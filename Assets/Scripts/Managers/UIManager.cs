@@ -54,7 +54,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject portraitTopBarObject;
 
     [Header("Bonus Wheel Transition Settings")]
-    [SerializeField] private Transform slotObject;
+   /* [SerializeField] private Transform slotObject;
     [SerializeField] private GameObject wheelLandscapeBackground;
     [SerializeField] private GameObject wheelPortraitBackground;
 
@@ -86,7 +86,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Vector3 wheelLandscapeTargetScale = new Vector3(1.3f, 1.3f, 1.3f);
     [SerializeField] private Vector3 wheelPortraitTargetScale = new Vector3(1.5f, 1.5f, 1.5f);
     [SerializeField] private Vector3 wheelLandscapePopScale = new Vector3(1.5f, 1.5f, 1.5f);
-    [SerializeField] private Vector3 wheelPortraitPopScale = new Vector3(1.7f, 1.7f, 1.7f);
+    [SerializeField] private Vector3 wheelPortraitPopScale = new Vector3(1.7f, 1.7f, 1.7f);*/
 
     [Header("Rainbow Panel Settings")]
     [SerializeField] private GameObject rainbowPanel;
@@ -376,11 +376,11 @@ public class UIManager : MonoBehaviour
     {
         UpdateNewWheelSpinButtonsVisibility();
         UpdateWheelPositionsForOrientation();
-        if ((wheelLandscapeBackground != null && wheelLandscapeBackground.activeSelf) ||
+      /*  if ((wheelLandscapeBackground != null && wheelLandscapeBackground.activeSelf) ||
             (wheelPortraitBackground != null && wheelPortraitBackground.activeSelf))
         {
             EnableWheelBackgroundBasedOnOrientation();
-        }
+        }*/
         UpdateJackpotPortraitLevitation(mode);
         UpdateTopBarVisibility(!isWheelBonusActive);
     }
@@ -392,9 +392,9 @@ public class UIManager : MonoBehaviour
         var oc = GetOrientationChange();
         bool isPortraitMode = (oc != null && oc.CurrentMode == OrientationChange.OrientationMode.MobilePortrait);
 
-        Transform redTr = GetRedWheelTransform();
-        Transform greenTr = GetGreenWheelTransform();
-
+        //Transform redTr = GetRedWheelTransform();
+        //Transform greenTr = GetGreenWheelTransform();
+/*
         Vector3 redStart = isPortraitMode ? redWheelPortraitStartPos : redWheelLandscapeStartPos;
         Vector3 greenStart = isPortraitMode ? greenWheelPortraitStartPos : greenWheelLandscapeStartPos;
         Vector3 startScale = isPortraitMode ? wheelPortraitStartScale : wheelLandscapeStartScale;
@@ -408,7 +408,7 @@ public class UIManager : MonoBehaviour
         {
             greenTr.localPosition = greenStart;
             greenTr.localScale = startScale;
-        }
+        }*/
     }
 
     private void EnableWheelBackgroundBasedOnOrientation()
@@ -416,14 +416,14 @@ public class UIManager : MonoBehaviour
         var oc = GetOrientationChange();
         bool isPortraitMode = (oc != null && oc.CurrentMode == OrientationChange.OrientationMode.MobilePortrait);
 
-        if (wheelLandscapeBackground != null) wheelLandscapeBackground.SetActive(!isPortraitMode);
-        if (wheelPortraitBackground != null) wheelPortraitBackground.SetActive(isPortraitMode);
+      /*  if (wheelLandscapeBackground != null) wheelLandscapeBackground.SetActive(!isPortraitMode);
+        if (wheelPortraitBackground != null) wheelPortraitBackground.SetActive(isPortraitMode);*/
     }
 
     private void DisableWheelBackgrounds()
     {
-        if (wheelLandscapeBackground != null) wheelLandscapeBackground.SetActive(false);
-        if (wheelPortraitBackground != null) wheelPortraitBackground.SetActive(false);
+/*        if (wheelLandscapeBackground != null) wheelLandscapeBackground.SetActive(false);
+        if (wheelPortraitBackground != null) wheelPortraitBackground.SetActive(false);*/
     }
 
     private void UpdateNewWheelSpinButtonsVisibility()
@@ -460,9 +460,9 @@ public class UIManager : MonoBehaviour
         if (redInit != null) redInit.ResetWheelEffects();
         var greenInit = GetGreenWheelController();
         if (greenInit != null) greenInit.ResetWheelEffects();
-        if (redWheelTitleObject != null) redWheelTitleObject.SetActive(false);
+     /*   if (redWheelTitleObject != null) redWheelTitleObject.SetActive(false);
         if (greenWheelTitleObject != null) greenWheelTitleObject.SetActive(false);
-        if (dualWheelTitleObject != null) dualWheelTitleObject.SetActive(false);
+        if (dualWheelTitleObject != null) dualWheelTitleObject.SetActive(false);*/
         DisableWheelBackgrounds();
         isWheelBonusActive = false;
         SetAllWheelSpinButtonsInteractable(false);
@@ -602,8 +602,8 @@ public class UIManager : MonoBehaviour
 
         if (wheelSpinButton) wheelSpinButton.onClick.AddListener(() => { AudioManager.Instance?.PlayWheelStart(); OnWheelSpinClicked(); });
         if (wheelSpinButtonPortrait) wheelSpinButtonPortrait.onClick.AddListener(() => { AudioManager.Instance?.PlayWheelStart(); OnWheelSpinClicked(); });
-        if (redCenterSpinButton) redCenterSpinButton.onClick.AddListener(() => { AudioManager.Instance?.PlayWheelStart(); OnWheelSpinClicked(); });
-        if (greenCenterSpinButton) greenCenterSpinButton.onClick.AddListener(() => { AudioManager.Instance?.PlayWheelStart(); OnWheelSpinClicked(); });
+       /* if (redCenterSpinButton) redCenterSpinButton.onClick.AddListener(() => { AudioManager.Instance?.PlayWheelStart(); OnWheelSpinClicked(); });
+        if (greenCenterSpinButton) greenCenterSpinButton.onClick.AddListener(() => { AudioManager.Instance?.PlayWheelStart(); OnWheelSpinClicked(); });*/
 
         var redSetup = GetRedWheelController();
         if (redSetup != null && redSetup.CenterSpinButton != null)
@@ -983,7 +983,7 @@ public class UIManager : MonoBehaviour
     {
         StopWinTypeWheelPulse();
 
-        Transform redTr = GetRedWheelTransform();
+       /* Transform redTr = GetRedWheelTransform();
         Transform greenTr = GetGreenWheelTransform();
 
         float pulseDuration = 0.45f;
@@ -1004,7 +1004,7 @@ public class UIManager : MonoBehaviour
             greenWheelPulseTween = greenTr.DOScale(Vector3.one * 1.0f, pulseDuration)
                 .SetEase(Ease.InOutSine)
                 .SetLoops(-1, LoopType.Yoyo);
-        }
+        }*/
     }
 
     private void StopWinTypeWheelPulse()
@@ -1023,7 +1023,7 @@ public class UIManager : MonoBehaviour
 
         float resetDuration = 0.3f;
 
-        Transform redTr = GetRedWheelTransform();
+        /*Transform redTr = GetRedWheelTransform();
         if (redTr != null)
         {
             redTr.DOKill();
@@ -1035,7 +1035,7 @@ public class UIManager : MonoBehaviour
         {
             greenTr.DOKill();
             greenTr.DOScale(Vector3.one, resetDuration).SetEase(Ease.OutQuad);
-        }
+        }*/
     }
 
     internal void TriggerBigWinPopup(SpinResult result, System.Action onComplete = null)
@@ -1888,7 +1888,7 @@ public class UIManager : MonoBehaviour
         return null;
     }
 
-    private Transform GetRedWheelTransform()
+   /* private Transform GetRedWheelTransform()
     {
         if (redWheelTransform != null) return redWheelTransform;
         var red = GetRedWheelController();
@@ -1900,7 +1900,7 @@ public class UIManager : MonoBehaviour
         if (greenWheelTransform != null) return greenWheelTransform;
         var green = GetGreenWheelController();
         return green != null ? green.transform : null;
-    }
+    }*/
 
     private OrientationChange GetOrientationChange()
     {
@@ -1918,7 +1918,7 @@ public class UIManager : MonoBehaviour
 
     private Transform GetSlotObjectTransform()
     {
-        if (slotObject != null) return slotObject;
+        //if (slotObject != null) return slotObject;
         var oc = GetOCController();
         if (oc != null && oc.SlotObject != null) return oc.SlotObject;
         return slotView != null ? slotView.transform : null;
@@ -1985,7 +1985,7 @@ public class UIManager : MonoBehaviour
 
     private void SetWheelSiblingOrder(bool redOnTop)
     {
-        Transform redTr = GetRedWheelTransform();
+        /*Transform redTr = GetRedWheelTransform();
         Transform greenTr = GetGreenWheelTransform();
 
         if (redTr != null && greenTr != null)
@@ -2000,11 +2000,11 @@ public class UIManager : MonoBehaviour
                 redTr.SetSiblingIndex(0);
                 greenTr.SetSiblingIndex(1);
             }
-        }
+        }*/
 
-        if (redWheelTitleObject != null) redWheelTitleObject.transform.SetAsLastSibling();
+    /*    if (redWheelTitleObject != null) redWheelTitleObject.transform.SetAsLastSibling();
         if (greenWheelTitleObject != null) greenWheelTitleObject.transform.SetAsLastSibling();
-        if (dualWheelTitleObject != null) dualWheelTitleObject.transform.SetAsLastSibling();
+        if (dualWheelTitleObject != null) dualWheelTitleObject.transform.SetAsLastSibling();*/
     }
 
     private void UpdateTopBarVisibility(bool visible = true)
@@ -2045,8 +2045,8 @@ public class UIManager : MonoBehaviour
     private void SetAllWheelSpinButtonsInteractable(bool interactable)
     {
         SetButtonInteractable(wheelSpinButton, wheelSpinButtonPortrait, interactable);
-        if (redCenterSpinButton) redCenterSpinButton.interactable = interactable;
-        if (greenCenterSpinButton) greenCenterSpinButton.interactable = interactable;
+        /*if (redCenterSpinButton) redCenterSpinButton.interactable = interactable;
+        if (greenCenterSpinButton) greenCenterSpinButton.interactable = interactable;*/
 
         var red = GetRedWheelController();
         if (red != null) red.SetCenterSpinButtonInteractable(interactable);
@@ -2068,8 +2068,8 @@ public class UIManager : MonoBehaviour
     {
         var redCtrl = GetRedWheelController();
         var greenCtrl = GetGreenWheelController();
-        Transform redTr = GetRedWheelTransform();
-        Transform greenTr = GetGreenWheelTransform();
+        Transform redTr;// = GetRedWheelTransform();
+        Transform greenTr;// = GetGreenWheelTransform();
         Transform targetSlotBG = GetSlotObjectTransform();
 
         string wType = (bonusData.wheelType ?? "").ToLower().Trim();
@@ -2077,9 +2077,9 @@ public class UIManager : MonoBehaviour
         bool isGreenTriggered = wType.Contains("green");
         bool isBothTriggered = wType.Contains("both") || wType.Contains("double") || (isRedTriggered && isGreenTriggered);
 
-        if (redWheelTitleObject != null) redWheelTitleObject.SetActive(false);
+       /* if (redWheelTitleObject != null) redWheelTitleObject.SetActive(false);
         if (greenWheelTitleObject != null) greenWheelTitleObject.SetActive(false);
-        if (dualWheelTitleObject != null) dualWheelTitleObject.SetActive(false);
+        if (dualWheelTitleObject != null) dualWheelTitleObject.SetActive(false);*/
         DisableWheelBackgrounds();
 
         StopWheelShineEffects();
@@ -2089,15 +2089,15 @@ public class UIManager : MonoBehaviour
         var oc = GetOrientationChange();
         bool isPortraitMode = (oc != null && oc.CurrentMode == OrientationChange.OrientationMode.MobilePortrait);
 
-        Vector3 curStartScale = isPortraitMode ? wheelPortraitStartScale : wheelLandscapeStartScale;
+       /* Vector3 curStartScale = isPortraitMode ? wheelPortraitStartScale : wheelLandscapeStartScale;
         Vector3 curTargetScale = isPortraitMode ? wheelPortraitTargetScale : wheelLandscapeTargetScale;
-        Vector3 curPopScale = isPortraitMode ? wheelPortraitPopScale : wheelLandscapePopScale;
+        Vector3 curPopScale = isPortraitMode ? wheelPortraitPopScale : wheelLandscapePopScale;*/
 
-        Vector3 initialSlotPos = targetSlotBG != null ? targetSlotBG.localPosition : (isPortraitMode ? new Vector3(0f, -368f, 0f) : new Vector3(0f, -16.5f, 0f));
+       /* Vector3 initialSlotPos = targetSlotBG != null ? targetSlotBG.localPosition : (isPortraitMode ? new Vector3(0f, -368f, 0f) : new Vector3(0f, -16.5f, 0f));
         Vector3 initialRedPos = redTr != null ? redTr.localPosition : (isPortraitMode ? redWheelPortraitStartPos : redWheelLandscapeStartPos);
         Vector3 initialGreenPos = greenTr != null ? greenTr.localPosition : (isPortraitMode ? greenWheelPortraitStartPos : greenWheelLandscapeStartPos);
         Vector3 initialRedScale = redTr != null ? redTr.localScale : curStartScale;
-        Vector3 initialGreenScale = greenTr != null ? greenTr.localScale : curStartScale;
+        Vector3 initialGreenScale = greenTr != null ? greenTr.localScale : curStartScale;*/
 
         isWheelBonusActive = true;
         wheelSpinTriggered = false;
@@ -2116,8 +2116,8 @@ public class UIManager : MonoBehaviour
         DisableRainbowPanel();
         if (targetSlotBG != null)
         {
-            float targetY = isPortraitMode ? portraitSlotBgTargetY : slotBgTargetY;
-            yield return targetSlotBG.DOLocalMoveY(targetY, slotBgMoveDuration).SetEase(Ease.InOutCubic).WaitForCompletion();
+            /*float targetY = isPortraitMode ? portraitSlotBgTargetY : slotBgTargetY;
+            yield return targetSlotBG.DOLocalMoveY(targetY, slotBgMoveDuration).SetEase(Ease.InOutCubic).WaitForCompletion();*/
         }
 
         EnableWheelBackgroundBasedOnOrientation();
@@ -2125,7 +2125,7 @@ public class UIManager : MonoBehaviour
         StartWheelShineEffects();
 
         List<Tween> midMoveTweens = new List<Tween>();
-        if (redTr != null)
+        /*if (redTr != null)
         {
             Vector3 midRedPos = isPortraitMode ? redWheelPortraitTargetPos : new Vector3(redWheelTargetX, redWheelFinalPos.y, redWheelFinalPos.z);
             midMoveTweens.Add(redTr.DOLocalMove(midRedPos, wheelMoveDuration).SetEase(Ease.OutCubic));
@@ -2137,7 +2137,7 @@ public class UIManager : MonoBehaviour
             Vector3 midGreenPos = isPortraitMode ? greenWheelPortraitTargetPos : new Vector3(greenWheelTargetX, greenWheelFinalPos.y, greenWheelFinalPos.z);
             midMoveTweens.Add(greenTr.DOLocalMove(midGreenPos, wheelMoveDuration).SetEase(Ease.OutCubic));
             midMoveTweens.Add(greenTr.DOScale(curStartScale, wheelMoveDuration).SetEase(Ease.OutCubic));
-        }
+        }*/
 
         if (midMoveTweens.Count > 0)
         {
@@ -2145,7 +2145,7 @@ public class UIManager : MonoBehaviour
         }
 
         GameObject targetTitleObj = null;
-        if (isBothTriggered)
+        /*if (isBothTriggered)
         {
             targetTitleObj = dualWheelTitleObject;
         }
@@ -2156,7 +2156,7 @@ public class UIManager : MonoBehaviour
         else
         {
             targetTitleObj = greenWheelTitleObject;
-        }
+        }*/
 
         if (targetTitleObj != null)
         {
@@ -2164,8 +2164,8 @@ public class UIManager : MonoBehaviour
         }
 
         List<Tween> finalMoveTweens = new List<Tween>();
-        Vector3 targetRedFinal = isPortraitMode ? redWheelPortraitTargetPos : redWheelFinalPos;
-        Vector3 targetGreenFinal = isPortraitMode ? greenWheelPortraitTargetPos : greenWheelFinalPos;
+       /* Vector3 targetRedFinal = isPortraitMode ? redWheelPortraitTargetPos : redWheelFinalPos;
+        Vector3 targetGreenFinal = isPortraitMode ? greenWheelPortraitTargetPos : greenWheelFinalPos;*/
 
         if (isBothTriggered)
         {
@@ -2173,7 +2173,7 @@ public class UIManager : MonoBehaviour
             if (redCtrl != null) redCtrl.SetFullDisable(false);
             if (greenCtrl != null) greenCtrl.SetFullDisable(false);
 
-            if (redTr != null)
+            /*if (redTr != null)
             {
                 finalMoveTweens.Add(redTr.DOLocalMove(targetRedFinal, phase2MoveDuration).SetEase(Ease.OutCubic));
                 finalMoveTweens.Add(AnimateWheelPopScale(redTr, curTargetScale, curPopScale, phase2MoveDuration));
@@ -2182,7 +2182,7 @@ public class UIManager : MonoBehaviour
             {
                 finalMoveTweens.Add(greenTr.DOLocalMove(targetGreenFinal, phase2MoveDuration).SetEase(Ease.OutCubic));
                 finalMoveTweens.Add(AnimateWheelPopScale(greenTr, curTargetScale, curPopScale, phase2MoveDuration));
-            }
+            }*/
         }
         else if (isRedTriggered)
         {
@@ -2190,7 +2190,7 @@ public class UIManager : MonoBehaviour
             if (redCtrl != null) redCtrl.SetFullDisable(false);
             if (greenCtrl != null) greenCtrl.SetFullDisable(true);
 
-            if (redTr != null)
+          /*  if (redTr != null)
             {
                 finalMoveTweens.Add(redTr.DOLocalMove(targetRedFinal, phase2MoveDuration).SetEase(Ease.OutCubic));
                 finalMoveTweens.Add(AnimateWheelPopScale(redTr, curTargetScale, curPopScale, phase2MoveDuration));
@@ -2199,7 +2199,7 @@ public class UIManager : MonoBehaviour
             {
                 finalMoveTweens.Add(greenTr.DOLocalMove(targetGreenFinal, phase2MoveDuration).SetEase(Ease.OutCubic));
                 finalMoveTweens.Add(greenTr.DOScale(curTargetScale, phase2MoveDuration).SetEase(Ease.OutCubic));
-            }
+            }*/
         }
         else
         {
@@ -2207,7 +2207,7 @@ public class UIManager : MonoBehaviour
             if (redCtrl != null) redCtrl.SetFullDisable(true);
             if (greenCtrl != null) greenCtrl.SetFullDisable(false);
 
-            if (redTr != null)
+           /* if (redTr != null)
             {
                 finalMoveTweens.Add(redTr.DOLocalMove(targetRedFinal, phase2MoveDuration).SetEase(Ease.OutCubic));
                 finalMoveTweens.Add(redTr.DOScale(curTargetScale, phase2MoveDuration).SetEase(Ease.OutCubic));
@@ -2216,7 +2216,7 @@ public class UIManager : MonoBehaviour
             {
                 finalMoveTweens.Add(greenTr.DOLocalMove(targetGreenFinal, phase2MoveDuration).SetEase(Ease.OutCubic));
                 finalMoveTweens.Add(AnimateWheelPopScale(greenTr, curTargetScale, curPopScale, phase2MoveDuration));
-            }
+            }*/
         }
 
         if (finalMoveTweens.Count > 0)
@@ -2298,18 +2298,18 @@ public class UIManager : MonoBehaviour
 
         DisableWheelBackgrounds();
         StopWheelShineEffects();
-        if (redCtrl != null) redCtrl.ResetWheelEffects();
+       /* if (redCtrl != null) redCtrl.ResetWheelEffects();
         if (greenCtrl != null) greenCtrl.ResetWheelEffects();
         if (redWheelTitleObject != null) redWheelTitleObject.SetActive(false);
         if (greenWheelTitleObject != null) greenWheelTitleObject.SetActive(false);
-        if (dualWheelTitleObject != null) dualWheelTitleObject.SetActive(false);
+        if (dualWheelTitleObject != null) dualWheelTitleObject.SetActive(false);*/
         UpdateTopBarVisibility(true);
 
         if (slotView != null) slotView.DisableAllOverlays();
 
         List<Tween> restoreTweens = new List<Tween>();
 
-        if (targetSlotBG != null)
+       /* if (targetSlotBG != null)
         {
             targetSlotBG.DOKill();
             restoreTweens.Add(targetSlotBG.DOLocalMove(initialSlotPos, slotBgMoveDuration).SetEase(Ease.InOutCubic));
@@ -2327,7 +2327,7 @@ public class UIManager : MonoBehaviour
             greenTr.DOKill();
             restoreTweens.Add(greenTr.DOLocalMove(initialGreenPos, wheelMoveDuration).SetEase(Ease.OutCubic));
             restoreTweens.Add(greenTr.DOScale(initialGreenScale, wheelMoveDuration).SetEase(Ease.OutCubic));
-        }
+        }*/
 
         if (restoreTweens.Count > 0)
         {
@@ -2378,7 +2378,7 @@ public class UIManager : MonoBehaviour
 
     private void FindWheelResultPopupReferences()
     {
-        Transform parentTr = wheelParent;
+       /* Transform parentTr = wheelParent;
         if (parentTr == null) return;
 
         if (wheelResultPopup == null)
@@ -2456,7 +2456,7 @@ public class UIManager : MonoBehaviour
                     }
                 }
             }
-        }
+        }*/
     }
 
     private IEnumerator OpenWheelResultPopupRoutine(DualWheelsBonusData bonusData, bool isRed, bool isGreen, bool isBoth)

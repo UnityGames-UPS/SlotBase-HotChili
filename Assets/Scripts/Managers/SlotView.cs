@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Spine.Unity;
 using DG.Tweening;
 
 public class SlotView : MonoBehaviour
@@ -9,37 +10,45 @@ public class SlotView : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameManager gameManager;
 
-    [Header("Symbol Sprites - Assign by Name")]
-    [SerializeField] private Sprite spriteRed3X;
-    [SerializeField] private Sprite spriteBlue2X;
-    [SerializeField] private Sprite spriteBlue7;
-    [SerializeField] private Sprite spriteWhite7;
-    [SerializeField] private Sprite spriteWhite7Bar;
-    [SerializeField] private Sprite spriteRed7;
-    [SerializeField] private Sprite spriteTripleBar;
-    [SerializeField] private Sprite spriteDoubleBar;
-    [SerializeField] private Sprite spriteSingleBar;
-    [SerializeField] private Sprite spriteSpin;
-    [SerializeField] private Sprite spriteGreenWheel;
-    [SerializeField] private Sprite spriteDoubleWheel;
-    [SerializeField] private Sprite spriteRedWheel;
+    [Header("Symbol Sprites - Matches Backend JSON")]
+    [SerializeField] private Sprite spriteGreenChilli; // ID 0
+    [SerializeField] private Sprite spriteYellowChilli; // ID 1
+    [SerializeField] private Sprite spriteOrangeChilli; // ID 2
+    [SerializeField] private Sprite spriteRedChilli; // ID 3
+    [SerializeField] private Sprite spriteTripleBar; // ID 4
+    [SerializeField] private Sprite spriteDoubleBar; // ID 5
+    [SerializeField] private Sprite spriteSingleBar; // ID 6
+    [SerializeField] private Sprite spriteRedSeven; // ID 7
+    [SerializeField] private Sprite spriteBlueSeven; // ID 8
+
+    [Header("Spine Win Animations - Matches Backend JSON")]
+    [SerializeField] private SkeletonDataAsset spineGreenChilli;
+    [SerializeField] private SkeletonDataAsset spineYellowChilli;
+    [SerializeField] private SkeletonDataAsset spineOrangeChilli;
+    [SerializeField] private SkeletonDataAsset spineRedChilli;
+    [SerializeField] private SkeletonDataAsset spineTripleBar;
+    [SerializeField] private SkeletonDataAsset spineDoubleBar;
+    [SerializeField] private SkeletonDataAsset spineSingleBar;
+    [SerializeField] private SkeletonDataAsset spineRedSeven;
+    [SerializeField] private SkeletonDataAsset spineBlueSeven;
+    private SkeletonDataAsset[] spineDataArray;
 
     private Sprite[] symbolSprites;
 
     [Header("Win Animation Sprite Arrays for All Icons")]
-    [SerializeField] private List<Sprite> animSpritesRed3X;
-    [SerializeField] private List<Sprite> animSpritesBlue2X;
-    [SerializeField] private List<Sprite> animSpritesBlue7;
-    [SerializeField] private List<Sprite> animSpritesWhite7;
-    [SerializeField] private List<Sprite> animSpritesWhite7Bar;
-    [SerializeField] private List<Sprite> animSpritesRed7;
-    [SerializeField] private List<Sprite> animSpritesTripleBar;
-    [SerializeField] private List<Sprite> animSpritesDoubleBar;
-    [SerializeField] private List<Sprite> animSpritesSingleBar;
-    [SerializeField] private List<Sprite> animSpritesSpin;
-    [SerializeField] private List<Sprite> animSpritesGreenWheel;
-    [SerializeField] private List<Sprite> animSpritesDoubleWheel;
-    [SerializeField] private List<Sprite> animSpritesRedWheel;
+    private List<Sprite> animSpritesRed3X;
+    private List<Sprite> animSpritesBlue2X;
+    private List<Sprite> animSpritesBlue7;
+    private List<Sprite> animSpritesWhite7;
+    private List<Sprite> animSpritesWhite7Bar;
+    private List<Sprite> animSpritesRed7;
+    private List<Sprite> animSpritesTripleBar;
+    private List<Sprite> animSpritesDoubleBar;
+    private List<Sprite> animSpritesSingleBar;
+    private List<Sprite> animSpritesSpin;
+    private List<Sprite> animSpritesGreenWheel;
+    private List<Sprite> animSpritesDoubleWheel;
+    private List<Sprite> animSpritesRedWheel;
 
     private List<Sprite>[] animationSpriteArrays;
 
@@ -170,6 +179,7 @@ public class SlotView : MonoBehaviour
     private void Awake()
     {
         BuildSymbolSpriteArray();
+            BuildSpineArray();
         InitializeReels();
     }
     private void Start()
@@ -177,6 +187,7 @@ public class SlotView : MonoBehaviour
         if (symbolSprites == null || symbolSprites.Length == 0)
         {
             BuildSymbolSpriteArray();
+            BuildSpineArray();
         }
 
         CacheOriginalWinBoxPositions();
@@ -374,23 +385,39 @@ public class SlotView : MonoBehaviour
             ? cols[col].rows[row] : null;
     }
 
+    
+    private void BuildSpineArray()
+    {
+        spineDataArray = new SkeletonDataAsset[10];
+        spineDataArray[0] = spineGreenChilli;
+        spineDataArray[1] = spineYellowChilli;
+        spineDataArray[2] = spineOrangeChilli;
+        spineDataArray[3] = spineRedChilli;
+        spineDataArray[4] = spineTripleBar;
+        spineDataArray[5] = spineDoubleBar;
+        spineDataArray[6] = spineSingleBar;
+        spineDataArray[7] = spineRedSeven;
+        spineDataArray[8] = spineBlueSeven;
+    }
+
+    private SkeletonDataAsset GetSpineData(int symbolId)
+    {
+        if (spineDataArray == null || symbolId < 0 || symbolId >= spineDataArray.Length) return null;
+        return spineDataArray[symbolId];
+    }
+
     private void BuildSymbolSpriteArray()
     {
-        symbolSprites = new Sprite[15];
-        symbolSprites[1] = spriteRed3X;
-        symbolSprites[2] = spriteBlue2X;
-        symbolSprites[3] = spriteBlue7;
-        symbolSprites[4] = spriteWhite7;
-        symbolSprites[5] = spriteWhite7Bar;
-        symbolSprites[6] = spriteRed7;
-        symbolSprites[7] = spriteTripleBar;
-        symbolSprites[8] = spriteDoubleBar;
-        symbolSprites[9] = spriteSingleBar;
-        symbolSprites[10] = spriteSpin;
-        symbolSprites[11] = spriteGreenWheel;
-        symbolSprites[12] = spriteDoubleWheel;
-        symbolSprites[13] = spriteRedWheel;
-        symbolSprites[14] = spriteRedWheel;
+        symbolSprites = new Sprite[10];
+        symbolSprites[0] = spriteGreenChilli;
+        symbolSprites[1] = spriteYellowChilli;
+        symbolSprites[2] = spriteOrangeChilli;
+        symbolSprites[3] = spriteRedChilli;
+        symbolSprites[4] = spriteTripleBar;
+        symbolSprites[5] = spriteDoubleBar;
+        symbolSprites[6] = spriteSingleBar;
+        symbolSprites[7] = spriteRedSeven;
+        symbolSprites[8] = spriteBlueSeven;
 
         Sprite defaultSprite = null;
         for (int i = 0; i < symbolSprites.Length; i++)
@@ -430,6 +457,15 @@ public class SlotView : MonoBehaviour
     {
         cycleDistance = symbolHeight;
         middlePosition = 0f;
+
+        // Initialize with random sprites so they aren't default Blue 7s
+        if (reelImagesList != null)
+        {
+            for (int col = 0; col < reelImagesList.Count; col++)
+            {
+                SetReelSymbols(col, null, true);
+            }
+        }
 
 
 
@@ -487,18 +523,8 @@ public class SlotView : MonoBehaviour
 
     private float GetTargetYForResult(List<int> columnSymbols)
     {
-        if (columnSymbols == null || columnSymbols.Count < 3)
-            return middlePosition + case2StopY;
-
-        bool isMiddleIcon = columnSymbols[1] != 0;
-        if (isMiddleIcon)
-        {
-            return middlePosition + case1StopY;
-        }
-        else
-        {
-            return middlePosition + case2StopY;
-        }
+        // Force standard 3x3 behavior
+        return middlePosition + case1StopY;
     }
 
     private void SetReelSymbols(int columnIndex, List<int> visibleSymbolIds, bool isInitial = false)
@@ -506,11 +532,11 @@ public class SlotView : MonoBehaviour
         if (columnIndex >= reelImagesList.Count) return;
 
         var reel = reelImagesList[columnIndex];
-        if (reel.images == null || reel.images.Count < 14) return;
+        if (reel.images == null || reel.images.Count < 9) return;
 
         bool isCase1 = visibleSymbolIds != null && visibleSymbolIds.Count >= 3 && visibleSymbolIds[1] != 0;
 
-        List<int> nonBlankIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
+        List<int> nonBlankIds = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
         if (visibleSymbolIds != null)
         {
@@ -531,30 +557,25 @@ public class SlotView : MonoBehaviour
         int bufferIndex = 0;
         HashSet<int> reservedIndices = new HashSet<int>();
 
-        if (isCase1)
+        if (visibleSymbolIds != null && visibleSymbolIds.Count >= 3)
         {
             reservedIndices.Add(6);
             reservedIndices.Add(7);
             reservedIndices.Add(8);
 
-            int midId = (visibleSymbolIds != null && visibleSymbolIds.Count > 1) ? visibleSymbolIds[1] : 1;
-            int topId = GetRandomNonBlankSymbolId(nonBlankIds);
-            int botId = GetRandomNonBlankSymbolId(nonBlankIds);
-
-            SetImageSymbol(reel.images[7], midId);
-            SetImageSymbol(reel.images[6], topId);
-            SetImageSymbol(reel.images[8], botId);
+            SetImageSymbol(reel.images[6], visibleSymbolIds[0]);
+            SetImageSymbol(reel.images[7], visibleSymbolIds[1]);
+            SetImageSymbol(reel.images[8], visibleSymbolIds[2]);
         }
         else
         {
             reservedIndices.Add(6);
             reservedIndices.Add(7);
+            reservedIndices.Add(8);
 
-            int topSymbolId = (visibleSymbolIds != null && visibleSymbolIds.Count > 0) ? visibleSymbolIds[0] : 1;
-            int botSymbolId = (visibleSymbolIds != null && visibleSymbolIds.Count > 2) ? visibleSymbolIds[2] : 1;
-
-            SetImageSymbol(reel.images[6], topSymbolId);
-            SetImageSymbol(reel.images[7], botSymbolId);
+            SetImageSymbol(reel.images[6], GetRandomNonBlankSymbolId(nonBlankIds));
+            SetImageSymbol(reel.images[7], GetRandomNonBlankSymbolId(nonBlankIds));
+            SetImageSymbol(reel.images[8], GetRandomNonBlankSymbolId(nonBlankIds));
         }
 
         for (int i = 0; i < reel.images.Count; i++)
@@ -1033,7 +1054,10 @@ public class SlotView : MonoBehaviour
                             List<Sprite> animSprites = (animationSpriteArrays != null && symId >= 0 && symId < animationSpriteArrays.Length) ? animationSpriteArrays[symId] : null;
                             if (animSprites != null && animSprites.Count > 0)
                             {
-                                imageAnim.textureArray = animSprites;
+                                if (animSprites != null)
+            {
+                imageAnim.textureArray = animSprites;
+            }
                             }
                             imageAnim.animationMode = ImageAnimation.AnimationMode.SINGLE_PHASE;
                             imageAnim.useDynamicFramerate = true;
@@ -1091,7 +1115,13 @@ public class SlotView : MonoBehaviour
                                 }
                             };
 
-                            imageAnim.StartAnimation();
+                            
+            SpineAnimController spine = (imageAnim != null) ? imageAnim.GetComponentInParent<SpineAnimController>() : null;
+            if (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset != null) 
+                            { var ar = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<UnityEngine.UI.Image>();
+                                if (ar != null) ar.enabled = false; spine.SkeletonGraphic.MatchRectTransformWithBounds(); 
+                                spine.Play(true); }
+            else { imageAnim.StartAnimation(); }
                         }
                     }
                 }
@@ -1203,6 +1233,13 @@ public class SlotView : MonoBehaviour
             var animGO = WinBox(winAnimationColumns, col, row);
             if (animGO == null) continue;
 
+            SpineAnimController spineAnim = animGO.GetComponentInChildren<SpineAnimController>();
+            if (currentDisplayMatrix != null && col < currentDisplayMatrix.Count && row < currentDisplayMatrix[col].Count)
+            {
+                int sId = currentDisplayMatrix[col][row];
+                if (spineAnim != null) spineAnim.SetSkeletonData(GetSpineData(sId));
+            }
+
             ImageAnimation imageAnim = animGO.GetComponentInChildren<ImageAnimation>();
             if (imageAnim == null) continue;
 
@@ -1211,9 +1248,12 @@ public class SlotView : MonoBehaviour
             if (symbolId < 0 || symbolId >= animationSpriteArrays.Length) continue;
 
             List<Sprite> animSprites = animationSpriteArrays[symbolId];
-            if (animSprites == null || animSprites.Count == 0) continue;
+            
 
-            imageAnim.textureArray = animSprites;
+            if (animSprites != null)
+            {
+                imageAnim.textureArray = animSprites;
+            }
             imageAnim.animationMode = ImageAnimation.AnimationMode.SINGLE_PHASE;
             imageAnim.useDynamicFramerate = true;
             imageAnim.dynamicLoopDuration = winSymbolLoopDuration;
@@ -1275,7 +1315,24 @@ public class SlotView : MonoBehaviour
 
         foreach (var imageAnim in activeAnims)
         {
-            imageAnim.StartAnimation();
+            
+            SpineAnimController spine = (imageAnim != null) ? imageAnim.GetComponentInParent<SpineAnimController>() : null;
+            if (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset != null) 
+            { 
+                Debug.Log($"[SlotView] SingleLoop triggering Spine animation on {spine.gameObject.name}");
+                var ar = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<UnityEngine.UI.Image>(); 
+                if (ar != null) ar.enabled = false; 
+                spine.SkeletonGraphic.MatchRectTransformWithBounds(); 
+                spine.Play(true); 
+            }
+            else 
+            { 
+                bool isSpineNull = (spine == null);
+                bool isSGNull = (spine != null && spine.SkeletonGraphic == null);
+                bool isAssetNull = (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset == null);
+                Debug.LogWarning($"[SlotView] SingleLoop falling back! SpineNull: {isSpineNull}, SGNull: {isSGNull}, AssetNull: {isAssetNull}");
+                imageAnim.StartAnimation(); 
+            }
         }
 
         if (activeAnims.Count > 0)
@@ -1320,6 +1377,16 @@ public class SlotView : MonoBehaviour
             var animGO = WinBox(winAnimationColumns, col, row);
             if (animGO == null) continue;
 
+            SpineAnimController spineAnim = animGO.GetComponentInChildren<SpineAnimController>();
+            if (currentDisplayMatrix != null && col < currentDisplayMatrix.Count && row < currentDisplayMatrix[col].Count)
+            {
+                int sId = currentDisplayMatrix[col][row];
+                var data = GetSpineData(sId);
+                if (data == null) Debug.LogWarning($"[SlotView] No Spine Data found for symbol ID: {sId} on Col: {col}, Row: {row}");
+                else Debug.Log($"[SlotView] Setting Spine Data for symbol ID: {sId} on Col: {col}, Row: {row}");
+                if (spineAnim != null) spineAnim.SetSkeletonData(data);
+            }
+
             ImageAnimation imageAnim = animGO.GetComponentInChildren<ImageAnimation>();
             if (imageAnim == null) continue;
 
@@ -1328,9 +1395,12 @@ public class SlotView : MonoBehaviour
             if (symbolId < 0 || symbolId >= animationSpriteArrays.Length) continue;
 
             List<Sprite> animSprites = animationSpriteArrays[symbolId];
-            if (animSprites == null || animSprites.Count == 0) continue;
+            
 
-            imageAnim.textureArray = animSprites;
+            if (animSprites != null)
+            {
+                imageAnim.textureArray = animSprites;
+            }
             imageAnim.animationMode = ImageAnimation.AnimationMode.SINGLE_PHASE;
             imageAnim.useDynamicFramerate = true;
             imageAnim.dynamicLoopDuration = winSymbolLoopDuration;
@@ -1360,7 +1430,24 @@ public class SlotView : MonoBehaviour
                 symbolImage.gameObject.SetActive(false);
             }
 
-            imageAnim.StartAnimation();
+            
+            SpineAnimController spine = (imageAnim != null) ? imageAnim.GetComponentInParent<SpineAnimController>() : null;
+            if (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset != null) 
+            { 
+                Debug.Log($"[SlotView] Continuous triggering Spine animation on {spine.gameObject.name}");
+                var ar = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<UnityEngine.UI.Image>(); 
+                if (ar != null) ar.enabled = false; 
+                spine.SkeletonGraphic.MatchRectTransformWithBounds(); 
+                spine.Play(true); 
+            }
+            else 
+            { 
+                bool isSpineNull = (spine == null);
+                bool isSGNull = (spine != null && spine.SkeletonGraphic == null);
+                bool isAssetNull = (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset == null);
+                Debug.LogWarning($"[SlotView] Continuous falling back! SpineNull: {isSpineNull}, SGNull: {isSGNull}, AssetNull: {isAssetNull}");
+                imageAnim.StartAnimation(); 
+            }
         }
     }
 

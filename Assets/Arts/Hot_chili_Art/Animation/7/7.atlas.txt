@@ -1,0 +1,11 @@
+7.png
+size:502,390
+filter:Linear,Linear
+pma:true
+7
+bounds:102,2,386,398
+offsets:1,1,388,400
+rotate:90
+glow_new
+bounds:2,290,98,98
+offsets:1,1,100,103

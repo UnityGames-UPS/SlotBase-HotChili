@@ -1,0 +1,13 @@
+Blue_Bar.png
+size:1002,170
+filter:Linear,Linear
+pma:true
+Bar_1
+bounds:2,2,448,166
+offsets:1,1,450,168
+Bar_2
+bounds:452,2,448,166
+offsets:1,1,450,168
+glow_new
+bounds:902,70,98,98
+offsets:1,1,100,103

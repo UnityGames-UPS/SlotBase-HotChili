@@ -173,7 +173,10 @@ public class ServerPayload
   public double totalWin;
   public double winAmount;
   public double grandTotalWin;
+  
+  [JsonProperty("lineWins")]
   public List<ServerWinLine> winningLines;
+  
   public ServerDualWheelsBonus dualWheelsBonus;
 
   public int scatterCount;
@@ -191,12 +194,13 @@ public class ServerWinLine
 {
   public int lineId = -1;
   public int lineIndex = -1;
-  public int symbolId;
+  public string symbolId;
   public string symbolName;
   public object positions;
   public List<ServerPosition> matchedPositions;
   public double payout;
   public double winAmount;
+  public double totalWin;
   public double multiplier;
   public double wildMultiplier;
 }
@@ -791,12 +795,12 @@ public static class InitDataConverter
         }
 
         int effectiveLineId = line.lineIndex >= 0 ? line.lineIndex : (line.lineId >= 0 ? line.lineId : index++);
-        double effectiveWinAmount = line.payout > 0 ? line.payout : line.winAmount;
+        double effectiveWinAmount = line.totalWin > 0 ? line.totalWin : (line.payout > 0 ? line.payout : line.winAmount);
 
         winLines.Add(new WinLine
         {
           lineId = effectiveLineId,
-          symbolId = line.symbolId,
+          symbolId = int.TryParse(line.symbolId, out int parsedId) ? parsedId : 0,
           positions = flatPositions,
           winAmount = effectiveWinAmount
         });

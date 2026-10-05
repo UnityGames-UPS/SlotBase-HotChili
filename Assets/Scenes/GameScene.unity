@@ -6660,7 +6660,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -119.729, y: -0}
+  m_AnchoredPosition: {x: -119.729, y: 0}
   m_SizeDelta: {x: 263.158, y: 63.791}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &302215406
@@ -19979,7 +19979,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -119.729, y: -0}
+  m_AnchoredPosition: {x: -119.729, y: 0}
   m_SizeDelta: {x: 263.158, y: 63.791}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &877238139
@@ -20438,38 +20438,6 @@ MonoBehaviour:
   wheelSpinButtonPortrait: {fileID: 925257479}
   landscapeTopBarObject: {fileID: 782451468}
   portraitTopBarObject: {fileID: 455666069}
-  slotObject: {fileID: 451360944}
-  wheelLandscapeBackground: {fileID: 1625865951}
-  wheelPortraitBackground: {fileID: 326144576}
-  wheelParent: {fileID: 1459503919}
-  redWheelTransform: {fileID: 250417937}
-  greenWheelTransform: {fileID: 2104110620}
-  redCenterSpinButton: {fileID: 59214068}
-  greenCenterSpinButton: {fileID: 367905309}
-  redWheelTitleObject: {fileID: 1784204649}
-  greenWheelTitleObject: {fileID: 1456201112}
-  dualWheelTitleObject: {fileID: 1883834541}
-  slotBgMoveDuration: 0.5
-  slotBgTargetY: -1000
-  portraitSlotBgTargetY: -1333
-  wheelMoveDuration: 1
-  phase2MoveDuration: 0.6
-  redWheelTargetX: -175
-  greenWheelTargetX: 175
-  redWheelFinalPos: {x: -140, y: 25, z: 0}
-  greenWheelFinalPos: {x: 140, y: 65, z: 0}
-  redWheelPortraitStartPos: {x: -150, y: -75, z: 0}
-  greenWheelPortraitStartPos: {x: 150, y: -5, z: 0}
-  redWheelPortraitTargetPos: {x: 0, y: -170, z: 0}
-  greenWheelPortraitTargetPos: {x: 0, y: 170, z: 0}
-  redWheelLandscapeStartPos: {x: -688, y: 111, z: 0}
-  greenWheelLandscapeStartPos: {x: 675, y: 111, z: 0}
-  wheelLandscapeStartScale: {x: 1, y: 1, z: 1}
-  wheelPortraitStartScale: {x: 1.2, y: 1.2, z: 1.2}
-  wheelLandscapeTargetScale: {x: 1.3, y: 1.3, z: 1.3}
-  wheelPortraitTargetScale: {x: 1.5, y: 1.5, z: 1.5}
-  wheelLandscapePopScale: {x: 1.5, y: 1.5, z: 1.5}
-  wheelPortraitPopScale: {x: 1.7, y: 1.7, z: 1.7}
   rainbowPanel: {fileID: 1017213653}
   wheelResultPopup: {fileID: 834369556}
   wheelResultPopupRect: {fileID: 834369557}
@@ -27320,7 +27288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f521a04de7f494272a617b2719edd271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SocketIOManager
-  testToken: d5c383d4f00747388fc06e9196d2b9f3
+  testToken: 1a539664da5d48a588ee2c81df2e60da
   gameManager: {fileID: 1206269883}
   uiManager: {fileID: 885496184}
   popupManager: {fileID: 1363796882}

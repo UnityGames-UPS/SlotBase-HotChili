@@ -1,0 +1,14 @@
+7_Bar.png
+size:653,425
+filter:Linear,Linear
+pma:true
+7
+bounds:2,4,410,419
+offsets:21,12,448,436
+bar
+bounds:414,2,421,137
+offsets:1,1,423,139
+rotate:90
+glow_new
+bounds:553,325,98,98
+offsets:1,1,100,103

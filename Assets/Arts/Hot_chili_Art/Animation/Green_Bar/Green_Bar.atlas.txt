@@ -1,0 +1,10 @@
+Green_Bar.png
+size:558,171
+filter:Linear,Linear
+pma:true
+Bar
+bounds:2,2,454,167
+offsets:1,1,456,169
+glow_new
+bounds:458,71,98,98
+offsets:1,1,100,103

@@ -1,0 +1,1105 @@
+fileFormatVersion: 2
+guid: a98a3d0e135953f4f9c79465a6c6cf44
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4037728056388616743
+    second: Yellow_Bar_0
+  - first:
+      213: -7467719681935968564
+    second: Yellow_Bar_1
+  - first:
+      213: 3816407066688560134
+    second: Yellow_Bar_2
+  - first:
+      213: 4345331075111405920
+    second: Yellow_Bar_3
+  - first:
+      213: 3215224891385523124
+    second: Yellow_Bar_4
+  - first:
+      213: -5139963799733443187
+    second: Yellow_Bar_5
+  - first:
+      213: -8907931882794341825
+    second: Yellow_Bar_6
+  - first:
+      213: -782732278882870887
+    second: Yellow_Bar_7
+  - first:
+      213: -2530679620886464672
+    second: Yellow_Bar_8
+  - first:
+      213: -1112167198511178293
+    second: Yellow_Bar_9
+  - first:
+      213: 7962770822981463481
+    second: Yellow_Bar_10
+  - first:
+      213: 7005089935630049919
+    second: Yellow_Bar_11
+  - first:
+      213: -5032233733427537870
+    second: Yellow_Bar_12
+  - first:
+      213: 458451822036239536
+    second: Yellow_Bar_13
+  - first:
+      213: -2580925064743962260
+    second: Yellow_Bar_14
+  - first:
+      213: -2480917682120897522
+    second: Yellow_Bar_15
+  - first:
+      213: -2891113429021796287
+    second: Yellow_Bar_16
+  - first:
+      213: -6442490244993074962
+    second: Yellow_Bar_17
+  - first:
+      213: 3547942706948397035
+    second: Yellow_Bar_18
+  - first:
+      213: 8808165984281208348
+    second: Yellow_Bar_19
+  - first:
+      213: -3889390808401049207
+    second: Yellow_Bar_20
+  - first:
+      213: 8798590179103075722
+    second: Yellow_Bar_21
+  - first:
+      213: 4790769636947428714
+    second: Yellow_Bar_22
+  - first:
+      213: -5411657572902190240
+    second: Yellow_Bar_23
+  - first:
+      213: 252198823567737345
+    second: Yellow_Bar_24
+  - first:
+      213: 4004254159586513495
+    second: Yellow_Bar_25
+  - first:
+      213: -1222673526073897304
+    second: Yellow_Bar_26
+  - first:
+      213: -637217785362400926
+    second: Yellow_Bar_27
+  - first:
+      213: 9098103739420385444
+    second: Yellow_Bar_28
+  - first:
+      213: 4269355518057168278
+    second: Yellow_Bar_29
+  - first:
+      213: -4608870262519581844
+    second: Yellow_Bar_30
+  - first:
+      213: 809519541284893469
+    second: Yellow_Bar_31
+  - first:
+      213: -5528818208013425373
+    second: Yellow_Bar_32
+  - first:
+      213: 4932245007689592937
+    second: Yellow_Bar_33
+  - first:
+      213: 6190493383377946328
+    second: Yellow_Bar_34
+  - first:
+      213: -3986035180106240877
+    second: Yellow_Bar_35
+  - first:
+      213: -7038818603815650552
+    second: Yellow_Bar_36
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Yellow_Bar_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 783
+        width: 483
+        height: 181
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ddf35bb9bb17f7c0800000000000000
+      internalID: -4037728056388616743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_1
+      rect:
+        serializedVersion: 2
+        x: 590
+        y: 842
+        width: 175
+        height: 127
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc67304d3845d5890800000000000000
+      internalID: -7467719681935968564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_2
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 782
+        width: 284
+        height: 222
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60c1348c10a96f430800000000000000
+      internalID: 3816407066688560134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_3
+      rect:
+        serializedVersion: 2
+        x: 1049
+        y: 725
+        width: 188
+        height: 281
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0694b7b1797bd4c30800000000000000
+      internalID: 4345331075111405920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_4
+      rect:
+        serializedVersion: 2
+        x: 1237
+        y: 830
+        width: 99
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4bb2704f006ce9c20800000000000000
+      internalID: 3215224891385523124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_5
+      rect:
+        serializedVersion: 2
+        x: 1391
+        y: 859
+        width: 89
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d856586282e2ba8b0800000000000000
+      internalID: -5139963799733443187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_6
+      rect:
+        serializedVersion: 2
+        x: 1543
+        y: 847
+        width: 65
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3aaaaa162ba06480800000000000000
+      internalID: -8907931882794341825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_7
+      rect:
+        serializedVersion: 2
+        x: 1771
+        y: 923
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99954f2b32d2325f0800000000000000
+      internalID: -782732278882870887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_8
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 783
+        width: 107
+        height: 123
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 067fdbcfa4831ecd0800000000000000
+      internalID: -2530679620886464672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_9
+      rect:
+        serializedVersion: 2
+        x: 1663
+        y: 865
+        width: 35
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcd56e153d9c090f0800000000000000
+      internalID: -1112167198511178293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_10
+      rect:
+        serializedVersion: 2
+        x: 1663
+        y: 771
+        width: 55
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bda7abffd1718e60800000000000000
+      internalID: 7962770822981463481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_11
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 392
+        width: 327
+        height: 391
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f72a4e09e24173160800000000000000
+      internalID: 7005089935630049919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_12
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 392
+        width: 303
+        height: 391
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2385054d41ae92ab0800000000000000
+      internalID: -5032233733427537870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_13
+      rect:
+        serializedVersion: 2
+        x: 631
+        y: 392
+        width: 301
+        height: 390
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b4c91fc08fbc5600800000000000000
+      internalID: 458451822036239536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_14
+      rect:
+        serializedVersion: 2
+        x: 1302
+        y: 725
+        width: 89
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c69b804f356be2cd0800000000000000
+      internalID: -2580925064743962260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_15
+      rect:
+        serializedVersion: 2
+        x: 1449
+        y: 709
+        width: 94
+        height: 149
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0cc2383382029dd0800000000000000
+      internalID: -2480917682120897522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_16
+      rect:
+        serializedVersion: 2
+        x: 1608
+        y: 741
+        width: 55
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1485bc177a3b0e7d0800000000000000
+      internalID: -2891113429021796287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_17
+      rect:
+        serializedVersion: 2
+        x: 1781
+        y: 772
+        width: 30
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee8b446814da796a0800000000000000
+      internalID: -6442490244993074962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_18
+      rect:
+        serializedVersion: 2
+        x: 932
+        y: 392
+        width: 107
+        height: 356
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be7d81b1813dc3130800000000000000
+      internalID: 3547942706948397035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_19
+      rect:
+        serializedVersion: 2
+        x: 1103
+        y: 676
+        width: 33
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c16a2c78b44ec3a70800000000000000
+      internalID: 8808165984281208348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_20
+      rect:
+        serializedVersion: 2
+        x: 1295
+        y: 423
+        width: 254
+        height: 286
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9890698aaab160ac0800000000000000
+      internalID: -3889390808401049207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_21
+      rect:
+        serializedVersion: 2
+        x: 1549
+        y: 385
+        width: 107
+        height: 356
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8deda5a62fda1a70800000000000000
+      internalID: 8798590179103075722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_22
+      rect:
+        serializedVersion: 2
+        x: 1721
+        y: 666
+        width: 60
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a658afa2a9b3c7240800000000000000
+      internalID: 4790769636947428714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_23
+      rect:
+        serializedVersion: 2
+        x: 1846
+        y: 666
+        width: 21
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 063cc111c1ee5e4b0800000000000000
+      internalID: -5411657572902190240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_24
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 1
+        width: 352
+        height: 391
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 102c68b6e7dff7300800000000000000
+      internalID: 252198823567737345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_25
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 1
+        width: 326
+        height: 391
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 752d88451f7f19730800000000000000
+      internalID: 4004254159586513495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_26
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 285
+        width: 135
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ae4712f7e0380fe0800000000000000
+      internalID: -1222673526073897304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_27
+      rect:
+        serializedVersion: 2
+        x: 1022
+        y: 285
+        width: 101
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 269b9e2ecc52827f0800000000000000
+      internalID: -637217785362400926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_28
+      rect:
+        serializedVersion: 2
+        x: 1039
+        y: 391
+        width: 256
+        height: 284
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a02ecda525f24e70800000000000000
+      internalID: 9098103739420385444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_29
+      rect:
+        serializedVersion: 2
+        x: 1457
+        y: 385
+        width: 30
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69db6a1493ccf3b30800000000000000
+      internalID: 4269355518057168278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_30
+      rect:
+        serializedVersion: 2
+        x: 1656
+        y: 382
+        width: 220
+        height: 284
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c63b8a24ae00a00c0800000000000000
+      internalID: -4608870262519581844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_31
+      rect:
+        serializedVersion: 2
+        x: 679
+        y: 1
+        width: 302
+        height: 285
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d13f509dbbdfb3b00800000000000000
+      internalID: 809519541284893469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_32
+      rect:
+        serializedVersion: 2
+        x: 981
+        y: 1
+        width: 300
+        height: 285
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 325e5abf121b543b0800000000000000
+      internalID: -5528818208013425373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_33
+      rect:
+        serializedVersion: 2
+        x: 1281
+        y: 1
+        width: 288
+        height: 285
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 960388cc3bad27440800000000000000
+      internalID: 4932245007689592937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_34
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 285
+        width: 67
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d606acfeec09e550800000000000000
+      internalID: 6190493383377946328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_35
+      rect:
+        serializedVersion: 2
+        x: 1569
+        y: 96
+        width: 286
+        height: 286
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39cae836f12cea8c0800000000000000
+      internalID: -3986035180106240877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yellow_Bar_36
+      rect:
+        serializedVersion: 2
+        x: 1730
+        y: 1
+        width: 64
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80b3829e5c7115e90800000000000000
+      internalID: -7038818603815650552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Yellow_Bar_0: -4037728056388616743
+      Yellow_Bar_1: -7467719681935968564
+      Yellow_Bar_10: 7962770822981463481
+      Yellow_Bar_11: 7005089935630049919
+      Yellow_Bar_12: -5032233733427537870
+      Yellow_Bar_13: 458451822036239536
+      Yellow_Bar_14: -2580925064743962260
+      Yellow_Bar_15: -2480917682120897522
+      Yellow_Bar_16: -2891113429021796287
+      Yellow_Bar_17: -6442490244993074962
+      Yellow_Bar_18: 3547942706948397035
+      Yellow_Bar_19: 8808165984281208348
+      Yellow_Bar_2: 3816407066688560134
+      Yellow_Bar_20: -3889390808401049207
+      Yellow_Bar_21: 8798590179103075722
+      Yellow_Bar_22: 4790769636947428714
+      Yellow_Bar_23: -5411657572902190240
+      Yellow_Bar_24: 252198823567737345
+      Yellow_Bar_25: 4004254159586513495
+      Yellow_Bar_26: -1222673526073897304
+      Yellow_Bar_27: -637217785362400926
+      Yellow_Bar_28: 9098103739420385444
+      Yellow_Bar_29: 4269355518057168278
+      Yellow_Bar_3: 4345331075111405920
+      Yellow_Bar_30: -4608870262519581844
+      Yellow_Bar_31: 809519541284893469
+      Yellow_Bar_32: -5528818208013425373
+      Yellow_Bar_33: 4932245007689592937
+      Yellow_Bar_34: 6190493383377946328
+      Yellow_Bar_35: -3986035180106240877
+      Yellow_Bar_36: -7038818603815650552
+      Yellow_Bar_4: 3215224891385523124
+      Yellow_Bar_5: -5139963799733443187
+      Yellow_Bar_6: -8907931882794341825
+      Yellow_Bar_7: -782732278882870887
+      Yellow_Bar_8: -2530679620886464672
+      Yellow_Bar_9: -1112167198511178293
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

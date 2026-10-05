@@ -453,7 +453,7 @@ public class GameManager : MonoBehaviour
     internal void OnSpinResultReceived(SpinResult result)
     {
         lastResult = result;
-
+        Debug.Log(result);
         if (result.winLines != null)
         {
             for (int i = 0; i < result.winLines.Count; i++)
