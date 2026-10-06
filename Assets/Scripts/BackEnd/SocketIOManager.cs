@@ -370,7 +370,7 @@ public class SocketIOManager : MonoBehaviour
       );
 
       result.playerData.currentBetIndex = gameManager.currentBetIndex;
-            Debug.Log("123" + result.playerData.currentBetIndex + "000 000" + result);
+
       gameManager.OnSpinResultReceived(result);
     }
     catch (Exception e)

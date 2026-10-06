@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Spine.Unity;
 using DG.Tweening;
 
-public class SlotView : MonoBehaviour
+public partial class SlotView : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameManager gameManager;
@@ -31,6 +31,11 @@ public class SlotView : MonoBehaviour
     [SerializeField] private SkeletonDataAsset spineSingleBar;
     [SerializeField] private SkeletonDataAsset spineRedSeven;
     [SerializeField] private SkeletonDataAsset spineBlueSeven;
+    
+    [Header("Spine Skin Names (Optional)")]
+    [Tooltip("If you combined multiple symbols into one Spine file, type the Skin Name here for each symbol ID (0 to 9).")]
+    public string[] spineSkinNames = new string[10];
+    
     private SkeletonDataAsset[] spineDataArray;
 
     private Sprite[] symbolSprites;
@@ -116,7 +121,7 @@ public class SlotView : MonoBehaviour
 
     private float[] reelCurveIntensity = new float[3] { 1f, 1f, 1f };
     private Tween[] reelSettleCurveTweens = new Tween[3];
-    private Coroutine cylindricalEffectCoroutine;
+    public CylindricalSpinEffect cylindricalEffect;
 
 
     private float middlePosition = 0f;
@@ -184,6 +189,7 @@ public class SlotView : MonoBehaviour
     }
     private void Start()
     {
+        if (cylindricalEffect != null) cylindricalEffect.Initialize(reelImagesList, reelCurveIntensity, () => isSpinning || false);
         if (symbolSprites == null || symbolSprites.Length == 0)
         {
             BuildSymbolSpriteArray();
@@ -246,7 +252,18 @@ public class SlotView : MonoBehaviour
     private void SetImageSymbol(Image img, int symbolId)
     {
         if (img == null) return;
-        img.sprite = GetSymbolSprite(symbolId);
+        
+        if (symbolId == 99)
+        {
+            img.sprite = null;
+            img.color = new Color(1f, 1f, 1f, 0f);
+        }
+        else
+        {
+            img.sprite = GetSymbolSprite(symbolId);
+            img.color = new Color(1f, 1f, 1f, 1f);
+        }
+        
         imageToSymbolIdMap[img] = symbolId;
     }
 
@@ -356,11 +373,15 @@ public class SlotView : MonoBehaviour
         {
             animGO = overlay.rows[0];
             ResetWinBoxPosition(animGO);
+            animGO.transform.localRotation = Quaternion.Euler(-30f, 0f, 0f); // Tilt back
+            animGO.transform.localScale = new Vector3(1f, 0.7f, 1f); // Squash Y
         }
         else if (row == 2)
         {
             animGO = overlay.rows.Length > 1 ? overlay.rows[1] : overlay.rows[0];
             ResetWinBoxPosition(animGO);
+            animGO.transform.localRotation = Quaternion.Euler(30f, 0f, 0f); // Tilt forward
+            animGO.transform.localScale = new Vector3(1f, 0.7f, 1f); // Squash Y
         }
         else if (row == 1)
         {
@@ -369,6 +390,8 @@ public class SlotView : MonoBehaviour
             {
                 Vector3 basePos = GetOriginalWinBoxPosition(animGO);
                 animGO.transform.localPosition = new Vector3(basePos.x, 6.5f, basePos.z);
+                animGO.transform.localRotation = Quaternion.Euler(0f, 0f, 0f); // Flat
+                animGO.transform.localScale = Vector3.one; // Normal scale
             }
         }
 
@@ -404,6 +427,12 @@ public class SlotView : MonoBehaviour
     {
         if (spineDataArray == null || symbolId < 0 || symbolId >= spineDataArray.Length) return null;
         return spineDataArray[symbolId];
+    }
+
+    internal string GetSpineSkin(int symbolId)
+    {
+        if (spineSkinNames == null || symbolId < 0 || symbolId >= spineSkinNames.Length) return null;
+        return spineSkinNames[symbolId];
     }
 
     private void BuildSymbolSpriteArray()
@@ -514,7 +543,7 @@ public class SlotView : MonoBehaviour
             }
         }
 
-        UpdateCylindricalSpinEffect();
+        
     }
 
     #endregion
@@ -614,402 +643,11 @@ public class SlotView : MonoBehaviour
 
     #endregion
 
-    #region Spin Animation
+    
 
-    internal void StartSpin()
-    {
-        if (isSpinning) return;
+    
 
-        if (symbolInfoCard != null) symbolInfoCard.HideCard();
-
-        isSpinning = true;
-        KillAllTweens();
-
-        for (int i = 0; i < reelCurveIntensity.Length; i++)
-        {
-            if (reelSettleCurveTweens[i] != null)
-            {
-                reelSettleCurveTweens[i].Kill();
-                reelSettleCurveTweens[i] = null;
-            }
-        }
-
-        DisableAllOverlays();
-        AudioManager.Instance?.PlayReelSpinLoop();
-
-        StartCylindricalEffectCoroutine();
-
-        for (int i = 0; i < reelCycleCount.Count; i++)
-        {
-            reelCycleCount[i] = 0;
-        }
-
-        int reelCount = currentDisplayMatrix != null ? currentDisplayMatrix.Count : (gameManager?.gameConfig != null ? gameManager.gameConfig.reelCount : 3);
-        int maxCols = Mathf.Min(reelCount, reelTransforms != null ? reelTransforms.Length : 3);
-
-        for (int col = 0; col < maxCols; col++)
-        {
-            StartReelCycleWithDelay(col, col * reelStartStagger);
-        }
-    }
-
-    private void StartReelCycleWithDelay(int columnIndex, float delay)
-    {
-        if (columnIndex >= reelTransforms.Length) return;
-
-        if (delay > 0)
-        {
-            Sequence startSequence = DOTween.Sequence();
-            startSequence.AppendInterval(delay);
-            startSequence.OnComplete(() =>
-            {
-                if (isSpinning)
-                {
-                    StartReelCycle(columnIndex);
-                }
-            });
-            startSequence.Play();
-
-            if (spinTweens.Count <= columnIndex)
-                spinTweens.Add(startSequence);
-            else
-                spinTweens[columnIndex] = startSequence;
-        }
-        else
-        {
-            StartReelCycle(columnIndex);
-        }
-    }
-
-    private void StartReelCycle(int columnIndex)
-    {
-        if (columnIndex >= reelTransforms.Length) return;
-        if (!isSpinning) return;
-
-        if (columnIndex < reelCurveIntensity.Length)
-        {
-            if (reelSettleCurveTweens[columnIndex] != null)
-            {
-                reelSettleCurveTweens[columnIndex].Kill();
-                reelSettleCurveTweens[columnIndex] = null;
-            }
-            reelCurveIntensity[columnIndex] = 1f;
-        }
-
-        Transform slotTransform = reelTransforms[columnIndex];
-        var reel = (columnIndex < reelImagesList.Count) ? reelImagesList[columnIndex] : null;
-        int totalImages = (reel != null && reel.images != null && reel.images.Count > 0) ? reel.images.Count : 14;
-
-        int bufferCount = totalImages - 3;
-        float fullDistance = bufferCount * symbolHeight;
-        float halfDistance = fullDistance / 2f;
-
-        float spinTopY = middlePosition + halfDistance;
-        float spinBottomY = middlePosition - halfDistance;
-
-        slotTransform.localPosition = new Vector3(slotTransform.localPosition.x, spinTopY, 0);
-
-        float currentSpeed = spinSpeed;
-        float loopDuration = fullDistance / currentSpeed;
-
-        Tweener loopTweener = slotTransform.DOLocalMoveY(spinBottomY, loopDuration)
-            .SetEase(Ease.Linear)
-            .SetLoops(-1, LoopType.Restart)
-            .OnStepComplete(() =>
-            {
-                if (columnIndex < reelCycleCount.Count)
-                {
-                    reelCycleCount[columnIndex]++;
-                }
-            });
-
-        if (spinTweens.Count <= columnIndex)
-            spinTweens.Add(loopTweener);
-        else
-            spinTweens[columnIndex] = loopTweener;
-    }
-
-    #endregion
-
-    #region Stop Spin
-
-    internal void StopSpin(List<List<int>> resultMatrix, System.Action onComplete, bool isTurbo = false)
-    {
-        int reelCount = resultMatrix != null ? resultMatrix.Count : (gameManager?.gameConfig != null ? gameManager.gameConfig.reelCount : 3);
-        int maxCols = Mathf.Min(reelCount, reelTransforms != null ? reelTransforms.Length : 3);
-
-        if (!isSpinning)
-        {
-            currentDisplayMatrix = resultMatrix;
-            for (int col = 0; col < maxCols; col++)
-            {
-                SetReelSymbols(col, resultMatrix[col], false);
-            }
-            onComplete?.Invoke();
-            return;
-        }
-
-        StartCoroutine(StopSpinSequence(resultMatrix, onComplete, false, isTurbo));
-    }
-
-    private IEnumerator StopSpinSequence(List<List<int>> resultMatrix, System.Action onComplete, bool isQuickStop, bool isTurbo = false)
-    {
-        currentDisplayMatrix = resultMatrix;
-        int reelCount = resultMatrix != null ? resultMatrix.Count : 3;
-        int maxCols = Mathf.Min(reelCount, reelTransforms != null ? reelTransforms.Length : 3);
-
-        if (!isQuickStop && !isTurbo)
-        {
-            while (true)
-            {
-                bool allReelsReady = true;
-                for (int col = 0; col < maxCols; col++)
-                {
-                    if (col < reelCycleCount.Count && reelCycleCount[col] < minSpinCyclesBeforeStop)
-                    {
-                        allReelsReady = false;
-                        break;
-                    }
-                }
-
-                if (allReelsReady) break;
-                yield return null;
-            }
-        }
-
-        AudioManager.Instance?.StopReelSpinLoop();
-
-        bool isWheelTriggered = gameManager != null &&
-                               gameManager.lastResult != null &&
-                               gameManager.lastResult.dualWheelsBonusData != null &&
-                               gameManager.lastResult.dualWheelsBonusData.isTriggered;
-
-        float stagger = isQuickStop ? quickStopStagger : (isTurbo ? (reelStopStagger * 0.5f) : reelStopStagger);
-
-        for (int col = 0; col < maxCols; col++)
-        {
-            bool isLastReel = (col == maxCols - 1);
-            float delay = col * stagger;
-            if (isLastReel && isWheelTriggered)
-            {
-                delay += tensionSpinExtraDuration;
-            }
-            StartCoroutine(StopSingleReel(col, resultMatrix[col], delay, isQuickStop || isTurbo, isLastReel && isWheelTriggered, stagger));
-        }
-
-        float extraDelay = isWheelTriggered ? tensionSpinExtraDuration : 0f;
-        float longestStopTime;
-        if (isQuickStop)
-        {
-            longestStopTime = ((maxCols - 1) * stagger) + extraDelay + quickStopDuration;
-        }
-        else if (isTurbo)
-        {
-            longestStopTime = ((maxCols - 1) * stagger) + extraDelay + (stopOvershootDuration * 0.5f) + (stopSettleDuration * 0.5f);
-        }
-        else
-        {
-            longestStopTime = ((maxCols - 1) * stagger) + extraDelay + stopOvershootDuration + stopSettleDuration;
-        }
-
-        yield return new WaitForSeconds(longestStopTime);
-
-        if (lastSlotTensionFrame != null)
-        {
-            lastSlotTensionFrame.SetActive(false);
-        }
-        AudioManager.Instance?.StopTensionBuilder();
-
-        isSpinning = false;
-
-        foreach (var tween in spinTweens)
-        {
-            tween?.Kill();
-        }
-        spinTweens.Clear();
-
-        if (reelSettleCurveTweens != null)
-        {
-            for (int i = 0; i < reelSettleCurveTweens.Length; i++)
-            {
-                if (reelSettleCurveTweens[i] != null)
-                {
-                    reelSettleCurveTweens[i].Kill();
-                    reelSettleCurveTweens[i] = null;
-                }
-            }
-        }
-
-        if (cylindricalEffectCoroutine != null)
-        {
-            StopCoroutine(cylindricalEffectCoroutine);
-            cylindricalEffectCoroutine = null;
-        }
-
-        UpdateCylindricalSpinEffect(force: true);
-
-        onComplete?.Invoke();
-    }
-
-    private IEnumerator StopSingleReel(int columnIndex, List<int> targetSymbols, float delay, bool isQuickStop, bool isTensionSpin = false, float currentStagger = 0.2f)
-    {
-        if (isTensionSpin)
-        {
-            float frameEnableDelay = (columnIndex > 0) ? (columnIndex - 1) * currentStagger : 0f;
-            if (delay > frameEnableDelay)
-            {
-                if (frameEnableDelay > 0f)
-                {
-                    yield return new WaitForSeconds(frameEnableDelay);
-                }
-                if (lastSlotTensionFrame != null) lastSlotTensionFrame.SetActive(true);
-                AudioManager.Instance?.PlayTensionBuilder();
-                yield return new WaitForSeconds(delay - frameEnableDelay);
-            }
-            else
-            {
-                if (lastSlotTensionFrame != null) lastSlotTensionFrame.SetActive(true);
-                AudioManager.Instance?.PlayTensionBuilder();
-                if (delay > 0)
-                {
-                    yield return new WaitForSeconds(delay);
-                }
-            }
-        }
-        else if (delay > 0)
-        {
-            yield return new WaitForSeconds(delay);
-        }
-
-        if (columnIndex < spinTweens.Count && spinTweens[columnIndex] != null)
-        {
-            spinTweens[columnIndex].Kill();
-        }
-
-        Transform slotTransform = reelTransforms[columnIndex];
-        slotTransform.DOKill();
-
-        float targetY = GetTargetYForResult(targetSymbols);
-
-        SetReelSymbols(columnIndex, targetSymbols, false);
-
-        bool isCase1 = targetSymbols != null && targetSymbols.Count >= 3 && targetSymbols[1] != 0;
-        if (isCase1)
-        {
-            if (columnIndex < reelCurveIntensity.Length)
-            {
-                if (reelSettleCurveTweens[columnIndex] != null) reelSettleCurveTweens[columnIndex].Kill();
-                reelCurveIntensity[columnIndex] = 1f;
-            }
-        }
-        else
-        {
-            if (columnIndex < reelCurveIntensity.Length)
-            {
-                if (reelSettleCurveTweens[columnIndex] != null) reelSettleCurveTweens[columnIndex].Kill();
-                float settleDuration = isQuickStop ? (quickStopDuration * 0.7f) : stopSettleDuration;
-                int colIdx = columnIndex;
-                reelSettleCurveTweens[colIdx] = DOVirtual.Float(reelCurveIntensity[colIdx], 0f, settleDuration, (val) =>
-                {
-                    if (colIdx < reelCurveIntensity.Length) reelCurveIntensity[colIdx] = val;
-                });
-            }
-            StartCylindricalEffectCoroutine();
-        }
-
-        float landingStartTopY = targetY + (2f * symbolHeight);
-        slotTransform.localPosition = new Vector3(
-            slotTransform.localPosition.x,
-            landingStartTopY,
-            0
-        );
-
-        AudioManager.Instance?.PlayReelStop();
-
-        if (currentDisplayMatrix != null && columnIndex < currentDisplayMatrix.Count)
-        {
-            bool hasWild = false;
-            int wildId = gameManager?.gameConfig != null ? gameManager.gameConfig.wildSymbolId : 10;
-            foreach (int sym in currentDisplayMatrix[columnIndex])
-            {
-                if (sym == wildId) hasWild = true;
-            }
-            if (hasWild) AudioManager.Instance?.PlayReelStop();
-        }
-
-        if (isQuickStop)
-        {
-            Sequence quickStopSequence = DOTween.Sequence();
-
-            quickStopSequence.Append(
-                slotTransform.DOLocalMoveY(targetY - quickStopOvershoot, quickStopDuration * 0.3f)
-                    .SetEase(Ease.OutQuad)
-            );
-
-            quickStopSequence.Append(
-                slotTransform.DOLocalMoveY(targetY, quickStopDuration * 0.7f)
-                    .SetEase(Ease.InOutQuad)
-            );
-
-            if (spinTweens.Count <= columnIndex)
-                spinTweens.Add(quickStopSequence);
-            else
-                spinTweens[columnIndex] = quickStopSequence;
-        }
-        else
-        {
-            Sequence stopSequence = DOTween.Sequence();
-
-            stopSequence.Append(
-                slotTransform.DOLocalMoveY(targetY - stopOvershootDistance, stopOvershootDuration)
-                    .SetEase(Ease.OutQuad)
-            );
-
-            stopSequence.Append(
-                slotTransform.DOLocalMoveY(targetY, stopSettleDuration)
-                    .SetEase(Ease.InOutQuad)
-            );
-
-            if (spinTweens.Count <= columnIndex)
-                spinTweens.Add(stopSequence);
-            else
-                spinTweens[columnIndex] = stopSequence;
-        }
-    }
-
-    #endregion
-
-    #region Quick Spin
-
-    internal void QuickStop(List<List<int>> resultMatrix, System.Action onComplete = null)
-    {
-        if (!isSpinning)
-        {
-            currentDisplayMatrix = resultMatrix;
-            int reelCount = resultMatrix != null ? resultMatrix.Count : 3;
-            int maxCols = Mathf.Min(reelCount, reelTransforms != null ? reelTransforms.Length : 3);
-
-            for (int col = 0; col < maxCols; col++)
-            {
-                if (col < reelTransforms.Length)
-                {
-                    SetReelSymbols(col, resultMatrix[col], false);
-                    reelTransforms[col].localPosition = new Vector3(
-                        reelTransforms[col].localPosition.x,
-                        middlePosition,
-                        0
-                    );
-                }
-            }
-
-            onComplete?.Invoke();
-            return;
-        }
-
-        StartCoroutine(StopSpinSequence(resultMatrix, onComplete, true));
-    }
-
-    #endregion
+    
 
     internal void AnimateDualWheelWin(System.Action onComplete = null)
     {
@@ -1137,522 +775,7 @@ public class SlotView : MonoBehaviour
 
 
 
-    #region Win Line Animation
-
-    internal void ShowWinLineAnimation(List<WinLine> winLines, System.Action onComplete)
-    {
-        if (winLines == null || winLines.Count == 0)
-        {
-            onComplete?.Invoke();
-            return;
-        }
-
-        KillWinTweens();
-        winAnimationCoroutine = StartCoroutine(PlaySingleWinLineAnimation(winLines, onComplete));
-    }
-
-    private IEnumerator PlaySingleWinLineAnimation(List<WinLine> winLines, System.Action onComplete)
-    {
-        if (winLines == null || winLines.Count == 0)
-        {
-            onComplete?.Invoke();
-            yield break;
-        }
-
-        HashSet<int> flatPositions = new HashSet<int>();
-        double totalWinAmount = 0;
-        foreach (var line in winLines)
-        {
-            if (line != null)
-            {
-                totalWinAmount += line.winAmount;
-                if (line.positions != null)
-                {
-                    foreach (int pos in line.positions)
-                    {
-                        flatPositions.Add(pos);
-                    }
-                }
-            }
-        }
-
-        if (flatPositions.Count == 0)
-        {
-            onComplete?.Invoke();
-            yield break;
-        }
-
-        ShowPhase1TotalWin(totalWinAmount);
-
-        AudioManager.Instance?.PlayWinLinePhase1Start();
-
-        bool isAutoPlaying = (gameManager != null && gameManager.isAutoPlaying);
-
-        if (isAutoPlaying)
-        {
-            yield return StartCoroutine(AnimateWinPositionsSingleLoop(flatPositions));
-            HidePhase1TotalWinText(true);
-            yield return new WaitForSeconds(0.15f);
-            onComplete?.Invoke();
-        }
-        else
-        {
-            StartContinuousWinAnimation(flatPositions);
-            onComplete?.Invoke();
-        }
-    }
-
-    private IEnumerator AnimateWinPositionsSingleLoop(IEnumerable<int> flatPositions)
-    {
-        if (flatPositions == null) yield break;
-
-        int reelCount = (gameManager != null && gameManager.gameConfig != null) ? gameManager.gameConfig.reelCount : 3;
-        int rowLimit = (gameManager != null && gameManager.gameConfig != null) ? gameManager.gameConfig.rowCount : 3;
-
-        List<ImageAnimation> activeAnims = new List<ImageAnimation>();
-        int completedCount = 0;
-        bool isCompleted = false;
-
-        foreach (int flatIndex in flatPositions)
-        {
-            int row = flatIndex / reelCount;
-            int col = flatIndex % reelCount;
-
-            if (col < 0 || col >= 5 || row < 0 || row >= rowLimit) continue;
-
-            if (col >= reelImagesList.Count) continue;
-            var reel = reelImagesList[col];
-            if (reel.images == null || reel.images.Count < 3) continue;
-
-            int imageIndex = 6 + row;
-            if (imageIndex >= reel.images.Count) continue;
-
-            Image symbolImage = reel.images[imageIndex];
-            if (symbolImage == null) continue;
-
-            var animGO = WinBox(winAnimationColumns, col, row);
-            if (animGO == null) continue;
-
-            SpineAnimController spineAnim = animGO.GetComponentInChildren<SpineAnimController>();
-            if (currentDisplayMatrix != null && col < currentDisplayMatrix.Count && row < currentDisplayMatrix[col].Count)
-            {
-                int sId = currentDisplayMatrix[col][row];
-                if (spineAnim != null) spineAnim.SetSkeletonData(GetSpineData(sId));
-            }
-
-            ImageAnimation imageAnim = animGO.GetComponentInChildren<ImageAnimation>();
-            if (imageAnim == null) continue;
-
-            if (currentDisplayMatrix == null || col >= currentDisplayMatrix.Count || row >= currentDisplayMatrix[col].Count) continue;
-            int symbolId = currentDisplayMatrix[col][row];
-            if (symbolId < 0 || symbolId >= animationSpriteArrays.Length) continue;
-
-            List<Sprite> animSprites = animationSpriteArrays[symbolId];
-            
-
-            if (animSprites != null)
-            {
-                imageAnim.textureArray = animSprites;
-            }
-            imageAnim.animationMode = ImageAnimation.AnimationMode.SINGLE_PHASE;
-            imageAnim.useDynamicFramerate = true;
-            imageAnim.dynamicLoopDuration = winSymbolLoopDuration;
-            imageAnim.doLoopAnimation = true;
-            imageAnim.delayBetweenLoop = 0f;
-
-            animGO.SetActive(true);
-            Image animRenderer = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<Image>();
-            if (animRenderer == null && animGO != null) animRenderer = animGO.GetComponentInChildren<Image>();
-            if (animRenderer != null)
-            {
-                animRenderer.DOKill();
-                Color c = animRenderer.color;
-                animRenderer.color = new Color(c.r, c.g, c.b, 1f);
-                animRenderer.enabled = true;
-                animRenderer.gameObject.SetActive(true);
-            }
-
-            if (symbolImage != null)
-            {
-                symbolImage.DOKill();
-                Color c = symbolImage.color;
-                symbolImage.color = new Color(c.r, c.g, c.b, 0f);
-                symbolImage.enabled = false;
-                symbolImage.gameObject.SetActive(false);
-            }
-
-            activeAnims.Add(imageAnim);
-
-            imageAnim.onLoopComplete = (currentLoop) =>
-            {
-                if (currentLoop >= 1)
-                {
-                    imageAnim.onLoopComplete = null;
-                    imageAnim.StopAnimation();
-                    if (animGO != null)
-                    {
-                        ResetWinBoxPosition(animGO);
-                        animGO.SetActive(false);
-                    }
-
-                    if (symbolImage != null)
-                    {
-                        symbolImage.DOKill();
-                        Color c = symbolImage.color;
-                        symbolImage.color = new Color(c.r, c.g, c.b, 1f);
-                        symbolImage.enabled = true;
-                        symbolImage.gameObject.SetActive(true);
-                    }
-
-                    completedCount++;
-                    if (completedCount >= activeAnims.Count)
-                    {
-                        isCompleted = true;
-                    }
-                }
-            };
-        }
-
-        foreach (var imageAnim in activeAnims)
-        {
-            
-            SpineAnimController spine = (imageAnim != null) ? imageAnim.GetComponentInParent<SpineAnimController>() : null;
-            if (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset != null) 
-            { 
-                Debug.Log($"[SlotView] SingleLoop triggering Spine animation on {spine.gameObject.name}");
-                var ar = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<UnityEngine.UI.Image>(); 
-                if (ar != null) ar.enabled = false; 
-                spine.SkeletonGraphic.MatchRectTransformWithBounds(); 
-                spine.Play(true); 
-            }
-            else 
-            { 
-                bool isSpineNull = (spine == null);
-                bool isSGNull = (spine != null && spine.SkeletonGraphic == null);
-                bool isAssetNull = (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset == null);
-                Debug.LogWarning($"[SlotView] SingleLoop falling back! SpineNull: {isSpineNull}, SGNull: {isSGNull}, AssetNull: {isAssetNull}");
-                imageAnim.StartAnimation(); 
-            }
-        }
-
-        if (activeAnims.Count > 0)
-        {
-            yield return new WaitUntil(() => isCompleted);
-        }
-        else
-        {
-            yield return new WaitForSeconds(winSymbolLoopDuration);
-        }
-    }
-
-    private void StartContinuousWinAnimation(IEnumerable<int> flatPositions)
-    {
-        if (flatPositions == null) return;
-
-        int reelCount = (gameManager != null && gameManager.gameConfig != null) ? gameManager.gameConfig.reelCount : 3;
-        int rowLimit = (gameManager != null && gameManager.gameConfig != null) ? gameManager.gameConfig.rowCount : 3;
-
-        if (winAnimationParent && !winAnimationParent.activeSelf)
-        {
-            winAnimationParent.SetActive(true);
-        }
-
-        foreach (int flatIndex in flatPositions)
-        {
-            int row = flatIndex / reelCount;
-            int col = flatIndex % reelCount;
-
-            if (col < 0 || col >= 5 || row < 0 || row >= rowLimit) continue;
-
-            if (col >= reelImagesList.Count) continue;
-            var reel = reelImagesList[col];
-            if (reel.images == null || reel.images.Count < 3) continue;
-
-            int imageIndex = 6 + row;
-            if (imageIndex >= reel.images.Count) continue;
-
-            Image symbolImage = reel.images[imageIndex];
-            if (symbolImage == null) continue;
-
-            var animGO = WinBox(winAnimationColumns, col, row);
-            if (animGO == null) continue;
-
-            SpineAnimController spineAnim = animGO.GetComponentInChildren<SpineAnimController>();
-            if (currentDisplayMatrix != null && col < currentDisplayMatrix.Count && row < currentDisplayMatrix[col].Count)
-            {
-                int sId = currentDisplayMatrix[col][row];
-                var data = GetSpineData(sId);
-                if (data == null) Debug.LogWarning($"[SlotView] No Spine Data found for symbol ID: {sId} on Col: {col}, Row: {row}");
-                else Debug.Log($"[SlotView] Setting Spine Data for symbol ID: {sId} on Col: {col}, Row: {row}");
-                if (spineAnim != null) spineAnim.SetSkeletonData(data);
-            }
-
-            ImageAnimation imageAnim = animGO.GetComponentInChildren<ImageAnimation>();
-            if (imageAnim == null) continue;
-
-            if (currentDisplayMatrix == null || col >= currentDisplayMatrix.Count || row >= currentDisplayMatrix[col].Count) continue;
-            int symbolId = currentDisplayMatrix[col][row];
-            if (symbolId < 0 || symbolId >= animationSpriteArrays.Length) continue;
-
-            List<Sprite> animSprites = animationSpriteArrays[symbolId];
-            
-
-            if (animSprites != null)
-            {
-                imageAnim.textureArray = animSprites;
-            }
-            imageAnim.animationMode = ImageAnimation.AnimationMode.SINGLE_PHASE;
-            imageAnim.useDynamicFramerate = true;
-            imageAnim.dynamicLoopDuration = winSymbolLoopDuration;
-            imageAnim.doLoopAnimation = true;
-            imageAnim.delayBetweenLoop = 0f;
-            imageAnim.onLoopComplete = null;
-
-            animGO.SetActive(true);
-
-            Image animRenderer = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<Image>();
-            if (animRenderer == null && animGO != null) animRenderer = animGO.GetComponentInChildren<Image>();
-            if (animRenderer != null)
-            {
-                animRenderer.DOKill();
-                Color c = animRenderer.color;
-                animRenderer.color = new Color(c.r, c.g, c.b, 1f);
-                animRenderer.enabled = true;
-                animRenderer.gameObject.SetActive(true);
-            }
-
-            if (symbolImage != null)
-            {
-                symbolImage.DOKill();
-                Color c = symbolImage.color;
-                symbolImage.color = new Color(c.r, c.g, c.b, 0f);
-                symbolImage.enabled = false;
-                symbolImage.gameObject.SetActive(false);
-            }
-
-            
-            SpineAnimController spine = (imageAnim != null) ? imageAnim.GetComponentInParent<SpineAnimController>() : null;
-            if (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset != null) 
-            { 
-                Debug.Log($"[SlotView] Continuous triggering Spine animation on {spine.gameObject.name}");
-                var ar = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<UnityEngine.UI.Image>(); 
-                if (ar != null) ar.enabled = false; 
-                spine.SkeletonGraphic.MatchRectTransformWithBounds(); 
-                spine.Play(true); 
-            }
-            else 
-            { 
-                bool isSpineNull = (spine == null);
-                bool isSGNull = (spine != null && spine.SkeletonGraphic == null);
-                bool isAssetNull = (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset == null);
-                Debug.LogWarning($"[SlotView] Continuous falling back! SpineNull: {isSpineNull}, SGNull: {isSGNull}, AssetNull: {isAssetNull}");
-                imageAnim.StartAnimation(); 
-            }
-        }
-    }
-
-    private void HideAllWinLineTexts()
-    {
-        if (reelImagesList == null) return;
-        foreach (var reel in reelImagesList)
-        {
-            if (reel.images != null)
-            {
-                foreach (var image in reel.images)
-                {
-                    if (image != null)
-                    {
-                        Transform textTransform = image.transform.Find("WinLineText");
-                        if (textTransform != null)
-                        {
-                            textTransform.DOKill();
-                            textTransform.localScale = Vector3.one;
-                            textTransform.gameObject.SetActive(false);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void ShowPhase1TotalWin(double totalWinAmount)
-    {
-        if (phase1TotalWinText != null)
-        {
-            phase1TotalWinText.text = FormatSpriteText(totalWinAmount);
-            AnimateTextScaleAppear(phase1TotalWinText.transform);
-        }
-    }
-
-    public static string FormatSpriteText(string input)
-    {
-        if (string.IsNullOrEmpty(input)) return string.Empty;
-
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        foreach (char c in input)
-        {
-            if (c >= '0' && c <= '9')
-            {
-                sb.Append("<sprite=").Append(c - '0').Append(">");
-            }
-            else if (c == '=')
-            {
-                sb.Append("<sprite=10>");
-            }
-            else if (c == '.' || c == ',')
-            {
-                sb.Append("<sprite=11>");
-            }
-            else
-            {
-                sb.Append(c);
-            }
-        }
-        return sb.ToString();
-    }
-
-    public static string FormatSpriteText(double amount)
-    {
-        return FormatSpriteText(amount.ToString("0.###"));
-    }
-
-    private void HidePhase1TotalWinText(bool animate = true)
-    {
-        if (phase1TotalWinText != null)
-        {
-            if (animate)
-            {
-                AnimateTextScaleDisappear(phase1TotalWinText.transform);
-            }
-            else
-            {
-                phase1TotalWinText.transform.DOKill();
-                phase1TotalWinText.transform.localScale = Vector3.one;
-                phase1TotalWinText.gameObject.SetActive(false);
-            }
-        }
-    }
-
-    private void AnimateTextScaleAppear(Transform textTransform, float popScale = 1.2f, float durationUp = 0.15f, float durationDown = 0.10f)
-    {
-        if (textTransform == null) return;
-        textTransform.DOKill();
-        textTransform.localScale = Vector3.zero;
-        textTransform.gameObject.SetActive(true);
-
-        Sequence seq = DOTween.Sequence();
-        seq.Append(textTransform.DOScale(popScale, durationUp).SetEase(Ease.OutQuad));
-        seq.Append(textTransform.DOScale(1.0f, durationDown).SetEase(Ease.InQuad));
-        winTweens.Add(seq);
-    }
-
-    private void AnimateTextScaleDisappear(Transform textTransform, float duration = 0.15f, System.Action onComplete = null)
-    {
-        if (textTransform == null)
-        {
-            onComplete?.Invoke();
-            return;
-        }
-
-        textTransform.DOKill();
-        if (textTransform.gameObject.activeSelf)
-        {
-            Sequence seq = DOTween.Sequence();
-            seq.Append(textTransform.DOScale(Vector3.zero, duration).SetEase(Ease.InQuad));
-            seq.OnComplete(() =>
-            {
-                textTransform.gameObject.SetActive(false);
-                textTransform.localScale = Vector3.one;
-                onComplete?.Invoke();
-            });
-            winTweens.Add(seq);
-        }
-        else
-        {
-            textTransform.localScale = Vector3.one;
-            textTransform.gameObject.SetActive(false);
-            onComplete?.Invoke();
-        }
-    }
-
-
-    private void KillWinTweens(bool stopCoroutine = true)
-    {
-        foreach (var tween in winTweens)
-        {
-            tween?.Kill();
-        }
-        winTweens.Clear();
-
-        if (stopCoroutine && winAnimationCoroutine != null)
-        {
-            StopCoroutine(winAnimationCoroutine);
-            winAnimationCoroutine = null;
-        }
-
-        if (winAnimationColumns != null)
-        {
-            foreach (var col in winAnimationColumns)
-            {
-                if (col?.rows != null)
-                {
-                    foreach (var animGO in col.rows)
-                    {
-                        if (animGO != null)
-                        {
-                            ImageAnimation imageAnim = animGO.GetComponentInChildren<ImageAnimation>();
-                            if (imageAnim != null)
-                            {
-                                imageAnim.onLoopComplete = null;
-                                Image animRenderer = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<Image>();
-                                if (animRenderer == null) animRenderer = animGO.GetComponentInChildren<Image>();
-                                if (animRenderer != null)
-                                {
-                                    animRenderer.DOKill();
-                                    Color ac = animRenderer.color;
-                                    animRenderer.color = new Color(ac.r, ac.g, ac.b, 1f);
-                                }
-                                imageAnim.StopAnimation();
-                            }
-                            if (animGO.activeSelf)
-                            {
-                                animGO.SetActive(false);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        DisableColumns(winAnimationColumns);
-        if (winAnimationParent) winAnimationParent.SetActive(false);
-        HideAllWinLineTexts();
-        HidePhase1TotalWinText(false);
-
-        foreach (var reel in reelImagesList)
-        {
-            if (reel.images != null)
-            {
-                foreach (var image in reel.images)
-                {
-                    if (image != null)
-                    {
-                        image.DOKill();
-                        image.transform.localScale = Vector3.one;
-                        Color c = image.color;
-                        image.color = new Color(c.r, c.g, c.b, 1f);
-                        image.enabled = true;
-                        if (!image.gameObject.activeSelf)
-                        {
-                            image.gameObject.SetActive(true);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    #endregion
+    
 
 
 
@@ -1687,142 +810,16 @@ public class SlotView : MonoBehaviour
             }
         }
 
-        if (cylindricalEffectCoroutine != null)
+        if (cylindricalEffect != null)
         {
-            StopCoroutine(cylindricalEffectCoroutine);
-            cylindricalEffectCoroutine = null;
+            cylindricalEffect.StopEffect();
+            
         }
 
         KillWinTweens();
     }
 
-    #region Cylindrical Spin Effect Coroutine
-
-    private bool IsAnySettleTweenActive()
-    {
-        if (reelSettleCurveTweens == null) return false;
-        for (int i = 0; i < reelSettleCurveTweens.Length; i++)
-        {
-            if (reelSettleCurveTweens[i] != null && reelSettleCurveTweens[i].IsActive() && reelSettleCurveTweens[i].IsPlaying())
-                return true;
-        }
-        return false;
-    }
-
-    private void StartCylindricalEffectCoroutine()
-    {
-        if (!enableCylindricalEffect) return;
-        if (cylindricalEffectCoroutine != null)
-        {
-            StopCoroutine(cylindricalEffectCoroutine);
-            cylindricalEffectCoroutine = null;
-        }
-        cylindricalEffectCoroutine = StartCoroutine(CylindricalSpinEffectRoutine());
-    }
-
-    private IEnumerator CylindricalSpinEffectRoutine()
-    {
-        while (isSpinning || IsAnySettleTweenActive())
-        {
-            UpdateCylindricalSpinEffect(force: false);
-            yield return null;
-        }
-        UpdateCylindricalSpinEffect(force: true);
-        cylindricalEffectCoroutine = null;
-    }
-
-    private void UpdateCylindricalSpinEffect(bool force = false)
-    {
-        if (!enableCylindricalEffect || reelTransforms == null || reelImagesList == null) return;
-
-        int maxCols = Mathf.Min(reelTransforms.Length, reelImagesList.Count);
-
-        float effectiveVisibleHalfHeight = visibleHalfHeight;
-        if (visibleAreaRectTransform != null && visibleAreaRectTransform.rect.height > 0)
-        {
-            effectiveVisibleHalfHeight = visibleAreaRectTransform.rect.height * 0.5f;
-        }
-        float effectiveOuterHalfHeight = Mathf.Max(outerHalfHeight, effectiveVisibleHalfHeight * 1.5f);
-
-        float invVisibleHalfHeight = 1f / Mathf.Max(1f, effectiveVisibleHalfHeight);
-        float invOuterRange = 1f / Mathf.Max(1f, effectiveOuterHalfHeight - effectiveVisibleHalfHeight);
-
-        for (int col = 0; col < maxCols; col++)
-        {
-            Transform slotTransform = reelTransforms[col];
-            if (slotTransform == null) continue;
-
-            var reel = reelImagesList[col];
-            if (reel == null || reel.images == null) continue;
-
-            float intensity = (col < reelCurveIntensity.Length) ? reelCurveIntensity[col] : 1f;
-
-            float centerImageLocalY = (reel.images.Count > 7 && reel.images[7] != null) ? reel.images[7].rectTransform.localPosition.y : -305.5f;
-            float slotOffsetFromCase1 = slotTransform.localPosition.y - case1StopY;
-
-            int imgCount = reel.images.Count;
-            for (int i = 0; i < imgCount; i++)
-            {
-                Image img = reel.images[i];
-                if (img == null) continue;
-
-                RectTransform rect = img.rectTransform;
-                if (rect == null) continue;
-
-                float yRel = (rect.localPosition.y - centerImageLocalY) + slotOffsetFromCase1;
-                float absY = Mathf.Abs(yRel);
-
-                float targetX = 0f;
-                float targetScale = 1f;
-
-                if (absY <= effectiveVisibleHalfHeight)
-                {
-                    float t = absY * invVisibleHalfHeight;
-                    float curveFactor = t * t * intensity;
-
-                    if (col == 0)
-                    {
-                        targetX = Mathf.Lerp(0f, leftReelEdgeX, curveFactor);
-                    }
-                    else if (col == 2)
-                    {
-                        targetX = Mathf.Lerp(0f, rightReelEdgeX, curveFactor);
-                    }
-
-                    targetScale = Mathf.Lerp(1f, edgeScale, curveFactor);
-                }
-                else
-                {
-                    float extraT = Mathf.Clamp01((absY - effectiveVisibleHalfHeight) * invOuterRange);
-
-                    if (col == 0)
-                    {
-                        targetX = Mathf.Lerp(leftReelEdgeX, leftReelOuterX, extraT) * intensity;
-                    }
-                    else if (col == 2)
-                    {
-                        targetX = Mathf.Lerp(rightReelEdgeX, rightReelOuterX, extraT) * intensity;
-                    }
-
-                    targetScale = Mathf.Lerp(1f, Mathf.Lerp(edgeScale, outerScale, extraT), intensity);
-                }
-
-                Vector2 anchoredPos = rect.anchoredPosition;
-                if (force || !Mathf.Approximately(anchoredPos.x, targetX))
-                {
-                    rect.anchoredPosition = new Vector2(targetX, anchoredPos.y);
-                }
-
-                Vector3 localScale = rect.localScale;
-                if (force || !Mathf.Approximately(localScale.x, targetScale))
-                {
-                    rect.localScale = new Vector3(targetScale, targetScale, targetScale);
-                }
-            }
-        }
-    }
-
-    #endregion
+    
 
     #region Cleanup
 

@@ -13,13 +13,8 @@ public class SpineAnimController : MonoBehaviour
         get
         {
             if (skeletonGraphic == null)
-                skeletonGraphic = GetComponentInChildren<SkeletonGraphic>(true);
-            
-            if (skeletonGraphic == null)
             {
-                GameObject child = new GameObject("SpineRenderer");
-                child.transform.SetParent(this.transform, false);
-                skeletonGraphic = child.AddComponent<SkeletonGraphic>();
+                skeletonGraphic = GetComponentInChildren<SkeletonGraphic>(true);
             }
             return skeletonGraphic;
         }
@@ -36,7 +31,7 @@ public class SpineAnimController : MonoBehaviour
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;
 
-        if (skeletonGraphic != null && !string.IsNullOrEmpty(animName))
+        if (skeletonGraphic != null && skeletonGraphic.SkeletonData != null && !string.IsNullOrEmpty(animName))
         {
             if (!isPlaying)
             {
@@ -49,6 +44,7 @@ public class SpineAnimController : MonoBehaviour
                 Debug.Log($"[SpineAnim] SUCCESSFULLY PLAYING animation '{animName}' on {gameObject.name}!");
             }
             skeletonGraphic.freeze = false;
+            skeletonGraphic.gameObject.SetActive(true);
         }
         else
         {
@@ -88,6 +84,7 @@ public class SpineAnimController : MonoBehaviour
                 Play(true);
             }
             skeletonGraphic.freeze = false;
+            skeletonGraphic.gameObject.SetActive(true);
         }
     }
 
@@ -103,6 +100,7 @@ public class SpineAnimController : MonoBehaviour
                 track.TimeScale = 0f;                       // freeze there
             }
             isPlaying = false;
+            if (skeletonGraphic != null) skeletonGraphic.gameObject.SetActive(false);
         }
     }
 
@@ -117,6 +115,7 @@ public class SpineAnimController : MonoBehaviour
             {
                 skeletonGraphic.Initialize(false);
             }
+            
             if (skeletonGraphic.SkeletonData != null)
             {
                 var anim = skeletonGraphic.SkeletonData.FindAnimation(animName);
@@ -129,7 +128,7 @@ public class SpineAnimController : MonoBehaviour
         return 0f;
     }
 
-    internal void SetSkeletonData(SkeletonDataAsset skeletonDataAsset, string overrideAnimName = null)
+    internal void SetSkeletonData(SkeletonDataAsset skeletonDataAsset, string overrideAnimName = null, string skinName = null)
     {
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;
@@ -144,13 +143,26 @@ public class SpineAnimController : MonoBehaviour
 
             if (skeletonGraphic.skeletonDataAsset != skeletonDataAsset)
             {
+                skeletonGraphic.Clear();
                 skeletonGraphic.skeletonDataAsset = skeletonDataAsset;
-                skeletonGraphic.Initialize(true);
+                if (skeletonDataAsset != null) 
+                {
+                    skeletonGraphic.Initialize(true);
+                }
                 isPlaying = false;
+                if (skeletonGraphic != null) skeletonGraphic.gameObject.SetActive(false);
             }
             
             // Check if the current animName is valid in the new skeleton data.
             // If it is not found, we fall back to the first animation in the new skeleton data.
+            
+            // Apply Skin if specified
+            if (skeletonGraphic.SkeletonData != null && !string.IsNullOrEmpty(skinName))
+            {
+                skeletonGraphic.Skeleton.SetSkin(skinName);
+                skeletonGraphic.Skeleton.SetSlotsToSetupPose();
+                skeletonGraphic.LateUpdate();
+            }
             if (skeletonGraphic.SkeletonData != null)
             {
                 if (string.IsNullOrEmpty(animName) || skeletonGraphic.SkeletonData.FindAnimation(animName) == null)
@@ -170,6 +182,7 @@ public class SpineAnimController : MonoBehaviour
             if (animName != oldAnimName)
             {
                 isPlaying = false;
+            if (skeletonGraphic != null) skeletonGraphic.gameObject.SetActive(false);
             }
         }
     }
