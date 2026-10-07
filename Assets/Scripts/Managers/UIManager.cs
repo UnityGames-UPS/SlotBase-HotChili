@@ -1021,7 +1021,7 @@ public class UIManager : MonoBehaviour
             greenWheelPulseTween = null;
         }
 
-        float resetDuration = 0.3f;
+//         float resetDuration = 0.3f;
 
         /*Transform redTr = GetRedWheelTransform();
         if (redTr != null)
@@ -2068,8 +2068,8 @@ public class UIManager : MonoBehaviour
     {
         var redCtrl = GetRedWheelController();
         var greenCtrl = GetGreenWheelController();
-        Transform redTr;// = GetRedWheelTransform();
-        Transform greenTr;// = GetGreenWheelTransform();
+//         Transform redTr;// = GetRedWheelTransform();
+//         Transform greenTr;// = GetGreenWheelTransform();
         Transform targetSlotBG = GetSlotObjectTransform();
 
         string wType = (bonusData.wheelType ?? "").ToLower().Trim();

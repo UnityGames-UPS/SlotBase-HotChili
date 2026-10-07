@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Spine.Unity;
 using DG.Tweening;
+using Best.HTTP.SecureProtocol.Org.BouncyCastle.Math.Field;
 
 public partial class SlotView : MonoBehaviour
 {
@@ -35,6 +36,9 @@ public partial class SlotView : MonoBehaviour
     [Header("Spine Skin Names (Optional)")]
     [Tooltip("If you combined multiple symbols into one Spine file, type the Skin Name here for each symbol ID (0 to 9).")]
     public string[] spineSkinNames = new string[10];
+
+    [Tooltip("Global scale modifier to shrink or grow Spine Win animations.")]
+    public float spineScaleMultiplier = 0.8f;
     
     private SkeletonDataAsset[] spineDataArray;
 
@@ -64,11 +68,11 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private List<ReelImages> reelImagesList;
 
     [Header("Reel Stop Y Positions")]
-    [SerializeField] private float case1StopY = 160f;
+    [SerializeField] private float case1StopY = 150.5f;
     [SerializeField] private float case2StopY = 0f;
-
+    
     [Header("Spin Settings")]
-    [SerializeField] private float symbolHeight = 100f;
+    [SerializeField] private float symbolHeight = 500f;
     [SerializeField] private float spinSpeed = 2000f;
     [SerializeField] private float reelStartStagger = 0.08f;
     [SerializeField] private float reelStopStagger = 0.12f;
@@ -93,6 +97,7 @@ public partial class SlotView : MonoBehaviour
 
     [Header("Win Animation Objects — Col 0..4  (each has 2 rows, contains ImageAnimation component)")]
     [SerializeField] private GameObject winAnimationParent;
+    [SerializeField] private GameObject winBorderAnimationParent;
     [Tooltip("GameObject references for win animations. Each should have an ImageAnimation component attached.")]
     [SerializeField] private ColumnOverlays[] winAnimationColumns = new ColumnOverlays[5];
 
@@ -107,18 +112,9 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private SymbolInfoCard symbolInfoCard;
 
     [Header("Cylindrical Spin Effect Settings")]
-    [SerializeField] private bool enableCylindricalEffect = true;
-    [Tooltip("Optional parent RectTransform reference (e.g. reel viewport frame) to automatically measure visible half height from parent rect height.")]
+        [Tooltip("Optional parent RectTransform reference (e.g. reel viewport frame) to automatically measure visible half height from parent rect height.")]
     [SerializeField] private RectTransform visibleAreaRectTransform;
-    [SerializeField] private float leftReelEdgeX = 70f;
-    [SerializeField] private float rightReelEdgeX = -70f;
-    [SerializeField] private float leftReelOuterX = 105f;
-    [SerializeField] private float rightReelOuterX = -105f;
-    [SerializeField] private float edgeScale = 0.94f;
-    [SerializeField] private float outerScale = 0.90f;
-    [SerializeField] private float visibleHalfHeight = 145f;
-    [SerializeField] private float outerHalfHeight = 220f;
-
+                                
     private float[] reelCurveIntensity = new float[3] { 1f, 1f, 1f };
     private Tween[] reelSettleCurveTweens = new Tween[3];
     public CylindricalSpinEffect cylindricalEffect;
@@ -176,20 +172,37 @@ public partial class SlotView : MonoBehaviour
 
     private void ResetWinBoxPosition(GameObject go)
     {
-        if (go != null && originalWinBoxLocalPositions != null && originalWinBoxLocalPositions.TryGetValue(go, out Vector3 origPos))
+        if (go != null)
         {
-            go.transform.localPosition = origPos;
+            if (originalWinBoxLocalPositions != null && originalWinBoxLocalPositions.TryGetValue(go, out Vector3 origPos))
+            {
+                go.transform.localPosition = origPos;
+            }
+            go.transform.localRotation = Quaternion.identity;
+            go.transform.localScale = Vector3.one * spineScaleMultiplier;
         }
     }
+
     private void Awake()
     {
+        if (cylindricalEffect == null)
+        {
+            cylindricalEffect = GetComponent<CylindricalSpinEffect>();
+            if (cylindricalEffect == null)
+            {
+                cylindricalEffect = gameObject.AddComponent<CylindricalSpinEffect>();
+            }
+        }
         BuildSymbolSpriteArray();
-            BuildSpineArray();
+        BuildSpineArray();
         InitializeReels();
     }
     private void Start()
     {
-        if (cylindricalEffect != null) cylindricalEffect.Initialize(reelImagesList, reelCurveIntensity, () => isSpinning || false);
+        if (cylindricalEffect != null)
+        {
+            cylindricalEffect.Initialize(reelImagesList, reelTransforms, visibleAreaRectTransform, reelCurveIntensity, () => isSpinning);
+        }
         if (symbolSprites == null || symbolSprites.Length == 0)
         {
             BuildSymbolSpriteArray();
@@ -205,6 +218,7 @@ public partial class SlotView : MonoBehaviour
     {
         DisableColumns(winAnimationColumns);
         if (winAnimationParent) winAnimationParent.SetActive(false);
+        if(winBorderAnimationParent) winBorderAnimationParent.SetActive(false);
         HidePhase1TotalWinText(false);
         if (symbolInfoCard) symbolInfoCard.HideCard();
         if (lastSlotTensionFrame) lastSlotTensionFrame.SetActive(false);
@@ -356,6 +370,35 @@ public partial class SlotView : MonoBehaviour
         }
     }
 
+    internal Image GetSymbolImage(int col, int row)
+    {
+        if (reelImagesList == null || col < 0 || col >= reelImagesList.Count) return null;
+        var reel = reelImagesList[col];
+        if (reel == null || reel.images == null) return null;
+
+        bool isCase1 = currentDisplayMatrix != null && col < currentDisplayMatrix.Count &&
+                       currentDisplayMatrix[col] != null && currentDisplayMatrix[col].Count >= 3 &&
+                       currentDisplayMatrix[col][1] != 0;
+
+        int imageIndex;
+        if (isCase1)
+        {
+            imageIndex = 6 + row;
+        }
+        else
+        {
+            if (row == 0) imageIndex = 6;
+            else if (row == 2) imageIndex = 7;
+            else return null;
+        }
+
+        if (imageIndex >= 0 && imageIndex < reel.images.Count)
+        {
+            return reel.images[imageIndex];
+        }
+        return null;
+    }
+
     private GameObject GetWinBoxObject(int col, int row)
     {
         if (winAnimationColumns == null || col < 0 || col >= winAnimationColumns.Length) return null;
@@ -368,30 +411,32 @@ public partial class SlotView : MonoBehaviour
         }
 
         GameObject animGO = null;
-
         if (row == 0)
         {
             animGO = overlay.rows[0];
-            ResetWinBoxPosition(animGO);
-            animGO.transform.localRotation = Quaternion.Euler(-30f, 0f, 0f); // Tilt back
-            animGO.transform.localScale = new Vector3(1f, 0.7f, 1f); // Squash Y
         }
         else if (row == 2)
         {
             animGO = overlay.rows.Length > 1 ? overlay.rows[1] : overlay.rows[0];
-            ResetWinBoxPosition(animGO);
-            animGO.transform.localRotation = Quaternion.Euler(30f, 0f, 0f); // Tilt forward
-            animGO.transform.localScale = new Vector3(1f, 0.7f, 1f); // Squash Y
         }
         else if (row == 1)
         {
             animGO = overlay.rows[0];
-            if (animGO != null)
+        }
+
+        if (animGO != null)
+        {
+            Image targetSymbolImage = GetSymbolImage(col, row);
+            if (targetSymbolImage != null)
             {
-                Vector3 basePos = GetOriginalWinBoxPosition(animGO);
-                animGO.transform.localPosition = new Vector3(basePos.x, 6.5f, basePos.z);
-                animGO.transform.localRotation = Quaternion.Euler(0f, 0f, 0f); // Flat
-                animGO.transform.localScale = Vector3.one; // Normal scale
+                animGO.transform.position = targetSymbolImage.transform.position;
+                animGO.transform.rotation = targetSymbolImage.transform.rotation;
+                Vector3 symScale = targetSymbolImage.transform.localScale;
+                animGO.transform.localScale = new Vector3(
+                    symScale.x * spineScaleMultiplier,
+                    symScale.y * spineScaleMultiplier,
+                    symScale.z * spineScaleMultiplier
+                );
             }
         }
 
@@ -552,7 +597,13 @@ public partial class SlotView : MonoBehaviour
 
     private float GetTargetYForResult(List<int> columnSymbols)
     {
-        // Force standard 3x3 behavior
+        if (columnSymbols != null && columnSymbols.Count >= 3)
+        {
+            if (columnSymbols[1] == 0)
+            {
+                return middlePosition + case2StopY;
+            }
+        }
         return middlePosition + case1StopY;
     }
 
@@ -586,7 +637,7 @@ public partial class SlotView : MonoBehaviour
         int bufferIndex = 0;
         HashSet<int> reservedIndices = new HashSet<int>();
 
-        if (visibleSymbolIds != null && visibleSymbolIds.Count >= 3)
+        if (isCase1)
         {
             reservedIndices.Add(6);
             reservedIndices.Add(7);
@@ -595,6 +646,14 @@ public partial class SlotView : MonoBehaviour
             SetImageSymbol(reel.images[6], visibleSymbolIds[0]);
             SetImageSymbol(reel.images[7], visibleSymbolIds[1]);
             SetImageSymbol(reel.images[8], visibleSymbolIds[2]);
+        }
+        else if (visibleSymbolIds != null && visibleSymbolIds.Count >= 3)
+        {
+            reservedIndices.Add(6);
+            reservedIndices.Add(7);
+
+            SetImageSymbol(reel.images[6], visibleSymbolIds[0]);
+            SetImageSymbol(reel.images[7], visibleSymbolIds[2]);
         }
         else
         {

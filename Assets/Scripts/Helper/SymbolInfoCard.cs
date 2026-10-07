@@ -13,16 +13,16 @@ public class SymbolInfoCard : MonoBehaviour
     [Header("Pointer Sprites")]
     [Tooltip("Sprite used when card is on the RIGHT side of symbol (1st & 2nd reel - pointer points left)")]
     [SerializeField] private Sprite rightSideCardSprite;
-    [Tooltip("Sprite used when card is on the LEFT side of symbol (3rd, 4th, 5th reel - pointer points right)")]
+    [Tooltip("Sprite used when card is on the LEFT side of symbol (3rd reel - pointer points right)")]
     [SerializeField] private Sprite leftSideCardSprite;
 
     [Header("Layout & Auto-Close Settings")]
     [Tooltip("Horizontal spacing from symbol center")]
-    [SerializeField] private float xSpacing = 160f;
+    [SerializeField] private float xSpacing = 220f;
     [Tooltip("Vertical offset adjustment")]
     [SerializeField] private float yOffset = 0f;
     [Tooltip("Auto close duration in seconds")]
-    [SerializeField] private float autoCloseDuration = 1.5f;
+    [SerializeField] private float autoCloseDuration = 2.0f;
 
     private RectTransform rectTransform;
     private int activeCol = -1;
@@ -106,68 +106,77 @@ public class SymbolInfoCard : MonoBehaviour
     {
         if (infoText == null) return;
 
+        double betFactor = 1.0;
+        if (gameManager != null)
+        {
+            if (gameManager.currentBetAmount > 0)
+            {
+                betFactor = gameManager.currentBetAmount;
+            }
+            else if (gameManager.gameConfig != null && gameManager.gameConfig.availableBets != null &&
+                     gameManager.gameConfig.availableBets.Count > gameManager.currentBetIndex &&
+                     gameManager.currentBetIndex >= 0)
+            {
+                betFactor = gameManager.gameConfig.availableBets[gameManager.currentBetIndex];
+            }
+        }
+
+        // HotChili Wild Multipliers (0: 2X Green, 1: 3X Yellow, 2: 4X Orange, 3: 5X Red)
+        if (symbolId >= 0 && symbolId <= 3)
+        {
+            infoText.alignment = TextAlignmentOptions.Center;
+            infoText.enableWordWrapping = true;
+            int mult = symbolId == 0 ? 2 : (symbolId == 1 ? 3 : (symbolId == 2 ? 4 : 5));
+            infoText.text = $"<color=#FFC700>{mult}X WILD</color>\nSubstitutes all symbols\nMultiplies line win by {mult}X";
+            return;
+        }
+
+        // Standard Symbols (7s and Bars)
+        infoText.alignment = TextAlignmentOptions.Flush;
+        infoText.enableWordWrapping = false;
+
         SymbolInfo symbolInfo = null;
         if (gameManager != null && gameManager.gameConfig != null && gameManager.gameConfig.symbols != null)
         {
             symbolInfo = gameManager.gameConfig.symbols.Find(s => s.id == symbolId);
         }
 
-        bool isWild = (symbolId == 1 || symbolId == 2);
-        bool isWheel = (symbolId >= 10 && symbolId <= 13);
-
-        if (isWild || isWheel)
+        if (symbolInfo != null && symbolInfo.multipliers != null && symbolInfo.multipliers.Count > 0)
         {
-            infoText.alignment = TextAlignmentOptions.Center;
-            infoText.enableWordWrapping = true;
-            if (isWheel)
+            List<string> lines = new List<string>();
+            for (int m = 0; m < symbolInfo.multipliers.Count; m++)
             {
-                infoText.text = "2 Bonus Symbols + Wheel Bonus Triggers Lucky Wheels";
+                double payout = symbolInfo.multipliers[m] * betFactor;
+                lines.Add($"<color=#FFC700>X3</color>   {payout.ToString("0.###")}");
             }
-            else if (isWild)
-            {
-                infoText.text = "Substitutes For Any Other Symbol Except For Bonus Symbols And Wheel Symbols";
-            }
+            infoText.text = string.Join("\n", lines);
         }
         else
         {
-            infoText.alignment = TextAlignmentOptions.Flush;
-            infoText.enableWordWrapping = false;
-
-            double betFactor = 1.0;
-            if (gameManager != null)
+            // Built-in fallback multipliers for HotChili
+            double defaultMultiplier = GetDefaultMultiplier(symbolId);
+            if (defaultMultiplier > 0)
             {
-                if (gameManager.currentBetAmount > 0)
-                {
-                    betFactor = gameManager.currentBetAmount;
-                }
-                else if (gameManager.gameConfig != null && gameManager.gameConfig.availableBets != null &&
-                         gameManager.gameConfig.availableBets.Count > gameManager.currentBetIndex &&
-                         gameManager.currentBetIndex >= 0)
-                {
-                    betFactor = gameManager.gameConfig.availableBets[gameManager.currentBetIndex];
-                }
-                else
-                {
-                    betFactor = gameManager.currentBetIndex + 1;
-                }
-            }
-
-            if (symbolInfo != null && symbolInfo.multipliers != null && symbolInfo.multipliers.Count > 0)
-            {
-                List<string> lines = new List<string>();
-
-                for (int m = 0; m < symbolInfo.multipliers.Count; m++)
-                {
-                    double payout = symbolInfo.multipliers[m] * betFactor;
-                    lines.Add($"<color=#FFC700>X3</color>   {payout.ToString("0.###")}");
-                }
-
-                infoText.text = string.Join("\n", lines);
+                double payout = defaultMultiplier * betFactor;
+                infoText.text = $"<color=#FFC700>X3</color>   {payout.ToString("0.###")}";
             }
             else
             {
                 infoText.text = "";
             }
+        }
+    }
+
+    private double GetDefaultMultiplier(int symbolId)
+    {
+        switch (symbolId)
+        {
+            case 7: return 25.0; // Red 7
+            case 8: return 25.0; // Blue 7
+            case 4: return 10.0; // Triple Bar
+            case 5: return 5.0;  // Double Bar
+            case 6: return 3.0;  // Single Bar
+            default: return 0.0;
         }
     }
 

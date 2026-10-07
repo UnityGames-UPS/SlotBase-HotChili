@@ -48,30 +48,35 @@ public partial class SlotView
         private void StartReelCycleWithDelay(int columnIndex, float delay)
         {
             if (columnIndex >= reelTransforms.Length) return;
-    
+
+            Sequence startSequence = DOTween.Sequence();
             if (delay > 0)
             {
-                Sequence startSequence = DOTween.Sequence();
                 startSequence.AppendInterval(delay);
-                startSequence.OnComplete(() =>
-                {
-                    if (isSpinning)
-                    {
-                        StartReelCycle(columnIndex);
-                    }
-                });
-                startSequence.Play();
-    
-                if (spinTweens.Count <= columnIndex)
-                    spinTweens.Add(startSequence);
-                else
-                    spinTweens[columnIndex] = startSequence;
             }
-            else
+
+            Transform slotTransform = reelTransforms[columnIndex];
+            float startY = slotTransform.localPosition.y;
+
+            // Wind-Up / Anticipation Effect:
+            startSequence.Append(slotTransform.DOLocalMoveY(startY + 45f, 0.12f).SetEase(Ease.OutCubic));
+            startSequence.Append(slotTransform.DOLocalMoveY(startY - 30f, 0.08f).SetEase(Ease.InQuad));
+
+            startSequence.OnComplete(() =>
             {
-                StartReelCycle(columnIndex);
-            }
+                if (isSpinning)
+                {
+                    StartReelCycle(columnIndex);
+                }
+            });
+            startSequence.Play();
+
+            if (spinTweens.Count <= columnIndex)
+                spinTweens.Add(startSequence);
+            else
+                spinTweens[columnIndex] = startSequence;
         }
+        
     
         private void StartReelCycle(int columnIndex)
         {
@@ -329,44 +334,44 @@ public partial class SlotView
                 if (hasWild) AudioManager.Instance?.PlayReelStop();
             }
     
-            if (isQuickStop)
+            Sequence stopSequence = DOTween.Sequence();
+            float overshoot = isQuickStop ? 14f : 30f;
+            float dropDuration = isQuickStop ? 0.12f : 0.16f;
+            float recoilDuration = isQuickStop ? 0.10f : 0.18f;
+
+            // Fast smooth drop through overshoot
+            stopSequence.Append(
+                slotTransform.DOLocalMoveY(targetY - overshoot, dropDuration)
+                    .SetEase(Ease.OutQuad)
+            );
+
+            // Crisp mechanical recoil into final target position
+            stopSequence.Append(
+                slotTransform.DOLocalMoveY(targetY, recoilDuration)
+                    .SetEase(Ease.OutBack, 1.15f)
+            );
+
+            stopSequence.OnUpdate(() =>
             {
-                Sequence quickStopSequence = DOTween.Sequence();
-    
-                quickStopSequence.Append(
-                    slotTransform.DOLocalMoveY(targetY - quickStopOvershoot, quickStopDuration * 0.3f)
-                        .SetEase(Ease.OutQuad)
-                );
-    
-                quickStopSequence.Append(
-                    slotTransform.DOLocalMoveY(targetY, quickStopDuration * 0.7f)
-                        .SetEase(Ease.InOutQuad)
-                );
-    
-                if (spinTweens.Count <= columnIndex)
-                    spinTweens.Add(quickStopSequence);
-                else
-                    spinTweens[columnIndex] = quickStopSequence;
-            }
+                if (cylindricalEffect != null)
+                {
+                    cylindricalEffect.UpdateCylindricalSpinEffect(force: false);
+                }
+            });
+
+            stopSequence.OnComplete(() =>
+            {
+                if (cylindricalEffect != null)
+                {
+                    cylindricalEffect.UpdateCylindricalSpinEffect(force: true);
+                }
+            });
+
+            if (spinTweens.Count <= columnIndex)
+                spinTweens.Add(stopSequence);
             else
-            {
-                Sequence stopSequence = DOTween.Sequence();
-    
-                stopSequence.Append(
-                    slotTransform.DOLocalMoveY(targetY - stopOvershootDistance, stopOvershootDuration)
-                        .SetEase(Ease.OutQuad)
-                );
-    
-                stopSequence.Append(
-                    slotTransform.DOLocalMoveY(targetY, stopSettleDuration)
-                        .SetEase(Ease.InOutQuad)
-                );
-    
-                if (spinTweens.Count <= columnIndex)
-                    spinTweens.Add(stopSequence);
-                else
-                    spinTweens[columnIndex] = stopSequence;
-            }
+                spinTweens[columnIndex] = stopSequence;
+
         }
     
         #endregion

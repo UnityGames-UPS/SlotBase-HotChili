@@ -9,9 +9,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] internal UIManager uiManager;
     [SerializeField] private PopupManager popupManager;
     [SerializeField] private SlotView slotView;
-    [Header("Dual Wheel Controllers")]
-    [SerializeField] internal WheelSpinController redWheel;
-    [SerializeField] internal WheelSpinController greenWheel;
+    //[Header("Dual Wheel Controllers")]
+     internal WheelSpinController redWheel;
+    internal WheelSpinController greenWheel;
 
     [Header("Spin Settings")]
     [SerializeField] private float normalSpinDuration = 3.5f;

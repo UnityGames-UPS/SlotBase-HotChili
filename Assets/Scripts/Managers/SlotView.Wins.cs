@@ -90,14 +90,7 @@ public partial class SlotView
     
                 if (col < 0 || col >= 5 || row < 0 || row >= rowLimit) continue;
     
-                if (col >= reelImagesList.Count) continue;
-                var reel = reelImagesList[col];
-                if (reel.images == null || reel.images.Count < 3) continue;
-    
-                int imageIndex = 6 + row;
-                if (imageIndex >= reel.images.Count) continue;
-    
-                Image symbolImage = reel.images[imageIndex];
+                Image symbolImage = GetSymbolImage(col, row);
                 if (symbolImage == null) continue;
     
                 var animGO = WinBox(winAnimationColumns, col, row);
@@ -226,22 +219,17 @@ public partial class SlotView
             {
                 winAnimationParent.SetActive(true);
             }
-    
-            foreach (int flatIndex in flatPositions)
+
+        if (winBorderAnimationParent) winBorderAnimationParent.SetActive(true);
+
+        foreach (int flatIndex in flatPositions)
             {
                 int row = flatIndex / reelCount;
                 int col = flatIndex % reelCount;
     
                 if (col < 0 || col >= 5 || row < 0 || row >= rowLimit) continue;
     
-                if (col >= reelImagesList.Count) continue;
-                var reel = reelImagesList[col];
-                if (reel.images == null || reel.images.Count < 3) continue;
-    
-                int imageIndex = 6 + row;
-                if (imageIndex >= reel.images.Count) continue;
-    
-                Image symbolImage = reel.images[imageIndex];
+                Image symbolImage = GetSymbolImage(col, row);
                 if (symbolImage == null) continue;
     
                 var animGO = WinBox(winAnimationColumns, col, row);
@@ -496,6 +484,7 @@ public partial class SlotView
     
             DisableColumns(winAnimationColumns);
             if (winAnimationParent) winAnimationParent.SetActive(false);
+            if (winBorderAnimationParent) winBorderAnimationParent.SetActive(false);
             HideAllWinLineTexts();
             HidePhase1TotalWinText(false);
     
