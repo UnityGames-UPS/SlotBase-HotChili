@@ -136,9 +136,9 @@ public partial class SlotView : MonoBehaviour
     private Coroutine winAnimationCoroutine;
 
 
-    internal List<List<int>> currentDisplayMatrix;
+    public List<List<int>> currentDisplayMatrix { get; private set; }
 
-    private bool isSpinning;
+    public bool isSpinning { get; private set; }
 
     #region Initialization
 
@@ -211,7 +211,7 @@ public partial class SlotView : MonoBehaviour
         SetupSymbolButtons();
     }
 
-    internal void DisableAllOverlays()
+    public void DisableAllOverlays()
     {
         DisableColumns(winAnimationColumns);
         if (winAnimationParent) winAnimationParent.SetActive(false);
@@ -247,7 +247,7 @@ public partial class SlotView : MonoBehaviour
         }
     }
 
-    internal void OnBetChanged()
+    public void OnBetChanged()
     {
         if (symbolInfoCard != null && symbolInfoCard.gameObject.activeSelf)
         {
@@ -292,7 +292,7 @@ public partial class SlotView : MonoBehaviour
         return nonBlankIds[Random.Range(0, nonBlankIds.Count)];
     }
 
-    internal void OnSymbolClicked(int col, int row, RectTransform symbolRect)
+    public void OnSymbolClicked(int col, int row, RectTransform symbolRect)
     {
         if (isSpinning)
         {
@@ -364,7 +364,7 @@ public partial class SlotView : MonoBehaviour
         }
     }
 
-    internal Image GetSymbolImage(int col, int row)
+    public Image GetSymbolImage(int col, int row)
     {
         if (reelImagesList == null || col < 0 || col >= reelImagesList.Count) return null;
         var reel = reelImagesList[col];
@@ -468,7 +468,7 @@ public partial class SlotView : MonoBehaviour
         return spineDataArray[symbolId];
     }
 
-    internal string GetSpineSkin(int symbolId)
+    public string GetSpineSkin(int symbolId)
     {
         if (spineSkinNames == null || symbolId < 0 || symbolId >= spineSkinNames.Length) return null;
         return spineSkinNames[symbolId];
@@ -550,7 +550,7 @@ public partial class SlotView : MonoBehaviour
         }
     }
 
-    internal void SetInitialMatrix(List<List<int>> matrix)
+    public void SetInitialMatrix(List<List<int>> matrix)
     {
         if (matrix == null || matrix.Count == 0) return;
 
@@ -747,12 +747,12 @@ public partial class SlotView : MonoBehaviour
     }
     #endregion
 
-    internal List<List<int>> GetCurrentDisplayMatrix()
+    public List<List<int>> GetCurrentDisplayMatrix()
     {
         return currentDisplayMatrix;
     }
 
-    internal bool IsSpinning()
+    public bool IsSpinning()
     {
         return isSpinning;
     }

@@ -111,12 +111,12 @@ public class PopupManager : MonoBehaviour
 
     #region 1. Disconnection Popup
 
-    internal void ShowDisconnectionPopup()
+    public void ShowDisconnectionPopup()
     {
         ShowDisconnectionPopup("Please restart the game.");
     }
 
-    internal void ShowDisconnectionPopup(string message)
+    public void ShowDisconnectionPopup(string message)
     {
         if (disconnectionPopup == null) return;
 
@@ -150,22 +150,22 @@ public class PopupManager : MonoBehaviour
 
     #region 2. Error Popup
 
-    internal void ShowInsufficientFundsError()
+    public void ShowInsufficientFundsError()
     {
         ShowErrorPopup("Information", "Insufficient balance. Please add funds to continue.", false);
     }
 
-    internal void ShowAnotherDeviceError()
+    public void ShowAnotherDeviceError()
     {
         ShowErrorPopup("Warning", "Your account has been logged in from another device. This session will be closed.", true);
     }
 
-    internal void ShowServerError(string message = "A server error occurred. Please try again later.")
+    public void ShowServerError(string message = "A server error occurred. Please try again later.")
     {
         ShowErrorPopup("Server Error", message, true);
     }
 
-    internal void ShowErrorPopup(string title, string message, bool isCritical)
+    public void ShowErrorPopup(string title, string message, bool isCritical)
     {
         if (errorPopup == null) return;
 
@@ -214,7 +214,7 @@ public class PopupManager : MonoBehaviour
 
     #region 3. Reconnection Popup
 
-    internal void ShowReconnectionPopup(int currentTry, int maxTries)
+    public void ShowReconnectionPopup(int currentTry, int maxTries)
     {
         if (reconnectionPopup == null) return;
 
@@ -242,7 +242,7 @@ public class PopupManager : MonoBehaviour
         }
     }
 
-    internal void CloseReconnectionPopup()
+    public void CloseReconnectionPopup()
     {
         if (reconnectionPopup == null || !reconnectionPopup.activeSelf) return;
 
@@ -263,12 +263,12 @@ public class PopupManager : MonoBehaviour
 
     #region 4. Loading Popup
 
-    internal void ShowLoadingPopup()
+    public void ShowLoadingPopup()
     {
         ShowLoadingPopup(defaultLoadingDuration);
     }
 
-    internal void ShowLoadingPopup(float duration = -1f)
+    public void ShowLoadingPopup(float duration = -1f)
     {
         if (loadingPopup == null) return;
 
@@ -302,7 +302,7 @@ public class PopupManager : MonoBehaviour
         }
     }
 
-    internal void CloseLoadingPopup(System.Action onComplete = null)
+    public void CloseLoadingPopup(System.Action onComplete = null)
     {
         if (onComplete != null) onLoadingClosed += onComplete;
 
@@ -376,7 +376,7 @@ public class PopupManager : MonoBehaviour
 
     #region 5. Exit Game Popup
 
-    internal void ShowExitGamePopup()
+    public void ShowExitGamePopup()
     {
         if (exitGamePopup == null) return;
 
@@ -543,7 +543,7 @@ public class PopupManager : MonoBehaviour
         UpdatePopupParentState();
     }
 
-    internal bool IsLoadingPopupActive()
+    public bool IsLoadingPopupActive()
     {
         return loadingPopup != null && loadingPopup.activeSelf;
     }

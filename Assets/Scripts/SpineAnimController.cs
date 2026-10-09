@@ -26,7 +26,7 @@ public class SpineAnimController : MonoBehaviour
     }
 
     // ▶️ Play
-    internal void Play(bool loop)
+    public void Play(bool loop)
     {
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;
@@ -41,18 +41,18 @@ public class SpineAnimController : MonoBehaviour
                     track.TimeScale = 0.5f;
                 }
                 isPlaying = true;
-                Debug.Log($"[SpineAnim] SUCCESSFULLY PLAYING animation '{animName}' on {gameObject.name}!");
+                // log silenced
             }
             skeletonGraphic.freeze = false;
             skeletonGraphic.gameObject.SetActive(true);
         }
         else
         {
-            Debug.LogWarning($"[SpineAnim] FAILED to play on {gameObject.name}. SkeletonGraphic missing: {skeletonGraphic == null}. AnimName: '{animName}'");
+            // log silenced
         }
     }
 
-    internal void Pause()
+    public void Pause()
     {
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;
@@ -67,7 +67,7 @@ public class SpineAnimController : MonoBehaviour
         }
     }
 
-    internal void Resume()
+    public void Resume()
     {
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;
@@ -89,7 +89,7 @@ public class SpineAnimController : MonoBehaviour
     }
 
     // ⏹️ Stop (clears animation completely)
-    internal void Stop()
+    public void Stop()
     { 
         if(isPlaying)
         {
@@ -104,7 +104,7 @@ public class SpineAnimController : MonoBehaviour
         }
     }
 
-    internal float GetAnimationDuration()
+    public float GetAnimationDuration()
     {
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;
@@ -128,7 +128,7 @@ public class SpineAnimController : MonoBehaviour
         return 0f;
     }
 
-    internal void SetSkeletonData(SkeletonDataAsset skeletonDataAsset, string overrideAnimName = null, string skinName = null)
+    public void SetSkeletonData(SkeletonDataAsset skeletonDataAsset, string overrideAnimName = null, string skinName = null)
     {
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;

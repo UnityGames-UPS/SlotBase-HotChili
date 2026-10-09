@@ -17,22 +17,22 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private double WinThreshold = 5.0;
 
-    internal GameConfig gameConfig;
-    internal PlayerData playerData;
-    internal SpinResult lastResult;
+    public GameConfig gameConfig { get; private set; }
+    public PlayerData playerData { get; private set; }
+    public SpinResult lastResult { get; private set; }
 
-    internal GameState currentState;
-    internal SpinSpeed currentSpinSpeed;
+    public GameState currentState { get; private set; }
+    public SpinSpeed currentSpinSpeed { get; private set; }
 
-    internal int currentBetIndex;
-    internal double currentBetAmount;
+    public int currentBetIndex { get; private set; }
+    public double currentBetAmount { get; private set; }
 
-    internal bool isAutoPlaying;
-    internal int autoPlayTotalRounds;
-    internal int autoPlayRemainingRounds;
+    public bool isAutoPlaying { get; private set; }
+    public int autoPlayTotalRounds { get; private set; }
+    public int autoPlayRemainingRounds { get; private set; }
 
-    internal bool isInitialized;
-    internal bool initializationFailed;
+    public bool isInitialized { get; private set; }
+    public bool initializationFailed { get; private set; }
 
     private Coroutine spinCoroutine;
     private bool stopRequested;
@@ -52,6 +52,11 @@ public class GameManager : MonoBehaviour
         currentSpinSpeed = SpinSpeed.Normal;
         isInitialized = false;
         initializationFailed = false;
+    }
+
+    public void SetInitializationFailed(bool failed = true)
+    {
+        initializationFailed = failed;
     }
 
     public void OnInitDataReceived(GameConfig config, PlayerData player, List<List<int>> initialMatrix)
@@ -78,7 +83,7 @@ public class GameManager : MonoBehaviour
 
     #region Bet Management
 
-    internal void IncreaseBet()
+    public void IncreaseBet()
     {
         if (currentState != GameState.Idle || isAutoPlaying) return;
         if (gameConfig == null || gameConfig.availableBets == null || gameConfig.availableBets.Count == 0) return;
@@ -102,7 +107,7 @@ public class GameManager : MonoBehaviour
         SetBetIndex(nextIndex);
     }
 
-    internal void DecreaseBet()
+    public void DecreaseBet()
     {
         if (currentState != GameState.Idle || isAutoPlaying) return;
         if (gameConfig == null || gameConfig.availableBets == null || gameConfig.availableBets.Count == 0) return;
@@ -126,7 +131,7 @@ public class GameManager : MonoBehaviour
         SetBetIndex(nextIndex);
     }
 
-    internal void SetBetIndex(int index)
+    public void SetBetIndex(int index)
     {
         currentBetIndex = index;
         UpdateBetAmount();
@@ -143,7 +148,7 @@ public class GameManager : MonoBehaviour
 
     #region Spin Control
     
-    internal void RequestSpin()
+    public void RequestSpin()
     {
         if (currentState != GameState.Idle) return;
         if (!socketManager.isConnected) return;
@@ -163,7 +168,7 @@ public class GameManager : MonoBehaviour
         StartSpin();
     }
 
-    internal void RequestStop()
+    public void RequestStop()
     {
         if (currentState == GameState.Spinning)
         {
@@ -221,7 +226,7 @@ public class GameManager : MonoBehaviour
         if (isAutoPlaying && autoPlayTotalRounds != -1)
         {
             autoPlayRemainingRounds--;
-            Debug.Log(" AutoPlay Remaining Rounds: " + autoPlayRemainingRounds + " / " + " autoPlayTotalRounds -" + autoPlayTotalRounds);
+            // autoplay log silenced
 
             if (uiManager != null) uiManager.UpdateAutoPlayCount();
         }
@@ -473,10 +478,10 @@ public class GameManager : MonoBehaviour
         };
     }
 
-    internal void OnSpinResultReceived(SpinResult result)
+    public void OnSpinResultReceived(SpinResult result)
     {
         lastResult = result;
-        Debug.Log(result);
+        // Debug.Log(result);
         if (result.winLines != null)
         {
             for (int i = 0; i < result.winLines.Count; i++)
@@ -507,7 +512,7 @@ public class GameManager : MonoBehaviour
             // 1. Target round count reached (e.g. 10 of 10 completed) -> STOP immediately
             if (autoPlayTotalRounds != -1 && autoPlayRemainingRounds <= 0)
             {
-                Debug.Log("AutoPlay completed all rounds. Stopping.");
+                // autoplay log silenced
                 currentState = GameState.Idle;
                 StopAutoPlay();
                 return;
@@ -537,7 +542,7 @@ public class GameManager : MonoBehaviour
 
     #region Spin Speed Control
 
-    internal void SetSpinSpeed(SpinSpeed speed)
+    public void SetSpinSpeed(SpinSpeed speed)
     {
         currentSpinSpeed = speed;
 
@@ -556,10 +561,10 @@ public class GameManager : MonoBehaviour
 
     #region Auto Play
 
-    internal void StartAutoPlay(int rounds)
+    public void StartAutoPlay(int rounds)
     {
         if (currentState != GameState.Idle) return;
-        Debug.Log($"[AutoPlay] Starting AutoPlay for {rounds} rounds.");
+        // autoplay log silenced
         double totalPay = GetTotalPay();
         if (playerData.balance < totalPay)
         {
@@ -576,7 +581,7 @@ public class GameManager : MonoBehaviour
         RequestSpin();
     }
 
-    internal void StopAutoPlay()
+    public void StopAutoPlay()
     {
         isAutoPlaying = false;
         autoPlayRemainingRounds = 0;
@@ -590,7 +595,7 @@ public class GameManager : MonoBehaviour
 
     #region Connection Events
 
-    internal void OnDisconnected()
+    public void OnDisconnected()
     {
         if (spinCoroutine != null)
         {
@@ -606,7 +611,7 @@ public class GameManager : MonoBehaviour
         currentState = GameState.Idle;
     }
 
-    internal void ExitGame()
+    public void ExitGame()
     {
         socketManager.CloseSocket();
 
@@ -616,12 +621,12 @@ public class GameManager : MonoBehaviour
 
     #region Helper Methods
 
-        internal double GetTotalPay()
+        public double GetTotalPay()
     {
         return currentBetAmount;
     }
 
-    internal bool IsSpinning()
+    public bool IsSpinning()
     {
         return currentState == GameState.Spinning || currentState == GameState.Stopping;
     }

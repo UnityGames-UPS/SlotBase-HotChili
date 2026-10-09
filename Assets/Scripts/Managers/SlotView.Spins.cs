@@ -8,7 +8,7 @@ public partial class SlotView
 {
     #region Spin Animation
     
-        internal void StartSpin()
+        public void StartSpin()
         {
             if (isSpinning) return;
     
@@ -130,7 +130,7 @@ public partial class SlotView
     
     #region Stop Spin
     
-        internal void StopSpin(List<List<int>> resultMatrix, System.Action onComplete, bool isTurbo = false)
+        public void StopSpin(List<List<int>> resultMatrix, System.Action onComplete, bool isTurbo = false)
         {
             int reelCount = resultMatrix != null ? resultMatrix.Count : (gameManager?.gameConfig != null ? gameManager.gameConfig.reelCount : 3);
             int maxCols = Mathf.Min(reelCount, reelTransforms != null ? reelTransforms.Length : 3);
@@ -362,7 +362,7 @@ UpdateCylindricalSpinEffect(force: true);
     
     #region Quick Spin
     
-        internal void QuickStop(List<List<int>> resultMatrix, System.Action onComplete = null)
+        public void QuickStop(List<List<int>> resultMatrix, System.Action onComplete = null)
         {
             if (!isSpinning)
             {
@@ -375,9 +375,10 @@ UpdateCylindricalSpinEffect(force: true);
                     if (col < reelTransforms.Length)
                     {
                         SetReelSymbols(col, resultMatrix[col], false);
+                        float targetY = GetTargetYForResult(resultMatrix[col]);
                         reelTransforms[col].localPosition = new Vector3(
                             reelTransforms[col].localPosition.x,
-                            middlePosition,
+                            targetY,
                             0
                         );
                     }

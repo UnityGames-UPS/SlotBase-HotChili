@@ -9,7 +9,7 @@ public partial class SlotView
 {
     #region Win Line Animation
     
-        internal void ShowWinLineAnimation(List<WinLine> winLines, System.Action onComplete)
+        public void ShowWinLineAnimation(List<WinLine> winLines, System.Action onComplete)
         {
             if (winLines == null || winLines.Count == 0)
             {
@@ -261,7 +261,7 @@ public partial class SlotView
                     int sId = currentDisplayMatrix[col][row];
                     var data = GetSpineData(sId);
                     if (data == null) Debug.LogWarning($"[SlotView] No Spine Data found for symbol ID: {sId} on Col: {col}, Row: {row}");
-                    else Debug.Log($"[SlotView] Setting Spine Data for symbol ID: {sId} on Col: {col}, Row: {row}");
+                    // log silenced
                     if (spineAnim != null) spineAnim.SetSkeletonData(data, null, GetSpineSkin(sId));
                 }
     
@@ -312,7 +312,7 @@ public partial class SlotView
                 SpineAnimController spine = (imageAnim != null) ? imageAnim.GetComponentInParent<SpineAnimController>() : null;
                 if (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset != null) 
                 { 
-                    Debug.Log($"[SlotView] Continuous triggering Spine animation on {spine.gameObject.name}");
+                    // log silenced
                     var ar = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<UnityEngine.UI.Image>(); 
                     if (ar != null) ar.enabled = false; 
                     // spine.SkeletonGraphic.MatchRectTransformWithBounds(); 
@@ -323,7 +323,7 @@ public partial class SlotView
                     bool isSpineNull = (spine == null);
                     bool isSGNull = (spine != null && spine.SkeletonGraphic == null);
                     bool isAssetNull = (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset == null);
-                    Debug.LogWarning($"[SlotView] Continuous falling back! SpineNull: {isSpineNull}, SGNull: {isSGNull}, AssetNull: {isAssetNull}");
+                    // log silenced
                     imageAnim.StartAnimation(); 
                 }
             }

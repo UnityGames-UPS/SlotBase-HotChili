@@ -275,7 +275,7 @@ public class SocketIOManager : MonoBehaviour
 
     if (!gameManager.isInitialized)
     {
-      gameManager.initializationFailed = true;
+      gameManager.SetInitializationFailed(true);
     }
 
     if (!string.IsNullOrEmpty(err.message) && err.message.Contains("Session expired"))
@@ -331,7 +331,7 @@ public class SocketIOManager : MonoBehaviour
     catch (Exception e)
     {
       Debug.LogError($"[SocketIO] Init parse failed: {e.Message}");
-      gameManager.initializationFailed = true;
+      gameManager.SetInitializationFailed(true);
       if (popupManager != null)
       {
         popupManager.ShowServerError("Failed to parse game initialization data.");
@@ -548,7 +548,7 @@ public class SocketIOManager : MonoBehaviour
 
       if (enablePingDebug)
       {
-        Debug.Log($"[SocketIO] Ping sent at {pingSendTime:F3}s");
+        // ping log silenced
       }
     }
   }
@@ -573,7 +573,7 @@ public class SocketIOManager : MonoBehaviour
 
       if (enablePingDebug)
       {
-        Debug.Log($"[SocketIO] Pong received | Latency: {pingMs} ms");
+        // pong log silenced
       }
     }
 

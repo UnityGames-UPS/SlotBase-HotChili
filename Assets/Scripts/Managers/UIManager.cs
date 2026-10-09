@@ -63,9 +63,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float maxCountDuration = 0.4f;
     [SerializeField] private float autoCloseDelay = 0.5f;
 
-    internal double BigWinThreshold => bigWinThreshold;
-    internal double MegaWinThreshold => megaWinThreshold;
-    internal double LegendaryWinThreshold => legendaryWinThreshold;
+    public double BigWinThreshold => bigWinThreshold;
+    public double MegaWinThreshold => megaWinThreshold;
+    public double LegendaryWinThreshold => legendaryWinThreshold;
 
     [Header("Spin Button")]
     [SerializeField] private Button spinButton;
@@ -553,7 +553,7 @@ public class UIManager : MonoBehaviour
 
     #region Game Events
 
-    internal void OnGameInitialized()
+    public void OnGameInitialized()
     {
         currentWinDisplayValue = 0;
         UpdateBetDisplay();
@@ -561,7 +561,7 @@ public class UIManager : MonoBehaviour
         UpdateWinDisplay(0);
     }
 
-    internal void OnSpinStarted()
+    public void OnSpinStarted()
     {
         AudioManager.Instance?.PlaySpinStart();
 
@@ -575,12 +575,12 @@ public class UIManager : MonoBehaviour
         CloseAutoPlayPanelImmediate();
     }
 
-    internal void OnSpinResultReceived()
+    public void OnSpinResultReceived()
     {
         SetSpinStopButtonStates(isSpinningState: true, isInteractable: true);
     }
 
-    internal void OnSpinStopping(SpinResult result = null)
+    public void OnSpinStopping(SpinResult result = null)
     {
         UpdateBalanceDisplay();
         if (result != null)
@@ -591,7 +591,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    internal void OnSpinCompleted(SpinResult result = null)
+    public void OnSpinCompleted(SpinResult result = null)
     {
         if (result != null)
         {
@@ -614,7 +614,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    internal void TriggerWinTypePopup(double winAmount, double totalBetAmount, System.Action onComplete = null)
+    public void TriggerWinTypePopup(double winAmount, double totalBetAmount, System.Action onComplete = null)
     {
         double totalBet = totalBetAmount > 0 ? totalBetAmount : (gameManager != null ? gameManager.currentBetAmount : 0.01);
         double multiplier = winAmount / totalBet;
@@ -816,7 +816,7 @@ public class UIManager : MonoBehaviour
         });
     }
 
-    internal void TriggerBigWinPopup(SpinResult result, System.Action onComplete = null)
+    public void TriggerBigWinPopup(SpinResult result, System.Action onComplete = null)
     {
         if (result == null)
         {
@@ -829,13 +829,13 @@ public class UIManager : MonoBehaviour
         TriggerWinTypePopup(win, bet, onComplete);
     }
 
-    internal void DisableControlsDuringWinAnimation()
+    public void DisableControlsDuringWinAnimation()
     {
         SetBetControlsEnabled(false);
         SetSpinStopButtonStates(isSpinningState: false, isInteractable: false);
     }
 
-    internal void EnableControlsAfterWinAnimation()
+    public void EnableControlsAfterWinAnimation()
     {
         if (isSpecialWinActive) return;
 
@@ -890,7 +890,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    internal void DisableSpinButtonDuringStop()
+    public void DisableSpinButtonDuringStop()
     {
         if (gameManager.isAutoPlaying)
         {
@@ -908,7 +908,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    internal void SetSpinStopButtonStates(bool isSpinningState, bool isInteractable)
+    public void SetSpinStopButtonStates(bool isSpinningState, bool isInteractable)
     {
         if (gameManager.isAutoPlaying)
         {
@@ -940,7 +940,7 @@ public class UIManager : MonoBehaviour
 
     #region Bet Controls
 
-    internal void UpdateBetDisplay()
+    public void UpdateBetDisplay()
     {
         if (gameManager.gameConfig == null) return;
 
@@ -1026,14 +1026,14 @@ public class UIManager : MonoBehaviour
         gameManager.StartAutoPlay(rounds);
     }
 
-    internal void OnAutoPlayStarted()
+    public void OnAutoPlayStarted()
     {
         UpdateAutoPlayCount();
         SetSpinStopButtonStates(isSpinningState: true, isInteractable: true);
         SetBetControlsEnabled(false);
     }
 
-    internal void OnAutoPlayStopped()
+    public void OnAutoPlayStopped()
     {
         SetButtonActive(autoSpinStopButton, autoSpinStopButtonPortrait, false);
 
@@ -1054,7 +1054,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    internal void UpdateAutoPlayCount()
+    public void UpdateAutoPlayCount()
     {
         string displayStr = "";
         if (gameManager.autoPlayTotalRounds == -1 || gameManager.autoPlayRemainingRounds < 0)
@@ -1378,7 +1378,7 @@ public class UIManager : MonoBehaviour
         jsFunctCalls?.RegisterFullscreenListener(gameObject.name);
     }
 
-    internal void OnFullscreenChanged(string isFullscreen)
+    public void OnFullscreenChanged(string isFullscreen)
     {
         bool newExpandedState = isFullscreen == "1";
 
@@ -1420,12 +1420,12 @@ public class UIManager : MonoBehaviour
 
     #region Display Updates
 
-    internal void UpdatePingDisplay(int pingMs)
+    public void UpdatePingDisplay(int pingMs)
     {
         SetTMPText(pingText, pingTextPortrait, $"{pingMs} ms");
     }
 
-    internal void UpdatePingDisplay(string content)
+    public void UpdatePingDisplay(string content)
     {
         SetTMPText(pingText, pingTextPortrait, content);
     }
@@ -1446,7 +1446,7 @@ public class UIManager : MonoBehaviour
         return val.StartsWith("$") ? val : "$" + val;
     }
 
-    internal void UpdateBalanceDisplay()
+    public void UpdateBalanceDisplay()
     {
         SetTMPText(balanceText, balanceTextPortrait, "BALANCE : " + FormatAmount(gameManager.playerData.balance));
     }
