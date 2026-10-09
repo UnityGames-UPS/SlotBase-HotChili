@@ -21298,6 +21298,7 @@ MonoBehaviour:
   - {fileID: -5589829931041130537, guid: e322906d4ae203343bd55ce55d83f70a, type: 3}
   - {fileID: -2334192722032600913, guid: 5ec50f2dfd6deea4680244a667aaaec9, type: 3}
   - {fileID: 694701647024224022, guid: 9eaabe5abf6f4a5419cc9f0d91281664, type: 3}
+  - {fileID: 694701647024224022, guid: 9eaabe5abf6f4a5419cc9f0d91281664, type: 3}
   - {fileID: -1408307075289964127, guid: 8aaa2ebdc3aff3d43878cd802eb5f30a, type: 3}
   - {fileID: -7790337731031603787, guid: 46f9d2f4f9e8e2049bc5bef9821da2ad, type: 3}
   - {fileID: 5966506635949937279, guid: abdcca6b0d36b7242881df282b6dde98, type: 3}
@@ -33857,6 +33858,7 @@ MonoBehaviour:
   winSymbolLoopDuration: 1.2
   winAnimationParent: {fileID: 1892258266}
   winBorderAnimationParent: {fileID: 472115666}
+  winLineAnimation: {fileID: 0}
   winAnimationColumns:
   - rows:
     - {fileID: 615330260}
