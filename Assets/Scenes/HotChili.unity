@@ -21362,7 +21362,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -5589829931041130537, guid: e322906d4ae203343bd55ce55d83f70a, type: 3}
+  m_Sprite: {fileID: 694701647024224022, guid: 9eaabe5abf6f4a5419cc9f0d91281664, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -33843,7 +33843,7 @@ MonoBehaviour:
     - {fileID: 110364075}
   case1StopY: 160
   case2StopY: 0
-  symbolHeight: 300
+  symbolHeight: 350
   spinSpeed: 2000
   reelStartStagger: 0.08
   reelStopStagger: 0.12
@@ -33869,7 +33869,7 @@ MonoBehaviour:
     - {fileID: 1036721906}
   tensionSpinExtraDuration: 2
   symbolInfoCard: {fileID: 1447385780}
-  enableCylindricalEffect: 0
+  enableCylindricalEffect: 1
   visibleHalfHeight: 310
   outerHalfHeight: 450
   edgeScale: 0.84

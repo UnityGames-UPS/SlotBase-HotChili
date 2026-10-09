@@ -241,6 +241,7 @@ public partial class SlotView
             }
 
         if (winBorderAnimationParent) winBorderAnimationParent.SetActive(true);
+        if(winLineAnimation) winLineAnimation.SetActive(true);
 
         foreach (int flatIndex in flatPositions)
             {
@@ -436,6 +437,7 @@ public partial class SlotView
             DisableColumns(winAnimationColumns);
             if (winAnimationParent) winAnimationParent.SetActive(false);
             if (winBorderAnimationParent) winBorderAnimationParent.SetActive(false);
+            if (winLineAnimation) winLineAnimation.SetActive(false);
             HideAllWinLineTexts();
     
             foreach (var reel in reelImagesList)

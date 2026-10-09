@@ -93,6 +93,7 @@ public partial class SlotView : MonoBehaviour
     [Header("Win Animation Objects — Col 0..4  (each has 2 rows, contains ImageAnimation component)")]
     [SerializeField] private GameObject winAnimationParent;
     [SerializeField] private GameObject winBorderAnimationParent;
+    [SerializeField] private GameObject winLineAnimation;
     [Tooltip("GameObject references for win animations. Each should have an ImageAnimation component attached.")]
     [SerializeField] private ColumnOverlays[] winAnimationColumns = new ColumnOverlays[5];
 
@@ -216,6 +217,7 @@ public partial class SlotView : MonoBehaviour
         DisableColumns(winAnimationColumns);
         if (winAnimationParent) winAnimationParent.SetActive(false);
         if(winBorderAnimationParent) winBorderAnimationParent.SetActive(false);
+        if(winLineAnimation) winLineAnimation.SetActive(false);
         if (symbolInfoCard) symbolInfoCard.HideCard();
         AudioManager.Instance?.StopTensionBuilder();
         AudioManager.Instance?.StopReelSpinLoop();
