@@ -29,9 +29,9 @@ public partial class SlotView
             DisableAllOverlays();
             AudioManager.Instance?.PlayReelSpinLoop();
     
-            if (cylindricalEffect != null) cylindricalEffect.StartEffect();
-    
-            for (int i = 0; i < reelCycleCount.Count; i++)
+            UpdateCylindricalSpinEffect(force: false);
+
+        for (int i = 0; i < reelCycleCount.Count; i++)
             {
                 reelCycleCount[i] = 0;
             }
@@ -176,10 +176,7 @@ public partial class SlotView
     
             AudioManager.Instance?.StopReelSpinLoop();
     
-            bool isWheelTriggered = gameManager != null &&
-                                   gameManager.lastResult != null &&
-                                   gameManager.lastResult.dualWheelsBonusData != null &&
-                                   gameManager.lastResult.dualWheelsBonusData.isTriggered;
+            bool isWheelTriggered = false;
     
             float stagger = isQuickStop ? quickStopStagger : (isTurbo ? (reelStopStagger * 0.5f) : reelStopStagger);
     
@@ -211,10 +208,6 @@ public partial class SlotView
     
             yield return new WaitForSeconds(longestStopTime);
     
-            if (lastSlotTensionFrame != null)
-            {
-                lastSlotTensionFrame.SetActive(false);
-            }
             AudioManager.Instance?.StopTensionBuilder();
     
             isSpinning = false;
@@ -237,11 +230,7 @@ public partial class SlotView
                 }
             }
     
-            if (cylindricalEffect != null)
-            {
-                cylindricalEffect.StopEffect();
-                
-            }
+UpdateCylindricalSpinEffect(force: true);
     
             
     
@@ -259,13 +248,13 @@ public partial class SlotView
                     {
                         yield return new WaitForSeconds(frameEnableDelay);
                     }
-                    if (lastSlotTensionFrame != null) lastSlotTensionFrame.SetActive(true);
+                    
                     AudioManager.Instance?.PlayTensionBuilder();
                     yield return new WaitForSeconds(delay - frameEnableDelay);
                 }
                 else
                 {
-                    if (lastSlotTensionFrame != null) lastSlotTensionFrame.SetActive(true);
+                    
                     AudioManager.Instance?.PlayTensionBuilder();
                     if (delay > 0)
                     {
@@ -311,8 +300,9 @@ public partial class SlotView
                         if (colIdx < reelCurveIntensity.Length) reelCurveIntensity[colIdx] = val;
                     });
                 }
-                if (cylindricalEffect != null) cylindricalEffect.StartEffect();
-            }
+                UpdateCylindricalSpinEffect(force: false);
+            
+        }
     
             float landingStartTopY = targetY + (2f * symbolHeight);
             slotTransform.localPosition = new Vector3(
@@ -331,7 +321,7 @@ public partial class SlotView
                 {
                     if (sym == wildId) hasWild = true;
                 }
-                if (hasWild) AudioManager.Instance?.PlayReelStop();
+                if (hasWild) AudioManager.Instance?.PlayWildChilliHit();
             }
     
             Sequence stopSequence = DOTween.Sequence();
@@ -353,18 +343,12 @@ public partial class SlotView
 
             stopSequence.OnUpdate(() =>
             {
-                if (cylindricalEffect != null)
-                {
-                    cylindricalEffect.UpdateCylindricalSpinEffect(force: false);
-                }
+                UpdateCylindricalSpinEffect(force: false);
             });
 
             stopSequence.OnComplete(() =>
             {
-                if (cylindricalEffect != null)
-                {
-                    cylindricalEffect.UpdateCylindricalSpinEffect(force: true);
-                }
+                UpdateCylindricalSpinEffect(force: true);
             });
 
             if (spinTweens.Count <= columnIndex)
@@ -407,4 +391,141 @@ public partial class SlotView
         }
     
         #endregion
+        #region 3D Cylindrical Drum Curvature
+
+    private void LateUpdate()
+    {
+        if (isSpinning)
+        {
+            UpdateCylindricalSpinEffect(force: false);
+        }
+    }
+
+    public void UpdateCylindricalSpinEffect(bool force = false)
+    {
+        if (!enableCylindricalEffect || reelTransforms == null || reelImagesList == null) return;
+
+        int maxCols = Mathf.Min(reelTransforms.Length, reelImagesList.Count);
+
+        float effectiveVisibleHalfHeight = visibleHalfHeight;
+        if (visibleAreaRectTransform != null && visibleAreaRectTransform.rect.height > 0)
+        {
+            effectiveVisibleHalfHeight = visibleAreaRectTransform.rect.height * 0.5f;
+        }
+        float effectiveOuterHalfHeight = Mathf.Max(outerHalfHeight, effectiveVisibleHalfHeight * 1.5f);
+
+        float invVisibleHalfHeight = 1f / Mathf.Max(1f, effectiveVisibleHalfHeight);
+        float invOuterRange = 1f / Mathf.Max(1f, effectiveOuterHalfHeight - effectiveVisibleHalfHeight);
+
+        for (int col = 0; col < maxCols; col++)
+        {
+            Transform slotTransform = reelTransforms[col];
+            if (slotTransform == null) continue;
+
+            var reel = reelImagesList[col];
+            if (reel == null || reel.images == null) continue;
+
+            float intensity = (col < reelCurveIntensity.Length) ? reelCurveIntensity[col] : 1f;
+
+            float centerImageLocalY = (reel.images.Count > 7 && reel.images[7] != null) ? reel.images[7].rectTransform.localPosition.y : -305.5f;
+            float slotOffsetFromCase1 = slotTransform.localPosition.y - case1StopY;
+
+            int imgCount = reel.images.Count;
+            for (int i = 0; i < imgCount; i++)
+            {
+                Image img = reel.images[i];
+                if (img == null) continue;
+
+                RectTransform rect = img.rectTransform;
+                if (rect == null) continue;
+
+                float yRel = (rect.localPosition.y - centerImageLocalY) + slotOffsetFromCase1;
+                float absY = Mathf.Abs(yRel);
+
+                // Skip offscreen symbols
+                if (absY > effectiveOuterHalfHeight && !force)
+                {
+                    continue;
+                }
+
+                float targetX = 0f;
+                float targetScale = 1f;
+                float barrelT = (absY <= effectiveVisibleHalfHeight) ? (absY * invVisibleHalfHeight) : 1f;
+
+                if (absY <= effectiveVisibleHalfHeight)
+                {
+                    float curveFactor = barrelT * barrelT * intensity;
+
+                    if (col == 0)
+                    {
+                        targetX = Mathf.Lerp(0f, leftReelEdgeX, curveFactor);
+                    }
+                    else if (col == maxCols - 1)
+                    {
+                        targetX = Mathf.Lerp(0f, rightReelEdgeX, curveFactor);
+                    }
+
+                    targetScale = Mathf.Lerp(1f, edgeScale, curveFactor);
+                }
+                else
+                {
+                    float extraT = Mathf.Clamp01((absY - effectiveVisibleHalfHeight) * invOuterRange);
+
+                    if (col == 0)
+                    {
+                        targetX = Mathf.Lerp(leftReelEdgeX, leftReelOuterX, extraT) * intensity;
+                    }
+                    else if (col == maxCols - 1)
+                    {
+                        targetX = Mathf.Lerp(rightReelEdgeX, rightReelOuterX, extraT) * intensity;
+                    }
+
+                    targetScale = Mathf.Lerp(1f, Mathf.Lerp(edgeScale, outerScale, extraT), intensity);
+                }
+
+                // 3D Cylinder Tilt & Squash with smooth intensity scaling
+                float squashY = Mathf.Lerp(1f, Mathf.Lerp(1f, minSquashY, intensity), barrelT * barrelT);
+                float tiltX = (Mathf.Lerp(0f, maxTiltAngle, barrelT) * intensity) * -Mathf.Sign(yRel);
+
+                // Apply 3D tilt rotation
+                rect.localRotation = Quaternion.Euler(tiltX, 0f, 0f);
+
+                // Apply horizontal fish-eye bow X
+                Vector2 anchoredPos = rect.anchoredPosition;
+                if (force || !Mathf.Approximately(anchoredPos.x, targetX))
+                {
+                    rect.anchoredPosition = new Vector2(targetX, anchoredPos.y);
+                }
+
+                // Apply 3D squashed & curved scale
+                Vector3 targetLocalScale = new Vector3(targetScale, squashY * targetScale, targetScale);
+                if (force || rect.localScale != targetLocalScale)
+                {
+                    rect.localScale = targetLocalScale;
+                }
+            }
+        }
+    }
+
+    public void ResetCylindricalTransforms()
+    {
+        if (reelImagesList == null) return;
+        foreach (var reel in reelImagesList)
+        {
+            if (reel?.images == null) continue;
+            foreach (var img in reel.images)
+            {
+                if (img == null) continue;
+                img.rectTransform.localRotation = Quaternion.identity;
+                img.rectTransform.localScale = Vector3.one;
+                Vector2 pos = img.rectTransform.anchoredPosition;
+                if (pos.x != 0f)
+                {
+                    img.rectTransform.anchoredPosition = new Vector2(0f, pos.y);
+                }
+            }
+        }
+    }
+
+    #endregion
 }

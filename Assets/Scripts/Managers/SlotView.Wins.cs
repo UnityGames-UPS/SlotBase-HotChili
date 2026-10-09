@@ -52,7 +52,6 @@ public partial class SlotView
                 yield break;
             }
     
-            ShowPhase1TotalWin(totalWinAmount);
     
             AudioManager.Instance?.PlayWinLinePhase1Start();
     
@@ -61,7 +60,6 @@ public partial class SlotView
             if (isAutoPlaying)
             {
                 yield return StartCoroutine(AnimateWinPositionsSingleLoop(flatPositions));
-                HidePhase1TotalWinText(true);
                 yield return new WaitForSeconds(0.15f);
                 onComplete?.Invoke();
             }
@@ -178,33 +176,55 @@ public partial class SlotView
     
             foreach (var imageAnim in activeAnims)
             {
-                
                 SpineAnimController spine = (imageAnim != null) ? imageAnim.GetComponentInParent<SpineAnimController>() : null;
                 if (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset != null) 
                 { 
-                    Debug.Log($"[SlotView] SingleLoop triggering Spine animation on {spine.gameObject.name}");
                     var ar = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<UnityEngine.UI.Image>(); 
                     if (ar != null) ar.enabled = false; 
-                    spine.SkeletonGraphic.MatchRectTransformWithBounds(); 
                     spine.Play(true); 
                 }
                 else 
                 { 
-                    bool isSpineNull = (spine == null);
-                    bool isSGNull = (spine != null && spine.SkeletonGraphic == null);
-                    bool isAssetNull = (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset == null);
-                    Debug.LogWarning($"[SlotView] SingleLoop falling back! SpineNull: {isSpineNull}, SGNull: {isSGNull}, AssetNull: {isAssetNull}");
                     imageAnim.StartAnimation(); 
                 }
             }
-    
-            if (activeAnims.Count > 0)
+
+            foreach (int flatIndex in flatPositions)
             {
-                yield return new WaitUntil(() => isCompleted);
+                int row = flatIndex / reelCount;
+                int col = flatIndex % reelCount;
+                if (col >= 0 && col < 5 && row >= 0 && row < rowLimit)
+                {
+                    Image symbolImage = GetSymbolImage(col, row);
+                    if (symbolImage != null)
+                    {
+                        symbolImage.DOKill();
+                        Color c = symbolImage.color;
+                        symbolImage.color = new Color(c.r, c.g, c.b, 0f);
+                        symbolImage.enabled = false;
+                        symbolImage.gameObject.SetActive(false);
+                    }
+                }
             }
-            else
+    
+            float loopDuration = winSymbolLoopDuration > 0 ? winSymbolLoopDuration : 1.2f;
+            float elapsed = 0f;
+            while (!isCompleted && elapsed < loopDuration)
             {
-                yield return new WaitForSeconds(winSymbolLoopDuration);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            // Clean up overlays
+            foreach (var imageAnim in activeAnims)
+            {
+                if (imageAnim != null)
+                {
+                    imageAnim.onLoopComplete = null;
+                    imageAnim.StopAnimation();
+                    var spine = imageAnim.GetComponentInParent<SpineAnimController>();
+                    if (spine != null) spine.Pause();
+                }
             }
         }
     
@@ -295,7 +315,7 @@ public partial class SlotView
                     Debug.Log($"[SlotView] Continuous triggering Spine animation on {spine.gameObject.name}");
                     var ar = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<UnityEngine.UI.Image>(); 
                     if (ar != null) ar.enabled = false; 
-                    spine.SkeletonGraphic.MatchRectTransformWithBounds(); 
+                    // spine.SkeletonGraphic.MatchRectTransformWithBounds(); 
                     spine.Play(true); 
                 }
                 else 
@@ -333,15 +353,6 @@ public partial class SlotView
             }
         }
     
-        private void ShowPhase1TotalWin(double totalWinAmount)
-        {
-            if (phase1TotalWinText != null)
-            {
-                phase1TotalWinText.text = FormatSpriteText(totalWinAmount);
-                AnimateTextScaleAppear(phase1TotalWinText.transform);
-            }
-        }
-    
         public static string FormatSpriteText(string input)
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
@@ -373,67 +384,7 @@ public partial class SlotView
         {
             return FormatSpriteText(amount.ToString("0.###"));
         }
-    
-        private void HidePhase1TotalWinText(bool animate = true)
-        {
-            if (phase1TotalWinText != null)
-            {
-                if (animate)
-                {
-                    AnimateTextScaleDisappear(phase1TotalWinText.transform);
-                }
-                else
-                {
-                    phase1TotalWinText.transform.DOKill();
-                    phase1TotalWinText.transform.localScale = Vector3.one;
-                    phase1TotalWinText.gameObject.SetActive(false);
-                }
-            }
-        }
-    
-        private void AnimateTextScaleAppear(Transform textTransform, float popScale = 1.2f, float durationUp = 0.15f, float durationDown = 0.10f)
-        {
-            if (textTransform == null) return;
-            textTransform.DOKill();
-            textTransform.localScale = Vector3.zero;
-            textTransform.gameObject.SetActive(true);
-    
-            Sequence seq = DOTween.Sequence();
-            seq.Append(textTransform.DOScale(popScale, durationUp).SetEase(Ease.OutQuad));
-            seq.Append(textTransform.DOScale(1.0f, durationDown).SetEase(Ease.InQuad));
-            winTweens.Add(seq);
-        }
-    
-        private void AnimateTextScaleDisappear(Transform textTransform, float duration = 0.15f, System.Action onComplete = null)
-        {
-            if (textTransform == null)
-            {
-                onComplete?.Invoke();
-                return;
-            }
-    
-            textTransform.DOKill();
-            if (textTransform.gameObject.activeSelf)
-            {
-                Sequence seq = DOTween.Sequence();
-                seq.Append(textTransform.DOScale(Vector3.zero, duration).SetEase(Ease.InQuad));
-                seq.OnComplete(() =>
-                {
-                    textTransform.gameObject.SetActive(false);
-                    textTransform.localScale = Vector3.one;
-                    onComplete?.Invoke();
-                });
-                winTweens.Add(seq);
-            }
-            else
-            {
-                textTransform.localScale = Vector3.one;
-                textTransform.gameObject.SetActive(false);
-                onComplete?.Invoke();
-            }
-        }
-    
-    
+
         private void KillWinTweens(bool stopCoroutine = true)
         {
             foreach (var tween in winTweens)
@@ -486,7 +437,6 @@ public partial class SlotView
             if (winAnimationParent) winAnimationParent.SetActive(false);
             if (winBorderAnimationParent) winBorderAnimationParent.SetActive(false);
             HideAllWinLineTexts();
-            HidePhase1TotalWinText(false);
     
             foreach (var reel in reelImagesList)
             {

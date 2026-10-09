@@ -61,11 +61,48 @@ public class ServerGameData
 }
 
 [Serializable]
+public class HotChiliFeaturePayout
+{
+  public double payout;
+  public bool enabled;
+  public List<int> symbols;
+}
+
+[Serializable]
+public class HotChiliMixedSequenceFeature
+{
+  public double payout;
+  public bool enabled;
+  public List<List<int>> sequence;
+}
+
+[Serializable]
+public class HotChiliScatterFeature
+{
+  public bool enabled;
+  public List<int> symbols;
+  public int maxCount;
+  public int minCount;
+  public bool useSymbolPayout;
+}
+
 public class ServerFeatures
 {
   public double baseCoinValue = 1;
-  public DualWheelsFeature dualWheels;
   public AnyPayoutsData anyPayouts;
+
+  [JsonProperty("GreenRedChilli")] public HotChiliFeaturePayout GreenRedChilli;
+  [JsonProperty("GreenOrangeChilli")] public HotChiliFeaturePayout GreenOrangeChilli;
+  [JsonProperty("GreenYellowChilli")] public HotChiliFeaturePayout GreenYellowChilli;
+  [JsonProperty("AllGreenChilli")] public HotChiliFeaturePayout AllGreenChilli;
+  [JsonProperty("chilliScatter")] public HotChiliScatterFeature chilliScatter;
+  [JsonProperty("AllRedSeven")] public HotChiliFeaturePayout AllRedSeven;
+  [JsonProperty("AllBlueSeven")] public HotChiliFeaturePayout AllBlueSeven;
+  [JsonProperty("mixedSevens")] public HotChiliFeaturePayout mixedSevens;
+  [JsonProperty("AllTripleBars")] public HotChiliFeaturePayout AllTripleBars;
+  [JsonProperty("AllDoubleBars")] public HotChiliFeaturePayout AllDoubleBars;
+  [JsonProperty("anyBarsSeven")] public HotChiliFeaturePayout anyBarsSeven;
+  [JsonProperty("mixedbars&sevens")] public HotChiliMixedSequenceFeature mixedbarsAndSevens;
 
   public MoneyBagFeature moneyBag;
   public FreeGamesFeature freeGames;
@@ -74,13 +111,6 @@ public class ServerFeatures
   public int minWinMultiplier;
 }
 
-[Serializable]
-public class DualWheelsFeature
-{
-  public bool enabled;
-  public List<double> greenWheelValues;
-  public List<double> redWheelValues;
-}
 
 [Serializable]
 public class AnyPayoutsData
@@ -177,7 +207,6 @@ public class ServerPayload
   [JsonProperty("lineWins")]
   public List<ServerWinLine> winningLines;
   
-  public ServerDualWheelsBonus dualWheelsBonus;
 
   public int scatterCount;
   public bool scatterTriggered;
@@ -205,25 +234,6 @@ public class ServerWinLine
   public double wildMultiplier;
 }
 
-[Serializable]
-public class ServerDualWheelsBonus
-{
-  public bool isTriggered;
-  public string type;
-  public string wheelType;
-  public double totalWinAmount;
-  public double greenWheelValue;
-  public double redWheelValue;
-  public int greenWheelStopIndex = -1;
-  public int redWheelStopIndex = -1;
-
-  public string GetEffectiveWheelType()
-  {
-    if (!string.IsNullOrEmpty(type)) return type;
-    if (!string.IsNullOrEmpty(wheelType)) return wheelType;
-    return "";
-  }
-}
 
 [Serializable]
 public class ServerWaysWin
@@ -314,8 +324,20 @@ public class GameConfig
   public int initialFreeSpins = 12;
   public ExtraSpinsData extraSpinsData;
 
-  public DualWheelsFeature dualWheels;
   public AnyPayoutsData anyPayouts;
+
+  public HotChiliFeaturePayout greenRedChilli;
+  public HotChiliFeaturePayout greenOrangeChilli;
+  public HotChiliFeaturePayout greenYellowChilli;
+  public HotChiliFeaturePayout allGreenChilli;
+  public HotChiliScatterFeature chilliScatter;
+  public HotChiliFeaturePayout allRedSeven;
+  public HotChiliFeaturePayout allBlueSeven;
+  public HotChiliFeaturePayout mixedSevens;
+  public HotChiliFeaturePayout allTripleBars;
+  public HotChiliFeaturePayout allDoubleBars;
+  public HotChiliFeaturePayout anyBarsSeven;
+  public HotChiliMixedSequenceFeature mixedbarsAndSevens;
 }
 
 [Serializable]
@@ -361,31 +383,14 @@ public class SpinResult
   public double serverTotalRoundWin;
   public bool isRoundOver;
 
-  public DualWheelsBonusData dualWheelsBonusData;
   public MoneyBagResultData moneyBagData;
-
-  public double GetDualWheelsWin()
-  {
-    return (dualWheelsBonusData != null && dualWheelsBonusData.isTriggered) ? dualWheelsBonusData.totalWinAmount : 0;
-  }
 
   public double GetTotalFeatureDeferredWins()
   {
-    return GetDualWheelsWin();
+    return 0;
   }
 }
 
-[Serializable]
-public class DualWheelsBonusData
-{
-  public bool isTriggered;
-  public double totalWinAmount;
-  public double greenWheelValue;
-  public double redWheelValue;
-  public int greenWheelStopIndex = -1;
-  public int redWheelStopIndex = -1;
-  public string wheelType;
-}
 
 [Serializable]
 public class WinLine
@@ -482,7 +487,7 @@ public enum WinPopupType
 
 public static class InitDataConverter
 {
-  internal static GameConfig ConvertToGameConfig(InitData serverData)
+  public static GameConfig ConvertToGameConfig(InitData serverData)
   {
     var config = new GameConfig
     {
@@ -528,8 +533,19 @@ public static class InitDataConverter
 
     if (serverData?.features != null)
     {
-      config.dualWheels = serverData.features.dualWheels;
       config.anyPayouts = serverData.features.anyPayouts;
+      config.greenRedChilli = serverData.features.GreenRedChilli;
+      config.greenOrangeChilli = serverData.features.GreenOrangeChilli;
+      config.greenYellowChilli = serverData.features.GreenYellowChilli;
+      config.allGreenChilli = serverData.features.AllGreenChilli;
+      config.chilliScatter = serverData.features.chilliScatter;
+      config.allRedSeven = serverData.features.AllRedSeven;
+      config.allBlueSeven = serverData.features.AllBlueSeven;
+      config.mixedSevens = serverData.features.mixedSevens;
+      config.allTripleBars = serverData.features.AllTripleBars;
+      config.allDoubleBars = serverData.features.AllDoubleBars;
+      config.anyBarsSeven = serverData.features.anyBarsSeven;
+      config.mixedbarsAndSevens = serverData.features.mixedbarsAndSevens;
       config.betMultiplier = serverData.features.betMultiplier > 0 ? serverData.features.betMultiplier : 1;
       config.maxWinMultiplier = serverData.features.maxWinMultiplier;
       config.minWinMultiplier = serverData.features.minWinMultiplier;
@@ -545,7 +561,7 @@ public static class InitDataConverter
     return config;
   }
 
-  internal static PlayerData ConvertToPlayerData(ServerPlayer serverPlayer, int defaultBetIndex = 0)
+  public static PlayerData ConvertToPlayerData(ServerPlayer serverPlayer, int defaultBetIndex = 0)
   {
     return new PlayerData
     {
@@ -588,10 +604,6 @@ public static class InitDataConverter
     double featureWins = 0;
     if (serverResponse.payload != null)
     {
-      if (serverResponse.payload.dualWheelsBonus != null && serverResponse.payload.dualWheelsBonus.isTriggered)
-      {
-        featureWins += serverResponse.payload.dualWheelsBonus.totalWinAmount;
-      }
       if (serverResponse.payload.moneyBag?.result != null)
       {
         featureWins += serverResponse.payload.moneyBag.result.winInCash;
@@ -643,18 +655,6 @@ public static class InitDataConverter
       serverTotalRoundWin = totalRoundWin,
       isRoundOver = isRoundOver,
 
-      dualWheelsBonusData = (serverResponse.payload?.dualWheelsBonus != null && serverResponse.payload.dualWheelsBonus.isTriggered)
-            ? new DualWheelsBonusData
-            {
-              isTriggered = true,
-              totalWinAmount = serverResponse.payload.dualWheelsBonus.totalWinAmount,
-              greenWheelValue = serverResponse.payload.dualWheelsBonus.greenWheelValue,
-              redWheelValue = serverResponse.payload.dualWheelsBonus.redWheelValue,
-              greenWheelStopIndex = serverResponse.payload.dualWheelsBonus.greenWheelStopIndex,
-              redWheelStopIndex = serverResponse.payload.dualWheelsBonus.redWheelStopIndex,
-              wheelType = serverResponse.payload.dualWheelsBonus.GetEffectiveWheelType()
-            }
-            : null,
 
       moneyBagData = (serverResponse.payload?.moneyBag != null && serverResponse.payload.moneyBag.triggered && serverResponse.payload.moneyBag.result != null)
             ? new MoneyBagResultData

@@ -217,7 +217,7 @@ public class OrientationChange : MonoBehaviour
         }
 
 #if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             int w = lastHeight > 0 ? lastHeight : Screen.height;
             int h = lastWidth > 0 ? lastWidth : Screen.width;

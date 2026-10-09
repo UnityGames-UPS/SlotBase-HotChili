@@ -77,7 +77,7 @@ public class WheelSpinController : MonoBehaviour
     public void SetResultShine(bool active)
     {
         if (resultShineObject != null) resultShineObject.SetActive(active);
-        if (active) AudioManager.Instance?.PlayWheelStop();
+        //if (active) AudioManager.Instance?.PlayWheelStop();
     }
 
     public void SetCenterSpinButtonInteractable(bool interactable)
@@ -206,7 +206,7 @@ public class WheelSpinController : MonoBehaviour
     {
         isSpinning = true;
         currentTargetIndex = targetIndex;
-        AudioManager.Instance?.PlayWheelSpinBg();
+        //AudioManager.Instance?.PlayWheelSpinBg();
         StartBorderAnimation();
 
         float targetSegmentAngle = (targetIndex * segmentAngle) + alignmentOffset;
@@ -237,7 +237,7 @@ public class WheelSpinController : MonoBehaviour
         ).SetEase(spinEase);
 
         yield return new WaitForSeconds(spinDuration);
-        AudioManager.Instance?.StopWheelSpinBg();
+        //AudioManager.Instance?.StopWheelSpinBg();
 
         wheelRect.localRotation = Quaternion.Euler(0, 0, finalTargetLocalRotation);
 

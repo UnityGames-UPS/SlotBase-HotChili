@@ -9,9 +9,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] internal UIManager uiManager;
     [SerializeField] private PopupManager popupManager;
     [SerializeField] private SlotView slotView;
-    //[Header("Dual Wheel Controllers")]
-     internal WheelSpinController redWheel;
-    internal WheelSpinController greenWheel;
 
     [Header("Spin Settings")]
     [SerializeField] private float normalSpinDuration = 3.5f;
@@ -40,6 +37,8 @@ public class GameManager : MonoBehaviour
     private Coroutine spinCoroutine;
     private bool stopRequested;
     private bool waitingForSpecialWin;
+    private bool isRespinActive = false;
+    public bool IsRespinActive => isRespinActive;
 
     #region Initialization
 
@@ -55,7 +54,7 @@ public class GameManager : MonoBehaviour
         initializationFailed = false;
     }
 
-    internal void OnInitDataReceived(GameConfig config, PlayerData player, List<List<int>> initialMatrix)
+    public void OnInitDataReceived(GameConfig config, PlayerData player, List<List<int>> initialMatrix)
     {
       
         gameConfig = config;
@@ -68,10 +67,6 @@ public class GameManager : MonoBehaviour
             slotView.SetInitialMatrix(initialMatrix);
         }
 
-        if (uiManager != null && gameConfig != null && gameConfig.dualWheels != null)
-        {
-            uiManager.SetupDualWheels(gameConfig.dualWheels);
-        }
 
         isInitialized = true;
         currentState = GameState.Idle;
@@ -153,14 +148,16 @@ public class GameManager : MonoBehaviour
         if (currentState != GameState.Idle) return;
         if (!socketManager.isConnected) return;
 
+        // [BALANCE CHECK #1] Verify player has enough funds before initiating spin
         double totalPay = GetTotalPay();
-        if (playerData.balance < totalPay)
+        if (playerData == null || playerData.balance < totalPay)
         {
+            if (isAutoPlaying) StopAutoPlay();
             if (popupManager != null)
             {
                 popupManager.ShowInsufficientFundsError();
             }
-            return;
+            return; // STOP: Do not spin if insufficient balance
         }
 
         StartSpin();
@@ -182,19 +179,52 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void StartSpin()
+    private void StartRespin()
     {
-        if (lastResult != null)
-        {
-            ProcessSpinResult();
-        }
-
-        lastResult = null;
         currentState = GameState.Spinning;
         stopRequested = false;
 
-        playerData.balance -= GetTotalPay();
+        uiManager.OnSpinStarted();
+
+        if (slotView != null)
+        {
+            slotView.StartSpin();
+        }
+
+        socketManager.SendSpinRequest(currentBetIndex);
+
+        if (spinCoroutine != null)
+            StopCoroutine(spinCoroutine);
+        spinCoroutine = StartCoroutine(SpinRoutine());
+    }
+
+    private void StartSpin()
+    {
+        // [BALANCE CHECK #2] Secondary safety guard: prevent spin if balance is below bet amount
+        double totalPay = GetTotalPay();
+        if (playerData == null || playerData.balance < totalPay)
+        {
+            if (isAutoPlaying) StopAutoPlay();
+            if (popupManager != null) popupManager.ShowInsufficientFundsError();
+            currentState = GameState.Idle;
+            return; // STOP: Do not execute reel spin or server call without money
+        }
+
+        currentState = GameState.Spinning;
+        stopRequested = false;
+
+        // [BALANCE DEDUCTION] Deduct spin bet from player balance
+        playerData.balance -= totalPay;
         if (playerData.balance < 0) playerData.balance = 0;
+
+        // [AUTOPLAY ROUND DECREMENT] Decrement round counter exactly once when spin starts
+        if (isAutoPlaying && autoPlayTotalRounds != -1)
+        {
+            autoPlayRemainingRounds--;
+            Debug.Log(" AutoPlay Remaining Rounds: " + autoPlayRemainingRounds + " / " + " autoPlayTotalRounds -" + autoPlayTotalRounds);
+
+            if (uiManager != null) uiManager.UpdateAutoPlayCount();
+        }
 
         uiManager.OnSpinStarted();
 
@@ -271,7 +301,7 @@ public class GameManager : MonoBehaviour
         double winVal = lastResult != null ? (lastResult.grandTotalWin > 0 ? lastResult.grandTotalWin : lastResult.winAmount) : 0;
         double multiplier = bet > 0 ? (winVal / bet) : 0;
 
-        bool isFeatureTriggered = lastResult != null && lastResult.dualWheelsBonusData != null && lastResult.dualWheelsBonusData.isTriggered;
+        bool isFeatureTriggered = false;
 
         if (lastResult != null && winVal > 0 && !isFeatureTriggered)
         {
@@ -334,6 +364,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(delay);
         }
 
+        AudioManager.Instance?.PlayBigWin();
         uiManager.TriggerBigWinPopup(result, () =>
         {
             waitingForSpecialWin = false;
@@ -357,56 +388,48 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ProcessSpecialFeaturesAfterWin());
     }
 
+    private bool CheckForCenterWild(List<List<int>> matrix)
+    {
+        if (matrix == null || matrix.Count < 3) return false;
+        var centerCol = matrix[1];
+        if (centerCol == null || centerCol.Count == 0) return false;
+        int paylineRow = centerCol.Count >= 3 ? 1 : 0;
+        if (paylineRow >= centerCol.Count) return false;
+        int centerSymbolId = centerCol[paylineRow];
+        return centerSymbolId >= 0 && centerSymbolId <= 3;
+    }
+
     private IEnumerator ProcessSpecialFeaturesAfterWin()
     {
-        while (waitingForSpecialWin || uiManager.IsSpecialWinActive)
+        while (waitingForSpecialWin || (uiManager != null && uiManager.IsSpecialWinActive))
         {
             yield return null;
         }
 
-        if (lastResult != null && lastResult.dualWheelsBonusData != null && lastResult.dualWheelsBonusData.isTriggered)
+        if (isRespinActive)
         {
-            yield return StartCoroutine(DelayDualWheelsTriggerResult());
-            yield break;
+            isRespinActive = false;
+            if (slotView != null) slotView.SetCenterWildLocked(false);
         }
-
-
-
-
 
         ResumeAfterSpecialFeature();
     }
 
-    private IEnumerator DelayDualWheelsTriggerResult()
+    private IEnumerator ExecuteCenterWildRespinRoutine()
     {
-        bool animDone = false;
+        isRespinActive = true;
         if (slotView != null)
         {
-            slotView.AnimateDualWheelWin(() => { animDone = true; });
-            yield return new WaitUntil(() => animDone);
-            slotView.DisableAllOverlays();
-        }
-        else
-        {
-            yield return new WaitForSeconds(1.0f);
+            int row = (lastResult?.resultMatrix != null && lastResult.resultMatrix.Count > 1 && lastResult.resultMatrix[1].Count >= 3) ? 1 : 0;
+            int centerId = (lastResult?.resultMatrix != null && lastResult.resultMatrix.Count > 1 && row < lastResult.resultMatrix[1].Count) ? lastResult.resultMatrix[1][row] : 0;
+            slotView.SetCenterWildLocked(true, centerId);
         }
 
-        if (uiManager != null)
-        {
-            uiManager.TriggerDualWheelsBonus(lastResult.dualWheelsBonusData, () =>
-            {
-                if (lastResult != null && lastResult.dualWheelsBonusData != null)
-                {
-                    lastResult.dualWheelsBonusData.isTriggered = false;
-                }
-                ResumeAfterSpecialFeature();
-            });
-        }
-        else
-        {
-            ResumeAfterSpecialFeature();
-        }
+        yield return new WaitForSeconds(0.6f);
+
+        StartRespin();
     }
+
 
     private void ResumeAfterSpecialFeature()
     {
@@ -466,41 +489,43 @@ public class GameManager : MonoBehaviour
 
     private void ProcessSpinResult()
     {
-        playerData = lastResult.playerData;
+        if (lastResult != null && lastResult.playerData != null)
+        {
+            playerData = lastResult.playerData;
+        }
 
-        uiManager.OnSpinCompleted(lastResult);
+        if (uiManager != null)
+        {
+            uiManager.OnSpinCompleted(lastResult);
+        }
 
         lastResult = null;
 
+        // [AUTOPLAY CONTINUATION LOGIC]
         if (isAutoPlaying)
         {
-            if (autoPlayTotalRounds != -1)
+            // 1. Target round count reached (e.g. 10 of 10 completed) -> STOP immediately
+            if (autoPlayTotalRounds != -1 && autoPlayRemainingRounds <= 0)
             {
-                autoPlayRemainingRounds--;
+                Debug.Log("AutoPlay completed all rounds. Stopping.");
+                currentState = GameState.Idle;
+                StopAutoPlay();
+                return;
             }
 
-            uiManager.UpdateAutoPlayCount();
-
-            if (autoPlayTotalRounds != -1 && autoPlayRemainingRounds <= 0)
+            // 2. Insufficient balance for next round -> STOP immediately
+            double totalPay = GetTotalPay();
+            if (playerData == null || playerData.balance < totalPay)
             {
                 currentState = GameState.Idle;
                 StopAutoPlay();
+                if (popupManager != null) popupManager.ShowInsufficientFundsError();
+                return;
             }
-            else
-            {
-                double totalPay = GetTotalPay();
-                if (playerData.balance < totalPay)
-                {
-                    currentState = GameState.Idle;
-                    StopAutoPlay();
-                    if (popupManager != null) popupManager.ShowInsufficientFundsError();
-                }
-                else
-                {
-                    currentState = GameState.Idle;
-                    RequestSpin();
-                }
-            }
+
+            // 3. Proceed to next round
+            currentState = GameState.Idle;
+            RequestSpin();
         }
         else
         {
@@ -534,7 +559,7 @@ public class GameManager : MonoBehaviour
     internal void StartAutoPlay(int rounds)
     {
         if (currentState != GameState.Idle) return;
-
+        Debug.Log($"[AutoPlay] Starting AutoPlay for {rounds} rounds.");
         double totalPay = GetTotalPay();
         if (playerData.balance < totalPay)
         {
@@ -542,7 +567,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        isAutoPlaying = true;
+        
+        isAutoPlaying = true;   
         autoPlayTotalRounds = rounds;
         autoPlayRemainingRounds = rounds;
 
@@ -590,10 +616,9 @@ public class GameManager : MonoBehaviour
 
     #region Helper Methods
 
-    internal double GetTotalPay()
+        internal double GetTotalPay()
     {
-        double divisor = (gameConfig != null && gameConfig.paylineCount > 0) ? gameConfig.paylineCount : 25;
-        return currentBetAmount * divisor;
+        return currentBetAmount;
     }
 
     internal bool IsSpinning()

@@ -55,9 +55,6 @@ public partial class SlotView : MonoBehaviour
     private List<Sprite> animSpritesDoubleBar;
     private List<Sprite> animSpritesSingleBar;
     private List<Sprite> animSpritesSpin;
-    private List<Sprite> animSpritesGreenWheel;
-    private List<Sprite> animSpritesDoubleWheel;
-    private List<Sprite> animSpritesRedWheel;
 
     private List<Sprite>[] animationSpriteArrays;
 
@@ -92,8 +89,6 @@ public partial class SlotView : MonoBehaviour
     [Header("Win Animation Settings")]
     [SerializeField] private float winSymbolLoopDuration = 1.2f;
 
-    [Header("Phase 1 Total Win Presentation")]
-    [SerializeField] private TMPro.TMP_Text phase1TotalWinText;
 
     [Header("Win Animation Objects — Col 0..4  (each has 2 rows, contains ImageAnimation component)")]
     [SerializeField] private GameObject winAnimationParent;
@@ -102,8 +97,6 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private ColumnOverlays[] winAnimationColumns = new ColumnOverlays[5];
 
     [Header("Tension / Anticipation Settings")]
-    [Tooltip("Frame object to enable on the last slot during tension extra spin when wheel feature is triggered.")]
-    [SerializeField] private GameObject lastSlotTensionFrame;
     [Tooltip("Extra spin duration in seconds for the last slot during tension spin.")]
     [SerializeField] private float tensionSpinExtraDuration = 2.0f;
 
@@ -111,13 +104,26 @@ public partial class SlotView : MonoBehaviour
     [Header("Symbol Info Card")]
     [SerializeField] private SymbolInfoCard symbolInfoCard;
 
-    [Header("Cylindrical Spin Effect Settings")]
-        [Tooltip("Optional parent RectTransform reference (e.g. reel viewport frame) to automatically measure visible half height from parent rect height.")]
+    [Header("3D Cylindrical Drum Settings")]
+    [SerializeField] private bool enableCylindricalEffect = true;
+    [SerializeField] private float visibleHalfHeight = 310f;
+    [SerializeField] private float outerHalfHeight = 450f;
+    [SerializeField] private float edgeScale = 0.84f;
+    [SerializeField] private float outerScale = 0.68f;
+    [Range(0f, 60f)]
+    [SerializeField] private float maxTiltAngle = 26f;
+    [Range(0.2f, 1f)]
+    [SerializeField] private float minSquashY = 0.78f;
+    [Header("Horizontal Edge Bow Settings (Fish-Eye)")]
+    [SerializeField] private float leftReelEdgeX = -16f;
+    [SerializeField] private float rightReelEdgeX = 16f;
+    [SerializeField] private float leftReelOuterX = -32f;
+    [SerializeField] private float rightReelOuterX = 32f;
+    [Tooltip("Optional parent RectTransform reference (e.g. reel viewport frame) to automatically measure visible half height from parent rect height.")]
     [SerializeField] private RectTransform visibleAreaRectTransform;
-                                
+
     private float[] reelCurveIntensity = new float[3] { 1f, 1f, 1f };
     private Tween[] reelSettleCurveTweens = new Tween[3];
-    public CylindricalSpinEffect cylindricalEffect;
 
 
     private float middlePosition = 0f;
@@ -185,24 +191,15 @@ public partial class SlotView : MonoBehaviour
 
     private void Awake()
     {
-        if (cylindricalEffect == null)
-        {
-            cylindricalEffect = GetComponent<CylindricalSpinEffect>();
-            if (cylindricalEffect == null)
-            {
-                cylindricalEffect = gameObject.AddComponent<CylindricalSpinEffect>();
-            }
-        }
         BuildSymbolSpriteArray();
         BuildSpineArray();
         InitializeReels();
     }
+
     private void Start()
     {
-        if (cylindricalEffect != null)
-        {
-            cylindricalEffect.Initialize(reelImagesList, reelTransforms, visibleAreaRectTransform, reelCurveIntensity, () => isSpinning);
-        }
+        UpdateCylindricalSpinEffect(force: true);
+
         if (symbolSprites == null || symbolSprites.Length == 0)
         {
             BuildSymbolSpriteArray();
@@ -219,12 +216,9 @@ public partial class SlotView : MonoBehaviour
         DisableColumns(winAnimationColumns);
         if (winAnimationParent) winAnimationParent.SetActive(false);
         if(winBorderAnimationParent) winBorderAnimationParent.SetActive(false);
-        HidePhase1TotalWinText(false);
         if (symbolInfoCard) symbolInfoCard.HideCard();
-        if (lastSlotTensionFrame) lastSlotTensionFrame.SetActive(false);
         AudioManager.Instance?.StopTensionBuilder();
         AudioManager.Instance?.StopReelSpinLoop();
-        AudioManager.Instance?.StopWheelTriggerWinLine();
     }
 
     private void SetupSymbolButtons()
@@ -521,10 +515,6 @@ public partial class SlotView : MonoBehaviour
         animationSpriteArrays[8] = animSpritesDoubleBar;
         animationSpriteArrays[9] = animSpritesSingleBar;
         animationSpriteArrays[10] = animSpritesSpin;
-        animationSpriteArrays[11] = animSpritesGreenWheel;
-        animationSpriteArrays[12] = animSpritesDoubleWheel;
-        animationSpriteArrays[13] = animSpritesRedWheel;
-        animationSpriteArrays[14] = animSpritesRedWheel;
     }
 
     private void InitializeReels()
@@ -708,135 +698,54 @@ public partial class SlotView : MonoBehaviour
 
     
 
-    internal void AnimateDualWheelWin(System.Action onComplete = null)
+
+    #region Center Wild Lock & Respin
+    private readonly HashSet<int> lockedColumns = new HashSet<int>();
+    private Tween centerWildLockTween;
+
+    public bool IsColumnLocked(int col) => lockedColumns.Contains(col);
+
+    public void SetCenterWildLocked(bool locked, int wildSymbolId = -1)
     {
-        if (currentDisplayMatrix == null)
+        if (locked)
         {
-            onComplete?.Invoke();
-            return;
-        }
-
-        KillWinTweens();
-        AudioManager.Instance?.PlayWheelTriggerWinLine();
-        if (gameManager != null && gameManager.uiManager != null)
-        {
-            gameManager.uiManager.EnableRainbowPanel();
-        }
-
-        List<ImageAnimation> activeWheelAnims = new List<ImageAnimation>();
-        int completedCount = 0;
-        int targetLoops = 2;
-
-        for (int col = 0; col < 5; col++)
-        {
-            if (col >= currentDisplayMatrix.Count) continue;
-            for (int row = 0; row < currentDisplayMatrix[col].Count; row++)
+            lockedColumns.Add(1);
+            int row = GetPaylineRow(1);
+            Image centerImage = GetSymbolImage(1, row);
+            if (centerImage != null)
             {
-                int symId = currentDisplayMatrix[col][row];
-                if (symId >= 10 && symId <= 13)
-                {
-                    var animGO = WinBox(winAnimationColumns, col, row);
-                    if (animGO != null)
-                    {
-                        ImageAnimation imageAnim = animGO.GetComponentInChildren<ImageAnimation>();
-                        int imageIndex = 6 + row;
-                        Image symbolImage = (col < reelImagesList.Count && reelImagesList[col].images != null && imageIndex < reelImagesList[col].images.Count)
-                            ? reelImagesList[col].images[imageIndex]
-                            : null;
-
-                        if (imageAnim != null)
-                        {
-                            activeWheelAnims.Add(imageAnim);
-
-                            List<Sprite> animSprites = (animationSpriteArrays != null && symId >= 0 && symId < animationSpriteArrays.Length) ? animationSpriteArrays[symId] : null;
-                            if (animSprites != null && animSprites.Count > 0)
-                            {
-                                if (animSprites != null)
-            {
-                imageAnim.textureArray = animSprites;
-            }
-                            }
-                            imageAnim.animationMode = ImageAnimation.AnimationMode.SINGLE_PHASE;
-                            imageAnim.useDynamicFramerate = true;
-                            imageAnim.dynamicLoopDuration = winSymbolLoopDuration;
-                            imageAnim.doLoopAnimation = true;
-                            imageAnim.delayBetweenLoop = 0f;
-
-                            animGO.SetActive(true);
-                            Image animRenderer = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<Image>();
-                            if (animRenderer == null && animGO != null) animRenderer = animGO.GetComponentInChildren<Image>();
-                            if (animRenderer != null)
-                            {
-                                animRenderer.DOKill();
-                                Color c = animRenderer.color;
-                                animRenderer.color = new Color(c.r, c.g, c.b, 1f);
-                                animRenderer.enabled = true;
-                                animRenderer.gameObject.SetActive(true);
-                            }
-                            if (symbolImage != null)
-                            {
-                                symbolImage.DOKill();
-                                Color c = symbolImage.color;
-                                symbolImage.color = new Color(c.r, c.g, c.b, 0f);
-                                symbolImage.enabled = false;
-                                symbolImage.gameObject.SetActive(false);
-                            }
-
-                            imageAnim.onLoopComplete = (loopCount) =>
-                            {
-                                if (loopCount >= targetLoops)
-                                {
-                                    imageAnim.onLoopComplete = null;
-                                    imageAnim.StopAnimation();
-                                    if (animGO != null)
-                                    {
-                                        ResetWinBoxPosition(animGO);
-                                        animGO.SetActive(false);
-                                    }
-
-                                    if (symbolImage != null)
-                                    {
-                                        symbolImage.DOKill();
-                                        Color c = symbolImage.color;
-                                        symbolImage.color = new Color(c.r, c.g, c.b, 1f);
-                                        symbolImage.enabled = true;
-                                        symbolImage.gameObject.SetActive(true);
-                                    }
-
-                                    completedCount++;
-                                    if (completedCount >= activeWheelAnims.Count)
-                                    {
-                                        DisableAllOverlays();
-                                        onComplete?.Invoke();
-                                    }
-                                }
-                            };
-
-                            
-            SpineAnimController spine = (imageAnim != null) ? imageAnim.GetComponentInParent<SpineAnimController>() : null;
-            if (spine != null && spine.SkeletonGraphic != null && spine.SkeletonGraphic.skeletonDataAsset != null) 
-                            { var ar = imageAnim.rendererDelegate != null ? imageAnim.rendererDelegate : imageAnim.GetComponent<UnityEngine.UI.Image>();
-                                if (ar != null) ar.enabled = false; spine.SkeletonGraphic.MatchRectTransformWithBounds(); 
-                                spine.Play(true); }
-            else { imageAnim.StartAnimation(); }
-                        }
-                    }
-                }
+                centerWildLockTween?.Kill();
+                centerImage.transform.DOKill();
+                centerImage.transform.localScale = Vector3.one;
+                centerWildLockTween = centerImage.transform.DOScale(1.15f, 0.4f)
+                    .SetEase(Ease.InOutSine)
+                    .SetLoops(-1, LoopType.Yoyo);
             }
         }
-
-        if (activeWheelAnims.Count == 0)
+        else
         {
-            DisableAllOverlays();
-            onComplete?.Invoke();
+            lockedColumns.Clear();
+            centerWildLockTween?.Kill();
+            centerWildLockTween = null;
+            int row = GetPaylineRow(1);
+            Image centerImage = GetSymbolImage(1, row);
+            if (centerImage != null)
+            {
+                centerImage.transform.DOKill();
+                centerImage.transform.localScale = Vector3.one;
+            }
         }
     }
 
-
-
-    
-
-
+    private int GetPaylineRow(int col)
+    {
+        if (currentDisplayMatrix != null && col < currentDisplayMatrix.Count && currentDisplayMatrix[col] != null)
+        {
+            return currentDisplayMatrix[col].Count >= 3 ? 1 : 0;
+        }
+        return 1;
+    }
+    #endregion
 
     internal List<List<int>> GetCurrentDisplayMatrix()
     {
@@ -869,11 +778,7 @@ public partial class SlotView : MonoBehaviour
             }
         }
 
-        if (cylindricalEffect != null)
-        {
-            cylindricalEffect.StopEffect();
-            
-        }
+        UpdateCylindricalSpinEffect(force: true);
 
         KillWinTweens();
     }
