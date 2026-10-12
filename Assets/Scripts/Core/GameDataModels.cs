@@ -385,7 +385,7 @@ public class SpinResult
 
   public MoneyBagResultData moneyBagData;
 
-  public double GetTotalFeatureDeferredWins()
+  internal double GetTotalFeatureDeferredWins()
   {
     return 0;
   }
@@ -485,9 +485,9 @@ public enum WinPopupType
 
 #region Helper Classes for Conversion
 
-public static class InitDataConverter
+internal static class InitDataConverter
 {
-  public static GameConfig ConvertToGameConfig(InitData serverData)
+  internal static GameConfig ConvertToGameConfig(InitData serverData)
   {
     var config = new GameConfig
     {
@@ -561,7 +561,7 @@ public static class InitDataConverter
     return config;
   }
 
-  public static PlayerData ConvertToPlayerData(ServerPlayer serverPlayer, int defaultBetIndex = 0)
+  internal static PlayerData ConvertToPlayerData(ServerPlayer serverPlayer, int defaultBetIndex = 0)
   {
     return new PlayerData
     {

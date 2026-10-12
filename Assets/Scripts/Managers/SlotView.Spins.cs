@@ -498,11 +498,10 @@ UpdateCylindricalSpinEffect(force: true);
                     rect.anchoredPosition = new Vector2(targetX, anchoredPos.y);
                 }
 
-                // Apply 3D squashed & curved scale
-                Vector3 targetLocalScale = new Vector3(targetScale, squashY * targetScale, targetScale);
-                if (force || rect.localScale != targetLocalScale)
+                // Icon scale remains fixed at (1, 1, 1) to prevent animation distortion
+                if (rect.localScale != Vector3.one)
                 {
-                    rect.localScale = targetLocalScale;
+                    rect.localScale = Vector3.one;
                 }
             }
         }

@@ -427,12 +427,7 @@ public partial class SlotView : MonoBehaviour
             {
                 animGO.transform.position = targetSymbolImage.transform.position;
                 animGO.transform.rotation = targetSymbolImage.transform.rotation;
-                Vector3 symScale = targetSymbolImage.transform.localScale;
-                animGO.transform.localScale = new Vector3(
-                    symScale.x * spineScaleMultiplier,
-                    symScale.y * spineScaleMultiplier,
-                    symScale.z * spineScaleMultiplier
-                );
+                animGO.transform.localScale = Vector3.one * spineScaleMultiplier;
             }
         }
 
