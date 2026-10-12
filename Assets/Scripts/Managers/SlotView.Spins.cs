@@ -428,7 +428,7 @@ UpdateCylindricalSpinEffect(force: true);
 
             float intensity = (col < reelCurveIntensity.Length) ? reelCurveIntensity[col] : 1f;
 
-            float centerImageLocalY = (reel.images.Count > 7 && reel.images[7] != null) ? reel.images[7].rectTransform.localPosition.y : -305.5f;
+            float centerImageLocalY = (reel.images.Count > 5 && reel.images[5] != null) ? reel.images[5].rectTransform.localPosition.y : 449.5f;
             float slotOffsetFromCase1 = slotTransform.localPosition.y - case1StopY;
 
             int imgCount = reel.images.Count;

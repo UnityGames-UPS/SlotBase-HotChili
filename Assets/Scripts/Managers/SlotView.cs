@@ -65,7 +65,7 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private List<ReelImages> reelImagesList;
 
     [Header("Reel Stop Y Positions")]
-    [SerializeField] private float case1StopY = 150.5f;
+    [SerializeField] private float case1StopY = 202f;
     [SerializeField] private float case2StopY = 0f;
     
     [Header("Spin Settings")]
@@ -230,7 +230,7 @@ public partial class SlotView : MonoBehaviour
         {
             var reel = reelImagesList[col];
             if (reel == null || reel.images == null) continue;
-            int visibleStartIndex = 6;
+            int visibleStartIndex = 4;
             int rowCount = 3;
             for (int row = 0; row < rowCount; row++)
             {
@@ -323,7 +323,7 @@ public partial class SlotView : MonoBehaviour
             }
         }
 
-        int imageIndex = 6 + row;
+        int imageIndex = 4 + row;
         if (imageIndex < reel.images.Count && reel.images[imageIndex] != null)
         {
             Image clickedImage = reel.images[imageIndex];
@@ -379,12 +379,12 @@ public partial class SlotView : MonoBehaviour
         int imageIndex;
         if (isCase1)
         {
-            imageIndex = 6 + row;
+            imageIndex = 4 + row;
         }
         else
         {
-            if (row == 0) imageIndex = 6;
-            else if (row == 2) imageIndex = 7;
+            if (row == 0) imageIndex = 4;
+            else if (row == 2) imageIndex = 5;
             else return null;
         }
 
@@ -626,31 +626,31 @@ public partial class SlotView : MonoBehaviour
 
         if (isCase1)
         {
+            reservedIndices.Add(4);
+            reservedIndices.Add(5);
             reservedIndices.Add(6);
-            reservedIndices.Add(7);
-            reservedIndices.Add(8);
 
-            SetImageSymbol(reel.images[6], visibleSymbolIds[0]);
-            SetImageSymbol(reel.images[7], visibleSymbolIds[1]);
-            SetImageSymbol(reel.images[8], visibleSymbolIds[2]);
+            SetImageSymbol(reel.images[4], visibleSymbolIds[0]);
+            SetImageSymbol(reel.images[5], visibleSymbolIds[1]);
+            SetImageSymbol(reel.images[6], visibleSymbolIds[2]);
         }
         else if (visibleSymbolIds != null && visibleSymbolIds.Count >= 3)
         {
-            reservedIndices.Add(6);
-            reservedIndices.Add(7);
+            reservedIndices.Add(4);
+            reservedIndices.Add(5);
 
-            SetImageSymbol(reel.images[6], visibleSymbolIds[0]);
-            SetImageSymbol(reel.images[7], visibleSymbolIds[2]);
+            SetImageSymbol(reel.images[4], visibleSymbolIds[0]);
+            SetImageSymbol(reel.images[5], visibleSymbolIds[2]);
         }
         else
         {
+            reservedIndices.Add(4);
+            reservedIndices.Add(5);
             reservedIndices.Add(6);
-            reservedIndices.Add(7);
-            reservedIndices.Add(8);
 
+            SetImageSymbol(reel.images[4], GetRandomNonBlankSymbolId(nonBlankIds));
+            SetImageSymbol(reel.images[5], GetRandomNonBlankSymbolId(nonBlankIds));
             SetImageSymbol(reel.images[6], GetRandomNonBlankSymbolId(nonBlankIds));
-            SetImageSymbol(reel.images[7], GetRandomNonBlankSymbolId(nonBlankIds));
-            SetImageSymbol(reel.images[8], GetRandomNonBlankSymbolId(nonBlankIds));
         }
 
         for (int i = 0; i < reel.images.Count; i++)
