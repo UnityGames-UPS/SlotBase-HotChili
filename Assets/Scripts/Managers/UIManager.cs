@@ -855,12 +855,37 @@ public class UIManager : MonoBehaviour
 
     #region Spin Button
 
+    private Sprite defaultSpinButtonSprite;
+    private Sprite defaultSpinButtonPortraitSprite;
+
+    /// <summary>Configures the spin button interactability during respin pending mode so the player can trigger the respin.</summary>
+    /// <param name="isRespin">True when awaiting player respin input; False when returning to normal state.</param>
+    /// <param name="respinSprite">Optional custom sprite parameter.</param>
+    public void SetRespinButtonState(bool isRespin, Sprite respinSprite = null)
+    {
+        if (isRespin)
+        {
+            SetSpinStopButtonStates(isSpinningState: false, isInteractable: true);
+        }
+        else
+        {
+            SetSpinStopButtonStates(isSpinningState: false, isInteractable: true);
+        }
+    }
+
+    /// <summary>Handles spin button clicks: starts normal spin, stops autoplay, or executes respin if IsRespinPending is active.</summary>
     public void OnSpinButtonPressed()
     {
         if (gameManager.isAutoPlaying)
         {
             AudioManager.Instance?.PlayAutoplayStop();
             gameManager.StopAutoPlay();
+            return;
+        }
+
+        if (gameManager.IsRespinPending)
+        {
+            gameManager.ExecuteRespin();
             return;
         }
 
@@ -1451,7 +1476,7 @@ public class UIManager : MonoBehaviour
         SetTMPText(balanceText, balanceTextPortrait, "BALANCE : " + FormatAmount(gameManager.playerData.balance));
     }
 
-    private void UpdateWinDisplay(double amount)
+    public void UpdateWinDisplay(double amount)
     {
         currentWinDisplayValue = amount;
         if (winAmountText) winAmountText.text = FormatAmount(amount);

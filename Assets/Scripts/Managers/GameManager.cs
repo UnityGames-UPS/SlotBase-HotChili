@@ -39,6 +39,8 @@ public class GameManager : MonoBehaviour
     private bool waitingForSpecialWin;
     private bool isRespinActive = false;
     public bool IsRespinActive => isRespinActive;
+    private bool isRespinPending = false;
+    public bool IsRespinPending => isRespinPending;
 
     #region Initialization
 
@@ -150,6 +152,12 @@ public class GameManager : MonoBehaviour
     
     public void RequestSpin()
     {
+        if (isRespinPending)
+        {
+            ExecuteRespin();
+            return;
+        }
+
         if (currentState != GameState.Idle) return;
         if (!socketManager.isConnected) return;
 
@@ -184,8 +192,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void StartRespin()
+    /// <summary>Starts the respin feature: keeps Reel 1 locked, spins outer reels (0 & 2), and resolves the respinMatrix.</summary>
+    public void ExecuteRespin()
     {
+        if (!isRespinPending || lastResult == null) return;
+
+        isRespinPending = false;
+        isRespinActive = true;
         currentState = GameState.Spinning;
         stopRequested = false;
 
@@ -196,11 +209,113 @@ public class GameManager : MonoBehaviour
             slotView.StartSpin();
         }
 
-        socketManager.SendSpinRequest(currentBetIndex);
-
         if (spinCoroutine != null)
             StopCoroutine(spinCoroutine);
-        spinCoroutine = StartCoroutine(SpinRoutine());
+        spinCoroutine = StartCoroutine(RespinRoutine());
+    }
+
+    /// <summary>Handles spin duration timing and reel stopping for the respin round.</summary>
+    private IEnumerator RespinRoutine()
+    {
+        float elapsed = 0f;
+
+        while (elapsed < GetSpinDuration() && !stopRequested)
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (stopRequested)
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        currentState = GameState.Stopping;
+
+        if (slotView != null && lastResult.respinMatrix != null)
+        {
+            if (currentSpinSpeed == SpinSpeed.QuickSpin || stopRequested)
+            {
+                slotView.QuickStop(lastResult.respinMatrix, OnRespinReelsStoppedComplete);
+            }
+            else if (currentSpinSpeed == SpinSpeed.Turbo)
+            {
+                slotView.StopSpin(lastResult.respinMatrix, OnRespinReelsStoppedComplete, isTurbo: true);
+            }
+            else
+            {
+                slotView.StopSpin(lastResult.respinMatrix, OnRespinReelsStoppedComplete, isTurbo: false);
+            }
+        }
+        else
+        {
+            OnRespinReelsStoppedComplete();
+        }
+    }
+
+    /// <summary>Callback triggered when respin reels stop: unlocks Reel 1, calculates respin win, and plays win animations.</summary>
+    private void OnRespinReelsStoppedComplete()
+    {
+        isRespinActive = false;
+        if (slotView != null) slotView.SetCenterWildLocked(false);
+        if (uiManager != null) uiManager.SetRespinButtonState(false);
+
+        double bet = currentBetAmount > 0 ? currentBetAmount : 0.01;
+        double winVal = lastResult != null ? lastResult.respinWinAmount : 0;
+        double multiplier = bet > 0 ? (winVal / bet) : 0;
+
+        if (lastResult != null && winVal > 0)
+        {
+            if (playerData != null)
+            {
+                playerData.balance += winVal;
+            }
+            if (uiManager != null)
+            {
+                uiManager.UpdateBalanceDisplay();
+                uiManager.UpdateWinDisplay(winVal);
+            }
+
+            if (multiplier >= WinThreshold)
+            {
+                uiManager.DisableControlsDuringWinAnimation();
+                currentState = GameState.Idle;
+                waitingForSpecialWin = true;
+                StartCoroutine(TriggerWinPopupWithDelay(0.3f, lastResult));
+                if (lastResult.respinLineWins != null && lastResult.respinLineWins.Count > 0 && slotView != null)
+                {
+                    slotView.ShowWinLineAnimation(lastResult.respinLineWins, OnRespinWinAnimationComplete);
+                }
+                else
+                {
+                    OnRespinWinAnimationComplete();
+                }
+            }
+            else
+            {
+                uiManager.EnableControlsAfterWinAnimation();
+                currentState = GameState.Idle;
+                if (lastResult.respinLineWins != null && lastResult.respinLineWins.Count > 0 && slotView != null)
+                {
+                    slotView.ShowWinLineAnimation(lastResult.respinLineWins, OnRespinWinAnimationComplete);
+                }
+                else
+                {
+                    OnRespinWinAnimationComplete();
+                }
+            }
+        }
+        else
+        {
+            currentState = GameState.Idle;
+            OnRespinWinAnimationComplete();
+        }
+    }
+
+    /// <summary>Callback triggered when respin win animations finish: resumes gameplay or next autoplay round.</summary>
+    private void OnRespinWinAnimationComplete()
+    {
+        ResumeAfterSpecialFeature();
     }
 
     private void StartSpin()
@@ -404,6 +519,7 @@ public class GameManager : MonoBehaviour
         return centerSymbolId >= 0 && centerSymbolId <= 3;
     }
 
+    /// <summary>Checks for triggered features after win animations: detects respinTriggered and initiates respin pending mode.</summary>
     private IEnumerator ProcessSpecialFeaturesAfterWin()
     {
         while (waitingForSpecialWin || (uiManager != null && uiManager.IsSpecialWinActive))
@@ -411,28 +527,31 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
+        if (lastResult != null && lastResult.isRespinTriggered && !isRespinActive)
+        {
+            isRespinPending = true;
+            if (slotView != null) slotView.SetCenterWildLocked(true);
+            if (uiManager != null) uiManager.SetRespinButtonState(true);
+
+            if (isAutoPlaying)
+            {
+                yield return new WaitForSeconds(1.0f);
+                if (isRespinPending)
+                {
+                    ExecuteRespin();
+                }
+            }
+            yield break;
+        }
+
         if (isRespinActive)
         {
             isRespinActive = false;
             if (slotView != null) slotView.SetCenterWildLocked(false);
+            if (uiManager != null) uiManager.SetRespinButtonState(false);
         }
 
         ResumeAfterSpecialFeature();
-    }
-
-    private IEnumerator ExecuteCenterWildRespinRoutine()
-    {
-        isRespinActive = true;
-        if (slotView != null)
-        {
-            int row = (lastResult?.resultMatrix != null && lastResult.resultMatrix.Count > 1 && lastResult.resultMatrix[1].Count >= 3) ? 1 : 0;
-            int centerId = (lastResult?.resultMatrix != null && lastResult.resultMatrix.Count > 1 && row < lastResult.resultMatrix[1].Count) ? lastResult.resultMatrix[1][row] : 0;
-            slotView.SetCenterWildLocked(true, centerId);
-        }
-
-        yield return new WaitForSeconds(0.6f);
-
-        StartRespin();
     }
 
 

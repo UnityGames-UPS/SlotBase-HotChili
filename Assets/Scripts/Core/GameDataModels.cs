@@ -216,6 +216,13 @@ public class ServerPayload
   public List<ServerWaysWin> waysWins;
   public ServerMoneyBagResult moneyBag;
   public ServerFreeGamesResult freeGames;
+
+  // Respin Feature Payload
+  public bool respinTriggered;
+  public List<List<string>> respinMatrix;
+  public double respinWinAmount;
+  public List<ServerWinLine> respinLineWins;
+  public int wildMultiplier;
 }
 
 [Serializable]
@@ -384,6 +391,13 @@ public class SpinResult
   public bool isRoundOver;
 
   public MoneyBagResultData moneyBagData;
+
+  // Respin Feature Results
+  public bool isRespinTriggered;
+  public List<List<int>> respinMatrix;
+  public double respinWinAmount;
+  public List<WinLine> respinLineWins;
+  public int respinWildMultiplier = 1;
 
   internal double GetTotalFeatureDeferredWins()
   {
@@ -570,6 +584,11 @@ internal static class InitDataConverter
     };
   }
 
+  /// <summary>Converts backend spin response JSON into client SpinResult, parsing respinTriggered, respinMatrix, and respinWinAmount.</summary>
+  /// <param name="serverResponse">Parsed server response object containing payload and matrix data.</param>
+  /// <param name="currentBalance">Player balance before spin deduction/addition.</param>
+  /// <param name="betAmount">Current active bet amount for multiplier calculations.</param>
+  /// <param name="gameConfig">Game configuration defining reel count, row count, and credit divisors.</param>
   internal static SpinResult ConvertServerResponseToSpinResult(ServerSpinResponse serverResponse, double currentBalance, double betAmount, GameConfig gameConfig)
   {
     double winAmountVal = 0;
@@ -665,7 +684,17 @@ internal static class InitDataConverter
               creditsAwarded = serverResponse.payload.moneyBag.result.creditsAwarded,
               winInCash = serverResponse.payload.moneyBag.result.winInCash
             }
-            : null
+            : null,
+
+      isRespinTriggered = serverResponse.payload != null && serverResponse.payload.respinTriggered,
+      respinMatrix = (serverResponse.payload != null && serverResponse.payload.respinMatrix != null)
+            ? ConvertReelsToMatrix(serverResponse.payload.respinMatrix, null, null, gameConfig)
+            : null,
+      respinWinAmount = serverResponse.payload != null ? serverResponse.payload.respinWinAmount : 0,
+      respinLineWins = (serverResponse.payload != null && serverResponse.payload.respinLineWins != null)
+            ? ConvertWinningLines(serverResponse.payload.respinLineWins, null, gameConfig)
+            : null,
+      respinWildMultiplier = serverResponse.payload != null && serverResponse.payload.wildMultiplier > 0 ? serverResponse.payload.wildMultiplier : 1
     };
 
     return result;

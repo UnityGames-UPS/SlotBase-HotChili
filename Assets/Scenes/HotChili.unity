@@ -19059,8 +19059,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.111, y: 63}
-  m_SizeDelta: {x: 1674.575, y: 154}
+  m_AnchoredPosition: {x: 42.652, y: 68.191}
+  m_SizeDelta: {x: 2308.632, y: 1014.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1226765644
 MonoBehaviour:
@@ -30351,6 +30351,7 @@ MonoBehaviour:
   spriteSingleBar: {fileID: 21300000, guid: a10eab62e511941488ba87b205bcf8ad, type: 3}
   spriteRedSeven: {fileID: 21300000, guid: 45e72053eedacba44995ba360700cfee, type: 3}
   spriteBlueSeven: {fileID: 21300000, guid: c866a3e9e249d9349bdef363238379cc, type: 3}
+  spriteReSpin: {fileID: 21300000, guid: c956b176a51257c489ff6f4ff3cd3a83, type: 3}
   spineGreenChilli: {fileID: 11400000, guid: cb806a19066e09f439aa7f880f6dbe74, type: 2}
   spineYellowChilli: {fileID: 11400000, guid: cb806a19066e09f439aa7f880f6dbe74, type: 2}
   spineOrangeChilli: {fileID: 11400000, guid: cb806a19066e09f439aa7f880f6dbe74, type: 2}
@@ -30426,7 +30427,7 @@ MonoBehaviour:
   winSymbolLoopDuration: 1.2
   winAnimationParent: {fileID: 1892258266}
   winBorderAnimationParent: {fileID: 472115666}
-  winLineAnimation: {fileID: 0}
+  winLineAnimation: {fileID: 1226765642}
   winAnimationColumns:
   - rows:
     - {fileID: 615330260}

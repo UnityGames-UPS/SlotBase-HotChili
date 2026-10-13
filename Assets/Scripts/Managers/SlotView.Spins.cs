@@ -8,6 +8,7 @@ public partial class SlotView
 {
     #region Spin Animation
     
+        /// <summary>Initiates reel spinning; automatically skips locked columns (e.g. Reel 1 during Respin) so held symbols stay stationary.</summary>
         public void StartSpin()
         {
             if (isSpinning) return;
@@ -34,6 +35,7 @@ public partial class SlotView
             {
                 for (int col = 0; col < reelImagesList.Count; col++)
                 {
+                    if (IsColumnLocked(col)) continue;
                     var reel = reelImagesList[col];
                     if (reel == null || reel.images == null) continue;
                     for (int i = 0; i < reel.images.Count; i++)
@@ -61,6 +63,7 @@ public partial class SlotView
     
             for (int col = 0; col < maxCols; col++)
             {
+                if (IsColumnLocked(col)) continue;
                 StartReelCycleWithDelay(col, col * reelStartStagger);
             }
         }
@@ -150,6 +153,10 @@ public partial class SlotView
     
     #region Stop Spin
     
+        /// <summary>Stops spinning reels at the result matrix; skips locked reels so held symbols remain intact.</summary>
+        /// <param name="resultMatrix">Target 3x3 symbol matrix to display.</param>
+        /// <param name="onComplete">Callback invoked when all spinning reels have settled.</param>
+        /// <param name="isTurbo">Whether turbo speed is active for faster deceleration.</param>
         public void StopSpin(List<List<int>> resultMatrix, System.Action onComplete, bool isTurbo = false)
         {
             int reelCount = resultMatrix != null ? resultMatrix.Count : (gameManager?.gameConfig != null ? gameManager.gameConfig.reelCount : 3);
@@ -160,6 +167,7 @@ public partial class SlotView
                 currentDisplayMatrix = resultMatrix;
                 for (int col = 0; col < maxCols; col++)
                 {
+                    if (IsColumnLocked(col)) continue;
                     SetReelSymbols(col, resultMatrix[col], false);
                 }
                 onComplete?.Invoke();
@@ -182,6 +190,7 @@ public partial class SlotView
                     bool allReelsReady = true;
                     for (int col = 0; col < maxCols; col++)
                     {
+                        if (IsColumnLocked(col)) continue;
                         if (col < reelCycleCount.Count && reelCycleCount[col] < minSpinCyclesBeforeStop)
                         {
                             allReelsReady = false;
@@ -202,6 +211,7 @@ public partial class SlotView
     
             for (int col = 0; col < maxCols; col++)
             {
+                if (IsColumnLocked(col)) continue;
                 bool isLastReel = (col == maxCols - 1);
                 float delay = col * stagger;
                 if (isLastReel && isWheelTriggered)
@@ -390,6 +400,9 @@ UpdateCylindricalSpinEffect(force: true);
     
     #region Quick Spin
     
+        /// <summary>Performs immediate/rapid stop on spinning reels, skipping locked reels.</summary>
+        /// <param name="resultMatrix">Target 3x3 symbol matrix to display.</param>
+        /// <param name="onComplete">Callback invoked when reels have finished settling.</param>
         public void QuickStop(List<List<int>> resultMatrix, System.Action onComplete = null)
         {
             if (!isSpinning)
@@ -400,6 +413,7 @@ UpdateCylindricalSpinEffect(force: true);
     
                 for (int col = 0; col < maxCols; col++)
                 {
+                    if (IsColumnLocked(col)) continue;
                     if (col < reelTransforms.Length)
                     {
                         SetReelSymbols(col, resultMatrix[col], false);

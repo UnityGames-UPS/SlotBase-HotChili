@@ -23,6 +23,8 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private Sprite spriteBlueSeven; // ID 8
     [SerializeField] private Sprite spriteReSpin;
 
+    public Sprite GetRespinSprite() => spriteReSpin;
+
     [Header("Spine Win Animations - Matches Backend JSON")]
     [SerializeField] private SkeletonDataAsset spineGreenChilli;
     [SerializeField] private SkeletonDataAsset spineYellowChilli;
@@ -305,6 +307,12 @@ public partial class SlotView : MonoBehaviour
 
     public void OnSymbolClicked(int col, int row, RectTransform symbolRect)
     {
+        if (gameManager != null && gameManager.IsRespinPending)
+        {
+            gameManager.ExecuteRespin();
+            return;
+        }
+
         if (isSpinning)
         {
             if (symbolInfoCard != null) symbolInfoCard.HideCard();
@@ -718,34 +726,124 @@ public partial class SlotView : MonoBehaviour
 
     public bool IsColumnLocked(int col) => lockedColumns.Contains(col);
 
+    /// <summary>Locks Reel 1 in place and toggles the Re-Spin overlay (spriteReSpin) via SlotAnimHolder for the respin feature.</summary>
+    /// <param name="locked">True to lock Reel 1 and show the Re-Spin overlay; False to unlock and hide.</param>
+    /// <param name="wildSymbolId">Optional symbol ID of the center wild symbol.</param>
     public void SetCenterWildLocked(bool locked, int wildSymbolId = -1)
     {
         if (locked)
         {
             lockedColumns.Add(1);
-            int row = GetPaylineRow(1);
-            Image centerImage = GetSymbolImage(1, row);
-            if (centerImage != null)
-            {
-                centerWildLockTween?.Kill();
-                centerImage.transform.DOKill();
-                centerImage.transform.localScale = Vector3.one;
-                centerWildLockTween = centerImage.transform.DOScale(1.15f, 0.4f)
-                    .SetEase(Ease.InOutSine)
-                    .SetLoops(-1, LoopType.Yoyo);
-            }
+            ShowRespinOverlay(true);
         }
         else
         {
             lockedColumns.Clear();
             centerWildLockTween?.Kill();
             centerWildLockTween = null;
-            int row = GetPaylineRow(1);
-            Image centerImage = GetSymbolImage(1, row);
-            if (centerImage != null)
+            ShowRespinOverlay(false);
+        }
+    }
+
+    /// <summary>Displays spriteReSpin on the child of SlotAnimHolder (center reel overlay) and enables click-to-respin interaction.</summary>
+    /// <param name="show">True to show the Re-Spin sprite overlay on Reel 1; False to hide it.</param>
+    public void ShowRespinOverlay(bool show)
+    {
+        if (winAnimationColumns == null || winAnimationColumns.Length <= 1) return;
+        var col1 = winAnimationColumns[1];
+        if (col1 == null || col1.rows == null || col1.rows.Length == 0) return;
+        GameObject animGO = col1.rows[0];
+        if (animGO == null) return;
+
+        if (show)
+        {
+            if (winAnimationParent != null && !winAnimationParent.activeSelf)
             {
-                centerImage.transform.DOKill();
-                centerImage.transform.localScale = Vector3.one;
+                winAnimationParent.SetActive(true);
+            }
+
+            // Align position with center payline of Reel 1
+            int paylineRow = GetPaylineRow(1);
+            Image centerSymbol = GetSymbolImage(1, paylineRow);
+            if (centerSymbol != null)
+            {
+                animGO.transform.position = centerSymbol.transform.position;
+                animGO.transform.rotation = centerSymbol.transform.rotation;
+            }
+
+            // Disable spine animation child so spine does not override the sprite
+            SpineAnimController spine = animGO.GetComponentInChildren<SpineAnimController>(true);
+            if (spine != null)
+            {
+                spine.Stop();
+                if (spine.SkeletonGraphic != null)
+                {
+                    spine.SkeletonGraphic.gameObject.SetActive(false);
+                }
+            }
+
+            // Stop image animation
+            ImageAnimation imageAnim = animGO.GetComponentInChildren<ImageAnimation>(true);
+            if (imageAnim != null)
+            {
+                imageAnim.StopAnimation();
+            }
+
+            // Set sprite to spriteReSpin on Image component
+            Image animImage = animGO.GetComponent<Image>();
+            if (animImage == null) animImage = animGO.GetComponentInChildren<Image>(true);
+            if (animImage != null)
+            {
+                if (spriteReSpin != null)
+                {
+                    animImage.sprite = spriteReSpin;
+                    animImage.overrideSprite = spriteReSpin;
+                }
+                animImage.enabled = true;
+                animImage.color = Color.white;
+            }
+
+            animGO.SetActive(true);
+
+            // Pulsing anticipation effect on the Re-Spin symbol
+            animGO.transform.DOKill();
+            animGO.transform.localScale = Vector3.one * spineScaleMultiplier;
+            animGO.transform.DOScale(spineScaleMultiplier * 1.12f, 0.45f)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(-1, LoopType.Yoyo);
+
+            // Make it clickable so clicking the Re-Spin icon on the reel triggers respin
+            Button btn = animGO.GetComponent<Button>();
+            if (btn == null)
+            {
+                btn = animGO.AddComponent<Button>();
+            }
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(() =>
+            {
+                if (gameManager != null && gameManager.IsRespinPending)
+                {
+                    gameManager.ExecuteRespin();
+                }
+            });
+            btn.interactable = true;
+        }
+        else
+        {
+            animGO.transform.DOKill();
+            animGO.transform.localScale = Vector3.one * spineScaleMultiplier;
+            animGO.SetActive(false);
+
+            // Restore SpineRenderer for normal win animations
+            SpineAnimController spine = animGO.GetComponentInChildren<SpineAnimController>(true);
+            if (spine != null && spine.SkeletonGraphic != null)
+            {
+                spine.SkeletonGraphic.gameObject.SetActive(true);
+            }
+
+            if (winAnimationParent != null)
+            {
+                winAnimationParent.SetActive(false);
             }
         }
     }
