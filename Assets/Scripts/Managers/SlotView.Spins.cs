@@ -276,43 +276,15 @@ UpdateCylindricalSpinEffect(force: true);
             slotTransform.DOKill();
     
             float targetY = GetTargetYForResult(targetSymbols);
-    
-            SetReelSymbols(columnIndex, targetSymbols, false);
-    
-            bool isCase1 = targetSymbols != null && targetSymbols.Count >= 3 && targetSymbols[1] != 0;
-            if (isCase1)
+            float landingStartTopY = targetY + 820f;
+            float currentY = slotTransform.localPosition.y;
+
+            if (columnIndex < reelCurveIntensity.Length)
             {
-                if (columnIndex < reelCurveIntensity.Length)
-                {
-                    if (reelSettleCurveTweens[columnIndex] != null) reelSettleCurveTweens[columnIndex].Kill();
-                    reelCurveIntensity[columnIndex] = 1f;
-                }
+                if (reelSettleCurveTweens[columnIndex] != null) reelSettleCurveTweens[columnIndex].Kill();
+                reelCurveIntensity[columnIndex] = 1f;
             }
-            else
-            {
-                if (columnIndex < reelCurveIntensity.Length)
-                {
-                    if (reelSettleCurveTweens[columnIndex] != null) reelSettleCurveTweens[columnIndex].Kill();
-                    float settleDuration = isQuickStop ? (quickStopDuration * 0.7f) : stopSettleDuration;
-                    int colIdx = columnIndex;
-                    reelSettleCurveTweens[colIdx] = DOVirtual.Float(reelCurveIntensity[colIdx], 0f, settleDuration, (val) =>
-                    {
-                        if (colIdx < reelCurveIntensity.Length) reelCurveIntensity[colIdx] = val;
-                    });
-                }
-                UpdateCylindricalSpinEffect(force: false);
-            
-        }
-    
-            float landingStartTopY = targetY + (2f * symbolHeight);
-            slotTransform.localPosition = new Vector3(
-                slotTransform.localPosition.x,
-                landingStartTopY,
-                0
-            );
-    
-            AudioManager.Instance?.PlayReelStop();
-    
+
             if (currentDisplayMatrix != null && columnIndex < currentDisplayMatrix.Count)
             {
                 bool hasWild = false;
@@ -323,19 +295,55 @@ UpdateCylindricalSpinEffect(force: true);
                 }
                 if (hasWild) AudioManager.Instance?.PlayWildChilliHit();
             }
-    
+
             Sequence stopSequence = DOTween.Sequence();
-            float overshoot = isQuickStop ? 14f : 30f;
-            float dropDuration = isQuickStop ? 0.12f : 0.16f;
-            float recoilDuration = isQuickStop ? 0.10f : 0.18f;
+            float overshoot = isQuickStop ? 14f : 28f;
+            float recoilDuration = isQuickStop ? 0.10f : 0.16f;
 
-            // Fast smooth drop through overshoot
-            stopSequence.Append(
-                slotTransform.DOLocalMoveY(targetY - overshoot, dropDuration)
-                    .SetEase(Ease.OutQuad)
-            );
+            if (!isQuickStop)
+            {
+                // 1. Finish downward travel smoothly to 0f without touching symbols currently on screen:
+                float distToBottom = Mathf.Max(0f, currentY - 0f);
+                float timeToBottom = Mathf.Max(0.02f, distToBottom / spinSpeed);
+                stopSequence.Append(slotTransform.DOLocalMoveY(0f, timeToBottom).SetEase(Ease.Linear));
 
-            // Crisp mechanical recoil into final target position
+                // 2. Wrap container to landingStartTopY where images 4, 5, 6 are completely off-screen above the top frame!
+                // Load incoming result symbols only while completely invisible:
+                stopSequence.AppendCallback(() =>
+                {
+                    slotTransform.localPosition = new Vector3(slotTransform.localPosition.x, landingStartTopY, 0f);
+                    SetReelSymbols(columnIndex, targetSymbols, false);
+                });
+
+                // 3. Roll down smoothly from landingStartTopY so the result symbols enter naturally through the top:
+                float dropDist = landingStartTopY - (targetY - overshoot);
+                float dropDuration = Mathf.Clamp(dropDist / spinSpeed, 0.14f, 0.22f);
+                stopSequence.Append(
+                    slotTransform.DOLocalMoveY(targetY - overshoot, dropDuration)
+                        .SetEase(Ease.OutQuad)
+                );
+            }
+            else
+            {
+                // QuickStop: Place container at landingStartTopY, load symbols while off-screen, and drop snappily:
+                slotTransform.localPosition = new Vector3(slotTransform.localPosition.x, landingStartTopY, 0f);
+                SetReelSymbols(columnIndex, targetSymbols, false);
+
+                float dropDist = landingStartTopY - (targetY - overshoot);
+                float dropDuration = Mathf.Clamp(dropDist / spinSpeed, 0.10f, 0.14f);
+                stopSequence.Append(
+                    slotTransform.DOLocalMoveY(targetY - overshoot, dropDuration)
+                        .SetEase(Ease.OutQuad)
+                );
+            }
+
+            // 4. Trigger stop sound on landing impact:
+            stopSequence.AppendCallback(() =>
+            {
+                AudioManager.Instance?.PlayReelStop();
+            });
+
+            // 5. Crisp mechanical recoil into final target position
             stopSequence.Append(
                 slotTransform.DOLocalMoveY(targetY, recoilDuration)
                     .SetEase(Ease.OutBack, 1.15f)

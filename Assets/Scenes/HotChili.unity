@@ -17574,7 +17574,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1154406430
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19501,8 +19501,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 286.3, y: -52.2}
-  m_SizeDelta: {x: 54.6, y: 50}
+  m_AnchoredPosition: {x: 324.94983, y: -52.2}
+  m_SizeDelta: {x: 165.1, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1249040396
 MonoBehaviour:
@@ -19524,7 +19524,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '1 '
+  m_text: 1 Lines
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ce1a6a2787e954e95868ded5474408f3, type: 2}
   m_sharedMaterial: {fileID: 8214354210935193778, guid: ce1a6a2787e954e95868ded5474408f3, type: 2}
@@ -30492,7 +30492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f521a04de7f494272a617b2719edd271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SocketIOManager
-  testToken: 2734eb957e9c41e6882b5d4b681658de
+  testToken: c1c4c79a3c13452989c8256dcac74225
   gameManager: {fileID: 1328156518}
   uiManager: {fileID: 1266113020}
   popupManager: {fileID: 1195155500}
@@ -30886,7 +30886,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1860869511
 RectTransform:
   m_ObjectHideFlags: 0

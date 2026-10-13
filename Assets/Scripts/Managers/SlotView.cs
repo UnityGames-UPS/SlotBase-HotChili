@@ -653,13 +653,18 @@ public partial class SlotView : MonoBehaviour
             SetImageSymbol(reel.images[6], GetRandomNonBlankSymbolId(nonBlankIds));
         }
 
-        for (int i = 0; i < reel.images.Count; i++)
+        // Only randomize non-reserved buffer symbols on initial setup, NEVER during a spin stop
+        // so that symbols currently passing through the window are never modified on screen.
+        if (isInitial)
         {
-            if (reservedIndices.Contains(i)) continue;
+            for (int i = 0; i < reel.images.Count; i++)
+            {
+                if (reservedIndices.Contains(i)) continue;
 
-            int symId = nonBlankIds[bufferIndex % nonBlankIds.Count];
-            bufferIndex++;
-            SetImageSymbol(reel.images[i], symId);
+                int symId = nonBlankIds[bufferIndex % nonBlankIds.Count];
+                bufferIndex++;
+                SetImageSymbol(reel.images[i], symId);
+            }
         }
 
         if (isInitial && reelTransforms[columnIndex] != null)
