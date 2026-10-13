@@ -87,6 +87,17 @@ public partial class SlotView
                 int col = flatIndex % reelCount;
     
                 if (col < 0 || col >= 5 || row < 0 || row >= rowLimit) continue;
+
+                if (currentDisplayMatrix != null && col < currentDisplayMatrix.Count && row < currentDisplayMatrix[col].Count)
+                {
+                    int checkId = currentDisplayMatrix[col][row];
+                    if (checkId == 9 || checkId == 99 || checkId < 0)
+                    {
+                        var blankAnimGO = WinBox(winAnimationColumns, col, row);
+                        if (blankAnimGO != null) blankAnimGO.SetActive(false);
+                        continue;
+                    }
+                }
     
                 Image symbolImage = GetSymbolImage(col, row);
                 if (symbolImage == null) continue;
@@ -159,10 +170,18 @@ public partial class SlotView
                         if (symbolImage != null)
                         {
                             symbolImage.DOKill();
-                            Color c = symbolImage.color;
-                            symbolImage.color = new Color(c.r, c.g, c.b, 1f);
-                            symbolImage.enabled = true;
-                            symbolImage.gameObject.SetActive(true);
+                            if (symbolImage.sprite != null && (!imageToSymbolIdMap.TryGetValue(symbolImage, out int sId) || (sId != 9 && sId != 99)))
+                            {
+                                Color c = symbolImage.color;
+                                symbolImage.color = new Color(c.r, c.g, c.b, 1f);
+                                symbolImage.enabled = true;
+                                symbolImage.gameObject.SetActive(true);
+                            }
+                            else
+                            {
+                                symbolImage.color = new Color(1f, 1f, 1f, 0f);
+                                symbolImage.enabled = false;
+                            }
                         }
     
                         completedCount++;
@@ -249,6 +268,17 @@ public partial class SlotView
                 int col = flatIndex % reelCount;
     
                 if (col < 0 || col >= 5 || row < 0 || row >= rowLimit) continue;
+
+                if (currentDisplayMatrix != null && col < currentDisplayMatrix.Count && row < currentDisplayMatrix[col].Count)
+                {
+                    int checkId = currentDisplayMatrix[col][row];
+                    if (checkId == 9 || checkId == 99 || checkId < 0)
+                    {
+                        var blankAnimGO = WinBox(winAnimationColumns, col, row);
+                        if (blankAnimGO != null) blankAnimGO.SetActive(false);
+                        continue;
+                    }
+                }
     
                 Image symbolImage = GetSymbolImage(col, row);
                 if (symbolImage == null) continue;
@@ -450,12 +480,20 @@ public partial class SlotView
                         {
                             image.DOKill();
                             image.transform.localScale = Vector3.one;
-                            Color c = image.color;
-                            image.color = new Color(c.r, c.g, c.b, 1f);
-                            image.enabled = true;
-                            if (!image.gameObject.activeSelf)
+                            if (image.sprite != null && (!imageToSymbolIdMap.TryGetValue(image, out int sId) || (sId != 9 && sId != 99)))
                             {
-                                image.gameObject.SetActive(true);
+                                Color c = image.color;
+                                image.color = new Color(c.r, c.g, c.b, 1f);
+                                image.enabled = true;
+                                if (!image.gameObject.activeSelf)
+                                {
+                                    image.gameObject.SetActive(true);
+                                }
+                            }
+                            else
+                            {
+                                image.color = new Color(1f, 1f, 1f, 0f);
+                                image.enabled = false;
                             }
                         }
                     }

@@ -28,6 +28,26 @@ public partial class SlotView
     
             DisableAllOverlays();
             AudioManager.Instance?.PlayReelSpinLoop();
+
+            // Re-assign valid sprites and enable Image components on any previously blank slots so reels spin full:
+            if (reelImagesList != null)
+            {
+                for (int col = 0; col < reelImagesList.Count; col++)
+                {
+                    var reel = reelImagesList[col];
+                    if (reel == null || reel.images == null) continue;
+                    for (int i = 0; i < reel.images.Count; i++)
+                    {
+                        Image img = reel.images[i];
+                        if (img == null) continue;
+                        if (img.sprite == null || !img.enabled || (imageToSymbolIdMap.TryGetValue(img, out int sid) && (sid == 9 || sid == 99)))
+                        {
+                            int randomSymId = GetRandomNonBlankSymbolId();
+                            SetImageSymbol(img, randomSymId);
+                        }
+                    }
+                }
+            }
     
             UpdateCylindricalSpinEffect(force: false);
 

@@ -21,6 +21,7 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private Sprite spriteSingleBar; // ID 6
     [SerializeField] private Sprite spriteRedSeven; // ID 7
     [SerializeField] private Sprite spriteBlueSeven; // ID 8
+    [SerializeField] private Sprite spriteReSpin;
 
     [Header("Spine Win Animations - Matches Backend JSON")]
     [SerializeField] private SkeletonDataAsset spineGreenChilli;
@@ -263,15 +264,23 @@ public partial class SlotView : MonoBehaviour
     {
         if (img == null) return;
         
-        if (symbolId == 99)
+        if (symbolId == 99 || symbolId == 9 || symbolId < 0)
         {
             img.sprite = null;
             img.color = new Color(1f, 1f, 1f, 0f);
+            img.enabled = false;
+
+            Button btn = img.GetComponent<Button>();
+            if (btn != null) btn.interactable = false;
         }
         else
         {
             img.sprite = GetSymbolSprite(symbolId);
             img.color = new Color(1f, 1f, 1f, 1f);
+            img.enabled = true;
+
+            Button btn = img.GetComponent<Button>();
+            if (btn != null) btn.interactable = true;
         }
         
         imageToSymbolIdMap[img] = symbolId;
@@ -286,7 +295,7 @@ public partial class SlotView : MonoBehaviour
             {
                 for (int i = 0; i < symbolSprites.Length; i++)
                 {
-                    if (symbolSprites[i] != null && i != 0) nonBlankIds.Add(i);
+                    if (symbolSprites[i] != null && i != 9) nonBlankIds.Add(i);
                 }
             }
         }
@@ -314,7 +323,7 @@ public partial class SlotView : MonoBehaviour
             bool isCase1ReelPos = Mathf.Abs(reelY - (-160f)) < 30f;
             bool isCase1Matrix = (currentDisplayMatrix != null && col < currentDisplayMatrix.Count &&
                                   currentDisplayMatrix[col] != null && currentDisplayMatrix[col].Count >= 3 &&
-                                  currentDisplayMatrix[col][1] != 0);
+                                  currentDisplayMatrix[col][1] != 9);
 
             if (isCase1ReelPos || isCase1Matrix)
             {
@@ -329,6 +338,7 @@ public partial class SlotView : MonoBehaviour
             Image clickedImage = reel.images[imageIndex];
             if (imageToSymbolIdMap.TryGetValue(clickedImage, out int symbolId))
             {
+                if (symbolId == 9 || symbolId == 99 || symbolId < 0) return;
                 if (symbolInfoCard != null)
                 {
                     symbolInfoCard.ShowCard(symbolId, col, row, symbolRect, gameManager, customYOffset);
@@ -340,6 +350,7 @@ public partial class SlotView : MonoBehaviour
         if (currentDisplayMatrix != null && col < currentDisplayMatrix.Count && row < currentDisplayMatrix[col].Count)
         {
             int fallbackId = currentDisplayMatrix[col][row];
+            if (fallbackId == 9 || fallbackId == 99 || fallbackId < 0) return;
             if (symbolInfoCard != null)
             {
                 symbolInfoCard.ShowCard(fallbackId, col, row, symbolRect, gameManager, customYOffset);
@@ -374,7 +385,7 @@ public partial class SlotView : MonoBehaviour
 
         bool isCase1 = currentDisplayMatrix != null && col < currentDisplayMatrix.Count &&
                        currentDisplayMatrix[col] != null && currentDisplayMatrix[col].Count >= 3 &&
-                       currentDisplayMatrix[col][1] != 0;
+                       currentDisplayMatrix[col][1] != 9;
 
         int imageIndex;
         if (isCase1)
@@ -565,8 +576,8 @@ public partial class SlotView : MonoBehaviour
         {
             if (col < reelCurveIntensity.Length && matrix[col] != null && matrix[col].Count >= 3)
             {
-                bool isCase1 = matrix[col][1] != 0;
-                reelCurveIntensity[col] = isCase1 ? 1f : 0f;
+                bool isCase1 = matrix[col][1] != 9;
+                reelCurveIntensity[col] = 1f;
             }
 
             if (col < reelImagesList.Count)
@@ -586,7 +597,7 @@ public partial class SlotView : MonoBehaviour
     {
         if (columnSymbols != null && columnSymbols.Count >= 3)
         {
-            if (columnSymbols[1] == 0)
+            if (columnSymbols[1] == 9)
             {
                 return middlePosition + case2StopY;
             }
@@ -601,7 +612,7 @@ public partial class SlotView : MonoBehaviour
         var reel = reelImagesList[columnIndex];
         if (reel.images == null || reel.images.Count < 9) return;
 
-        bool isCase1 = visibleSymbolIds != null && visibleSymbolIds.Count >= 3 && visibleSymbolIds[1] != 0;
+        bool isCase1 = visibleSymbolIds != null && visibleSymbolIds.Count >= 3 && visibleSymbolIds[1] != 9;
 
         List<int> nonBlankIds = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
@@ -609,7 +620,7 @@ public partial class SlotView : MonoBehaviour
         {
             foreach (int sId in visibleSymbolIds)
             {
-                if (sId != 0) nonBlankIds.Remove(sId);
+                if (sId != 9) nonBlankIds.Remove(sId);
             }
         }
 
@@ -679,14 +690,14 @@ public partial class SlotView : MonoBehaviour
 
     private Sprite GetSymbolSprite(int symbolId)
     {
-        if (symbolId < 0 || symbolId >= symbolSprites.Length)
+        if (symbolId < 0 || symbolId >= symbolSprites.Length || symbolId == 9)
         {
-            return symbolSprites[0];
+            return null;
         }
 
         if (symbolSprites[symbolId] == null)
         {
-            return symbolSprites[0];
+            return null;
         }
 
         return symbolSprites[symbolId];
