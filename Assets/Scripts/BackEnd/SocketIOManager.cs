@@ -110,15 +110,31 @@ public class SocketIOManager : MonoBehaviour
   private void RequestAuthToken()
   {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        if (JSManager != null)
-        {
-            JSManager.SendCustomMessage("authToken");
-        }
+    if (JSManager != null)
+    {
+      JSManager.SendCustomMessage("authToken");
+    }
+    StartCoroutine(FallbackAuthRoutine());
 #else
     authToken = testToken;
     socketURL = testSocketURL;
     InitializeSocket();
 #endif
+  }
+
+  /// <summary>
+  /// Fallback routine for WebGL: connects using testToken if external wrapper does not provide auth token within timeout.
+  /// </summary>
+  private IEnumerator FallbackAuthRoutine()
+  {
+    yield return new WaitForSeconds(3.0f);
+    if (!socketSetupStarted)
+    {
+      Debug.LogWarning("[SocketIO] No external auth token received within 3s. Falling back to testToken for standalone WebGL.");
+      authToken = testToken;
+      socketURL = testSocketURL;
+      InitializeSocket();
+    }
   }
 
   void ReceiveAuthToken(string jsonData)

@@ -30493,7 +30493,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f521a04de7f494272a617b2719edd271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SocketIOManager
-  testToken: c1c4c79a3c13452989c8256dcac74225
+  testToken: e94745d2ddef42d39b80346fc7b00c9c
   gameManager: {fileID: 1328156518}
   uiManager: {fileID: 1266113020}
   popupManager: {fileID: 1195155500}

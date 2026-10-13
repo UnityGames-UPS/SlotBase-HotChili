@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Spine.Unity;
 using DG.Tweening;
-using Best.HTTP.SecureProtocol.Org.BouncyCastle.Math.Field;
 
 public partial class SlotView : MonoBehaviour
 {
