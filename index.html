@@ -66,55 +66,22 @@
     document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
 
     var buildUrl = "Build";
-    var loaderUrl = buildUrl + "/Downloads.loader.js";
+    var loaderUrl = buildUrl + "/Build.loader.js";
     var config = {
-      dataUrl: buildUrl + "/Downloads.data.unityweb",
-      frameworkUrl: buildUrl + "/Downloads.framework.js.unityweb",
-      codeUrl: buildUrl + "/Downloads.wasm.unityweb",
+      dataUrl: buildUrl + "/Build.data.unityweb",
+      frameworkUrl: buildUrl + "/Build.framework.js.unityweb",
+      codeUrl: buildUrl + "/Build.wasm.unityweb",
       streamingAssetsUrl: "StreamingAssets",
       companyName: "DefaultCompany",
       productName: "DoubleWheel",
       productVersion: "1.0",
     };
 
-    var unityInstanceRef = null;
-
-    // Dynamically read token and socketURL from URL query params (e.g., http://localhost:8080/?token=YOUR_TOKEN)
-    var urlParams = new URLSearchParams(window.location.search);
-    var activeToken = urlParams.get("token") || "c1c4c79a3c13452989c8256dcac74225";
-    var activeSocketURL = urlParams.get("socketURL") || "https://devrealtime.dingdinghouse.com/";
-
-    function sendAuthToken() {
-      if (unityInstanceRef) {
-        var authData = JSON.stringify({
-          cookie: activeToken,
-          socketURL: activeSocketURL,
-          nameSpace: "playground"
-        });
-        console.log("[WebGL Bridge] Sending auth token to Unity SocketManager:", authData);
-        unityInstanceRef.SendMessage("SocketManager", "ReceiveAuthToken", authData);
-      }
-    }
-
-    // Handles Unity calls to window.parent.dispatchReactUnityEvent
-    window.dispatchReactUnityEvent = function (msg) {
-      console.log("[WebGL Bridge] Received event from Unity:", msg);
-      if (msg === "authToken") {
-        sendAuthToken();
-      }
-    };
-    try {
-      window.parent.dispatchReactUnityEvent = window.dispatchReactUnityEvent;
-    } catch (e) {}
-
     var script = document.createElement("script");
     script.src = loaderUrl;
     script.onload = () => {
       createUnityInstance(canvas, config, (progress) => {
       }).then((unityInstance) => {
-        unityInstanceRef = unityInstance;
-        // Dispatch token once instance is ready
-        setTimeout(sendAuthToken, 1000);
       }).catch((message) => {
         alert(message);
       });
