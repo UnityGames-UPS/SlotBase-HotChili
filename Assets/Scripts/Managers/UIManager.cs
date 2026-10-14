@@ -155,6 +155,7 @@ public class UIManager : MonoBehaviour
 
     [Header("Game Rules Dynamic Texts - 12 Payout Rows")]
     [SerializeField] private TMP_Text totalLineCountText;
+    [SerializeField] private TMP_Text totalLineCountTextPortrait;
     [SerializeField] private TMP_Text ruleGreenRedChilliText;    // 1000
     [SerializeField] private TMP_Text ruleGreenOrangeChilliText; // 400
     [SerializeField] private TMP_Text ruleGreenYellowChilliText; // 300
@@ -267,7 +268,8 @@ public class UIManager : MonoBehaviour
 
 
 
-    public void OnFocusChanged(string value)
+    // Called via SendMessage from WebGL CustomJsLib
+    internal void OnFocusChanged(string value)
     {
         bool focused = value == "1";
         AudioManager.Instance?.SetMuteAll(!focused);
@@ -553,7 +555,7 @@ public class UIManager : MonoBehaviour
 
     #region Game Events
 
-    public void OnGameInitialized()
+    internal void OnGameInitialized()
     {
         currentWinDisplayValue = 0;
         UpdateBetDisplay();
@@ -561,7 +563,7 @@ public class UIManager : MonoBehaviour
         UpdateWinDisplay(0);
     }
 
-    public void OnSpinStarted()
+    internal void OnSpinStarted()
     {
         AudioManager.Instance?.PlaySpinStart();
 
@@ -575,12 +577,12 @@ public class UIManager : MonoBehaviour
         CloseAutoPlayPanelImmediate();
     }
 
-    public void OnSpinResultReceived()
+    internal void OnSpinResultReceived()
     {
         SetSpinStopButtonStates(isSpinningState: true, isInteractable: true);
     }
 
-    public void OnSpinStopping(SpinResult result = null)
+    internal void OnSpinStopping(SpinResult result = null)
     {
         UpdateBalanceDisplay();
         if (result != null)
@@ -591,7 +593,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void OnSpinCompleted(SpinResult result = null)
+    internal void OnSpinCompleted(SpinResult result = null)
     {
         if (result != null)
         {
@@ -614,7 +616,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void TriggerWinTypePopup(double winAmount, double totalBetAmount, System.Action onComplete = null)
+    private void TriggerWinTypePopup(double winAmount, double totalBetAmount, System.Action onComplete = null)
     {
         double totalBet = totalBetAmount > 0 ? totalBetAmount : (gameManager != null ? gameManager.currentBetAmount : 0.01);
         double multiplier = winAmount / totalBet;
@@ -758,7 +760,7 @@ public class UIManager : MonoBehaviour
         CloseWinTypePopup();
     }
 
-    public void OnWinTypeScreenClicked()
+    private void OnWinTypeScreenClicked()
     {
         if (isWinTypeCounting)
         {
@@ -774,7 +776,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void CloseWinTypePopup()
+    private void CloseWinTypePopup()
     {
         if (winTypeCountCoroutine != null) StopCoroutine(winTypeCountCoroutine);
         if (winTypeAutoCloseCoroutine != null) StopCoroutine(winTypeAutoCloseCoroutine);
@@ -816,7 +818,7 @@ public class UIManager : MonoBehaviour
         });
     }
 
-    public void TriggerBigWinPopup(SpinResult result, System.Action onComplete = null)
+    internal void TriggerBigWinPopup(SpinResult result, System.Action onComplete = null)
     {
         if (result == null)
         {
@@ -829,13 +831,13 @@ public class UIManager : MonoBehaviour
         TriggerWinTypePopup(win, bet, onComplete);
     }
 
-    public void DisableControlsDuringWinAnimation()
+    internal void DisableControlsDuringWinAnimation()
     {
         SetBetControlsEnabled(false);
         SetSpinStopButtonStates(isSpinningState: false, isInteractable: false);
     }
 
-    public void EnableControlsAfterWinAnimation()
+    internal void EnableControlsAfterWinAnimation()
     {
         if (isSpecialWinActive) return;
 
@@ -861,7 +863,7 @@ public class UIManager : MonoBehaviour
     /// <summary>Configures the spin button interactability during respin pending mode so the player can trigger the respin.</summary>
     /// <param name="isRespin">True when awaiting player respin input; False when returning to normal state.</param>
     /// <param name="respinSprite">Optional custom sprite parameter.</param>
-    public void SetRespinButtonState(bool isRespin, Sprite respinSprite = null)
+    internal void SetRespinButtonState(bool isRespin, Sprite respinSprite = null)
     {
         if (isRespin)
         {
@@ -874,7 +876,7 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>Handles spin button clicks: starts normal spin, stops autoplay, or executes respin if IsRespinPending is active.</summary>
-    public void OnSpinButtonPressed()
+    private void OnSpinButtonPressed()
     {
         if (gameManager.isAutoPlaying)
         {
@@ -915,7 +917,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void DisableSpinButtonDuringStop()
+    internal void DisableSpinButtonDuringStop()
     {
         if (gameManager.isAutoPlaying)
         {
@@ -933,7 +935,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void SetSpinStopButtonStates(bool isSpinningState, bool isInteractable)
+    private void SetSpinStopButtonStates(bool isSpinningState, bool isInteractable)
     {
         if (gameManager.isAutoPlaying)
         {
@@ -965,7 +967,7 @@ public class UIManager : MonoBehaviour
 
     #region Bet Controls
 
-    public void UpdateBetDisplay()
+    internal void UpdateBetDisplay()
     {
         if (gameManager.gameConfig == null) return;
 
@@ -988,7 +990,7 @@ public class UIManager : MonoBehaviour
 
     #region Auto Play Panel
 
-    public void OnSpinButtonHeld()
+    private void OnSpinButtonHeld()
     {
         if (gameManager.currentState == GameState.Idle && !gameManager.isAutoPlaying)
         {
@@ -1051,14 +1053,14 @@ public class UIManager : MonoBehaviour
         gameManager.StartAutoPlay(rounds);
     }
 
-    public void OnAutoPlayStarted()
+    internal void OnAutoPlayStarted()
     {
         UpdateAutoPlayCount();
         SetSpinStopButtonStates(isSpinningState: true, isInteractable: true);
         SetBetControlsEnabled(false);
     }
 
-    public void OnAutoPlayStopped()
+    internal void OnAutoPlayStopped()
     {
         SetButtonActive(autoSpinStopButton, autoSpinStopButtonPortrait, false);
 
@@ -1079,7 +1081,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateAutoPlayCount()
+    internal void UpdateAutoPlayCount()
     {
         string displayStr = "";
         if (gameManager.autoPlayTotalRounds == -1 || gameManager.autoPlayRemainingRounds < 0)
@@ -1098,7 +1100,7 @@ public class UIManager : MonoBehaviour
 
     #region Spin Speed Universal Toggle Logic
 
-    public void SetSpeedMode(SpinSpeed speed)
+    private void SetSpeedMode(SpinSpeed speed)
     {
         gameManager.SetSpinSpeed(speed);
         UpdateSpeedButtonsVisibility(speed);
@@ -1287,7 +1289,7 @@ public class UIManager : MonoBehaviour
         gameRulesPanel.SetActive(true);
     }
 
-    public void UpdateGameRulesDynamicTexts()
+    private void UpdateGameRulesDynamicTexts()
     {
         double pGreenRed = 1000;
         double pGreenOrange = 400;
@@ -1331,6 +1333,7 @@ public class UIManager : MonoBehaviour
         if (ruleMixedBarsSevensText) ruleMixedBarsSevensText.text = $"BET  x  {pMixedBars7s}";
 
         if (totalLineCountText) totalLineCountText.text = "1 LINES";
+        if (totalLineCountTextPortrait) totalLineCountTextPortrait.text = "1";
     }
 
     private void CloseGameRulesPanel()
@@ -1403,7 +1406,8 @@ public class UIManager : MonoBehaviour
         jsFunctCalls?.RegisterFullscreenListener(gameObject.name);
     }
 
-    public void OnFullscreenChanged(string isFullscreen)
+    // Called via SendMessage from WebGL CustomJsLib
+    internal void OnFullscreenChanged(string isFullscreen)
     {
         bool newExpandedState = isFullscreen == "1";
 
@@ -1445,17 +1449,17 @@ public class UIManager : MonoBehaviour
 
     #region Display Updates
 
-    public void UpdatePingDisplay(int pingMs)
+    internal void UpdatePingDisplay(int pingMs)
     {
         SetTMPText(pingText, pingTextPortrait, $"{pingMs} ms");
     }
 
-    public void UpdatePingDisplay(string content)
+    internal void UpdatePingDisplay(string content)
     {
         SetTMPText(pingText, pingTextPortrait, content);
     }
 
-    public void UpdateJackpotDisplay(JackpotValues values)
+    internal void UpdateJackpotDisplay(JackpotValues values)
     {
         if (values == null) return;
 
@@ -1471,12 +1475,12 @@ public class UIManager : MonoBehaviour
         return val.StartsWith("$") ? val : "$" + val;
     }
 
-    public void UpdateBalanceDisplay()
+    internal void UpdateBalanceDisplay()
     {
         SetTMPText(balanceText, balanceTextPortrait, "BALANCE : " + FormatAmount(gameManager.playerData.balance));
     }
 
-    public void UpdateWinDisplay(double amount)
+    internal void UpdateWinDisplay(double amount)
     {
         currentWinDisplayValue = amount;
         if (winAmountText) winAmountText.text = FormatAmount(amount);

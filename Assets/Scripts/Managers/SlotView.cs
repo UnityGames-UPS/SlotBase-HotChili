@@ -22,7 +22,7 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private Sprite spriteBlueSeven; // ID 8
     [SerializeField] private Sprite spriteReSpin;
 
-    public Sprite GetRespinSprite() => spriteReSpin;
+    internal Sprite GetRespinSprite() => spriteReSpin;
 
     [Header("Spine Win Animations - Matches Backend JSON")]
     [SerializeField] private SkeletonDataAsset spineGreenChilli;
@@ -139,9 +139,9 @@ public partial class SlotView : MonoBehaviour
     private Coroutine winAnimationCoroutine;
 
 
-    public List<List<int>> currentDisplayMatrix { get; private set; }
+    internal List<List<int>> currentDisplayMatrix { get; private set; }
 
-    public bool isSpinning { get; private set; }
+    internal bool isSpinning { get; private set; }
 
     #region Initialization
 
@@ -214,7 +214,7 @@ public partial class SlotView : MonoBehaviour
         SetupSymbolButtons();
     }
 
-    public void DisableAllOverlays()
+    private void DisableAllOverlays()
     {
         DisableColumns(winAnimationColumns);
         if (winAnimationParent) winAnimationParent.SetActive(false);
@@ -251,7 +251,7 @@ public partial class SlotView : MonoBehaviour
         }
     }
 
-    public void OnBetChanged()
+    internal void OnBetChanged()
     {
         if (symbolInfoCard != null && symbolInfoCard.gameObject.activeSelf)
         {
@@ -304,7 +304,7 @@ public partial class SlotView : MonoBehaviour
         return nonBlankIds[Random.Range(0, nonBlankIds.Count)];
     }
 
-    public void OnSymbolClicked(int col, int row, RectTransform symbolRect)
+    internal void OnSymbolClicked(int col, int row, RectTransform symbolRect)
     {
         if (gameManager != null && gameManager.IsRespinPending)
         {
@@ -384,7 +384,7 @@ public partial class SlotView : MonoBehaviour
         }
     }
 
-    public Image GetSymbolImage(int col, int row)
+    private Image GetSymbolImage(int col, int row)
     {
         if (reelImagesList == null || col < 0 || col >= reelImagesList.Count) return null;
         var reel = reelImagesList[col];
@@ -483,7 +483,7 @@ public partial class SlotView : MonoBehaviour
         return spineDataArray[symbolId];
     }
 
-    public string GetSpineSkin(int symbolId)
+    private string GetSpineSkin(int symbolId)
     {
         if (spineSkinNames == null || symbolId < 0 || symbolId >= spineSkinNames.Length) return null;
         return spineSkinNames[symbolId];
@@ -565,7 +565,7 @@ public partial class SlotView : MonoBehaviour
         }
     }
 
-    public void SetInitialMatrix(List<List<int>> matrix)
+    internal void SetInitialMatrix(List<List<int>> matrix)
     {
         if (matrix == null || matrix.Count == 0) return;
 
@@ -723,17 +723,18 @@ public partial class SlotView : MonoBehaviour
     private readonly HashSet<int> lockedColumns = new HashSet<int>();
     private Tween centerWildLockTween;
 
-    public bool IsColumnLocked(int col) => lockedColumns.Contains(col);
+    internal bool IsColumnLocked(int col) => lockedColumns.Contains(col);
 
     /// <summary>Locks Reel 1 in place and toggles the Re-Spin overlay (spriteReSpin) via SlotAnimHolder for the respin feature.</summary>
     /// <param name="locked">True to lock Reel 1 and show the Re-Spin overlay; False to unlock and hide.</param>
     /// <param name="wildSymbolId">Optional symbol ID of the center wild symbol.</param>
-    public void SetCenterWildLocked(bool locked, int wildSymbolId = -1)
+    internal void SetCenterWildLocked(bool locked, int wildSymbolId = -1)
     {
         if (locked)
         {
             lockedColumns.Add(1);
             ShowRespinOverlay(true);
+            ShowMiddleReelGlow(true);
         }
         else
         {
@@ -741,12 +742,51 @@ public partial class SlotView : MonoBehaviour
             centerWildLockTween?.Kill();
             centerWildLockTween = null;
             ShowRespinOverlay(false);
+            ShowMiddleReelGlow(false);
+        }
+    }
+
+    /// <summary>Controls the middle slot border glow animation on Reel 1 during the respin feature.</summary>
+    private void ShowMiddleReelGlow(bool show)
+    {
+        if (winBorderAnimationParent == null) return;
+
+        Transform middleSlot = winBorderAnimationParent.transform.Find("Middle Slot");
+        Transform leftSlot = winBorderAnimationParent.transform.Find("Left Slot");
+        Transform rightSlot = winBorderAnimationParent.transform.Find("Right Slot ") ?? winBorderAnimationParent.transform.Find("Right Slot");
+
+        if (show)
+        {
+            winBorderAnimationParent.SetActive(true);
+            if (leftSlot != null) leftSlot.gameObject.SetActive(false);
+            if (rightSlot != null) rightSlot.gameObject.SetActive(false);
+
+            if (middleSlot != null)
+            {
+                middleSlot.gameObject.SetActive(true);
+                ImageAnimation anim = middleSlot.GetComponent<ImageAnimation>();
+                if (anim != null)
+                {
+                    anim.doLoopAnimation = true;
+                    anim.StartAnimation();
+                }
+            }
+        }
+        else
+        {
+            if (middleSlot != null)
+            {
+                ImageAnimation anim = middleSlot.GetComponent<ImageAnimation>();
+                if (anim != null) anim.StopAnimation();
+                middleSlot.gameObject.SetActive(false);
+            }
+            winBorderAnimationParent.SetActive(false);
         }
     }
 
     /// <summary>Displays spriteReSpin on the child of SlotAnimHolder (center reel overlay) and enables click-to-respin interaction.</summary>
     /// <param name="show">True to show the Re-Spin sprite overlay on Reel 1; False to hide it.</param>
-    public void ShowRespinOverlay(bool show)
+    private void ShowRespinOverlay(bool show)
     {
         if (winAnimationColumns == null || winAnimationColumns.Length <= 1) return;
         var col1 = winAnimationColumns[1];
@@ -804,12 +844,17 @@ public partial class SlotView : MonoBehaviour
 
             animGO.SetActive(true);
 
-            // Pulsing anticipation effect on the Re-Spin symbol
+            // Pop-in bounce punch followed by pulsing anticipation loop
             animGO.transform.DOKill();
-            animGO.transform.localScale = Vector3.one * spineScaleMultiplier;
-            animGO.transform.DOScale(spineScaleMultiplier * 1.12f, 0.45f)
-                .SetEase(Ease.InOutSine)
-                .SetLoops(-1, LoopType.Yoyo);
+            animGO.transform.localScale = Vector3.one * (spineScaleMultiplier * 0.7f);
+            animGO.transform.DOScale(spineScaleMultiplier * 1.25f, 0.25f)
+                .SetEase(Ease.OutBack)
+                .OnComplete(() =>
+                {
+                    animGO.transform.DOScale(spineScaleMultiplier * 1.12f, 0.45f)
+                        .SetEase(Ease.InOutSine)
+                        .SetLoops(-1, LoopType.Yoyo);
+                });
 
             // Make it clickable so clicking the Re-Spin icon on the reel triggers respin
             Button btn = animGO.GetComponent<Button>();
@@ -857,12 +902,12 @@ public partial class SlotView : MonoBehaviour
     }
     #endregion
 
-    public List<List<int>> GetCurrentDisplayMatrix()
+    private List<List<int>> GetCurrentDisplayMatrix()
     {
         return currentDisplayMatrix;
     }
 
-    public bool IsSpinning()
+    internal bool IsSpinning()
     {
         return isSpinning;
     }

@@ -17,30 +17,30 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private double WinThreshold = 5.0;
 
-    public GameConfig gameConfig { get; private set; }
-    public PlayerData playerData { get; private set; }
-    public SpinResult lastResult { get; private set; }
+    internal GameConfig gameConfig { get; private set; }
+    internal PlayerData playerData { get; private set; }
+    internal SpinResult lastResult { get; private set; }
 
-    public GameState currentState { get; private set; }
-    public SpinSpeed currentSpinSpeed { get; private set; }
+    internal GameState currentState { get; private set; }
+    internal SpinSpeed currentSpinSpeed { get; private set; }
 
-    public int currentBetIndex { get; private set; }
-    public double currentBetAmount { get; private set; }
+    internal int currentBetIndex { get; private set; }
+    internal double currentBetAmount { get; private set; }
 
-    public bool isAutoPlaying { get; private set; }
-    public int autoPlayTotalRounds { get; private set; }
-    public int autoPlayRemainingRounds { get; private set; }
+    internal bool isAutoPlaying { get; private set; }
+    internal int autoPlayTotalRounds { get; private set; }
+    internal int autoPlayRemainingRounds { get; private set; }
 
-    public bool isInitialized { get; private set; }
-    public bool initializationFailed { get; private set; }
+    internal bool isInitialized { get; private set; }
+    internal bool initializationFailed { get; private set; }
 
     private Coroutine spinCoroutine;
     private bool stopRequested;
     private bool waitingForSpecialWin;
     private bool isRespinActive = false;
-    public bool IsRespinActive => isRespinActive;
+    internal bool IsRespinActive => isRespinActive;
     private bool isRespinPending = false;
-    public bool IsRespinPending => isRespinPending;
+    internal bool IsRespinPending => isRespinPending;
 
     #region Initialization
 
@@ -56,12 +56,12 @@ public class GameManager : MonoBehaviour
         initializationFailed = false;
     }
 
-    public void SetInitializationFailed(bool failed = true)
+    internal void SetInitializationFailed(bool failed = true)
     {
         initializationFailed = failed;
     }
 
-    public void OnInitDataReceived(GameConfig config, PlayerData player, List<List<int>> initialMatrix)
+    internal void OnInitDataReceived(GameConfig config, PlayerData player, List<List<int>> initialMatrix)
     {
       
         gameConfig = config;
@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
 
     #region Bet Management
 
-    public void IncreaseBet()
+    internal void IncreaseBet()
     {
         if (currentState != GameState.Idle || isAutoPlaying) return;
         if (gameConfig == null || gameConfig.availableBets == null || gameConfig.availableBets.Count == 0) return;
@@ -109,7 +109,7 @@ public class GameManager : MonoBehaviour
         SetBetIndex(nextIndex);
     }
 
-    public void DecreaseBet()
+    internal void DecreaseBet()
     {
         if (currentState != GameState.Idle || isAutoPlaying) return;
         if (gameConfig == null || gameConfig.availableBets == null || gameConfig.availableBets.Count == 0) return;
@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
         SetBetIndex(nextIndex);
     }
 
-    public void SetBetIndex(int index)
+    private void SetBetIndex(int index)
     {
         currentBetIndex = index;
         UpdateBetAmount();
@@ -150,7 +150,7 @@ public class GameManager : MonoBehaviour
 
     #region Spin Control
     
-    public void RequestSpin()
+    internal void RequestSpin()
     {
         if (isRespinPending)
         {
@@ -176,7 +176,7 @@ public class GameManager : MonoBehaviour
         StartSpin();
     }
 
-    public void RequestStop()
+    internal void RequestStop()
     {
         if (currentState == GameState.Spinning)
         {
@@ -193,7 +193,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>Starts the respin feature: keeps Reel 1 locked, spins outer reels (0 & 2), and resolves the respinMatrix.</summary>
-    public void ExecuteRespin()
+    internal void ExecuteRespin()
     {
         if (!isRespinPending || lastResult == null) return;
 
@@ -532,14 +532,20 @@ public class GameManager : MonoBehaviour
             isRespinPending = true;
             if (slotView != null) slotView.SetCenterWildLocked(true);
             if (uiManager != null) uiManager.SetRespinButtonState(true);
+            AudioManager.Instance?.PlayWildChilliHit();
 
-            if (isAutoPlaying)
+            // Automatic anticipation delay: 1.5s delay before auto-spinning (player can also tap early)
+            float delay = 1.5f;
+            float timer = 0f;
+            while (timer < delay && isRespinPending)
             {
-                yield return new WaitForSeconds(1.0f);
-                if (isRespinPending)
-                {
-                    ExecuteRespin();
-                }
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            if (isRespinPending)
+            {
+                ExecuteRespin();
             }
             yield break;
         }
@@ -597,7 +603,7 @@ public class GameManager : MonoBehaviour
         };
     }
 
-    public void OnSpinResultReceived(SpinResult result)
+    internal void OnSpinResultReceived(SpinResult result)
     {
         lastResult = result;
         // Debug.Log(result);
@@ -661,7 +667,7 @@ public class GameManager : MonoBehaviour
 
     #region Spin Speed Control
 
-    public void SetSpinSpeed(SpinSpeed speed)
+    internal void SetSpinSpeed(SpinSpeed speed)
     {
         currentSpinSpeed = speed;
 
@@ -680,7 +686,7 @@ public class GameManager : MonoBehaviour
 
     #region Auto Play
 
-    public void StartAutoPlay(int rounds)
+    internal void StartAutoPlay(int rounds)
     {
         if (currentState != GameState.Idle) return;
         // autoplay log silenced
@@ -700,7 +706,7 @@ public class GameManager : MonoBehaviour
         RequestSpin();
     }
 
-    public void StopAutoPlay()
+    internal void StopAutoPlay()
     {
         isAutoPlaying = false;
         autoPlayRemainingRounds = 0;
@@ -714,7 +720,7 @@ public class GameManager : MonoBehaviour
 
     #region Connection Events
 
-    public void OnDisconnected()
+    internal void OnDisconnected()
     {
         if (spinCoroutine != null)
         {
@@ -730,7 +736,7 @@ public class GameManager : MonoBehaviour
         currentState = GameState.Idle;
     }
 
-    public void ExitGame()
+    internal void ExitGame()
     {
         socketManager.CloseSocket();
 
@@ -740,12 +746,12 @@ public class GameManager : MonoBehaviour
 
     #region Helper Methods
 
-        public double GetTotalPay()
+        internal double GetTotalPay()
     {
         return currentBetAmount;
     }
 
-    public bool IsSpinning()
+    internal bool IsSpinning()
     {
         return currentState == GameState.Spinning || currentState == GameState.Stopping;
     }

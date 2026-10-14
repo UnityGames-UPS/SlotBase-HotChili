@@ -9,7 +9,7 @@ public partial class SlotView
     #region Spin Animation
     
         /// <summary>Initiates reel spinning; automatically skips locked columns (e.g. Reel 1 during Respin) so held symbols stay stationary.</summary>
-        public void StartSpin()
+        internal void StartSpin()
         {
             if (isSpinning) return;
     
@@ -157,7 +157,7 @@ public partial class SlotView
         /// <param name="resultMatrix">Target 3x3 symbol matrix to display.</param>
         /// <param name="onComplete">Callback invoked when all spinning reels have settled.</param>
         /// <param name="isTurbo">Whether turbo speed is active for faster deceleration.</param>
-        public void StopSpin(List<List<int>> resultMatrix, System.Action onComplete, bool isTurbo = false)
+        internal void StopSpin(List<List<int>> resultMatrix, System.Action onComplete, bool isTurbo = false)
         {
             int reelCount = resultMatrix != null ? resultMatrix.Count : (gameManager?.gameConfig != null ? gameManager.gameConfig.reelCount : 3);
             int maxCols = Mathf.Min(reelCount, reelTransforms != null ? reelTransforms.Length : 3);
@@ -403,7 +403,7 @@ UpdateCylindricalSpinEffect(force: true);
         /// <summary>Performs immediate/rapid stop on spinning reels, skipping locked reels.</summary>
         /// <param name="resultMatrix">Target 3x3 symbol matrix to display.</param>
         /// <param name="onComplete">Callback invoked when reels have finished settling.</param>
-        public void QuickStop(List<List<int>> resultMatrix, System.Action onComplete = null)
+        internal void QuickStop(List<List<int>> resultMatrix, System.Action onComplete = null)
         {
             if (!isSpinning)
             {
@@ -444,7 +444,7 @@ UpdateCylindricalSpinEffect(force: true);
         }
     }
 
-    public void UpdateCylindricalSpinEffect(bool force = false)
+    private void UpdateCylindricalSpinEffect(bool force = false)
     {
         if (!enableCylindricalEffect || reelTransforms == null || reelImagesList == null) return;
 
@@ -549,7 +549,7 @@ UpdateCylindricalSpinEffect(force: true);
         }
     }
 
-    public void ResetCylindricalTransforms()
+    private void ResetCylindricalTransforms()
     {
         if (reelImagesList == null) return;
         foreach (var reel in reelImagesList)

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager Instance { get; private set; }
+    internal static AudioManager Instance { get; private set; }
 
     private const string PrefKeyMusic    = "audio_music_enabled";
     private const string PrefKeysfx      = "audio_sfx_enabled";
@@ -43,10 +43,10 @@ public class AudioManager : MonoBehaviour
     private float _musicVolume = 0.5f;
     private float _sfxVolume   = 1.0f;
 
-    public bool MusicEnabled => _musicEnabled;
-    public bool SfxEnabled   => _sfxEnabled;
-    public float MusicVolume => _musicVolume;
-    public float SfxVolume   => _sfxVolume;
+    internal bool MusicEnabled => _musicEnabled;
+    internal bool SfxEnabled   => _sfxEnabled;
+    internal float MusicVolume => _musicVolume;
+    internal float SfxVolume   => _sfxVolume;
 
     private void Awake()
     {
@@ -110,7 +110,7 @@ public class AudioManager : MonoBehaviour
 
     #region Volume & Settings Controls
 
-    public void SetMusicEnabled(bool on)
+    private void SetMusicEnabled(bool on)
     {
         _musicEnabled = on;
         PlayerPrefs.SetInt(PrefKeyMusic, on ? 1 : 0);
@@ -120,7 +120,7 @@ public class AudioManager : MonoBehaviour
         else StopBgMusic();
     }
 
-    public void SetSfxEnabled(bool on)
+    private void SetSfxEnabled(bool on)
     {
         _sfxEnabled = on;
         PlayerPrefs.SetInt(PrefKeysfx, on ? 1 : 0);
@@ -128,7 +128,7 @@ public class AudioManager : MonoBehaviour
         ApplySfxVolume();
     }
 
-    public void SetMusicVolume(float volume)
+    internal void SetMusicVolume(float volume)
     {
         _musicVolume = Mathf.Clamp01(volume);
         PlayerPrefs.SetFloat(PrefKeyMusicVol, _musicVolume);
@@ -136,7 +136,7 @@ public class AudioManager : MonoBehaviour
         ApplyMusicVolume();
     }
 
-    public void SetSfxVolume(float volume)
+    internal void SetSfxVolume(float volume)
     {
         _sfxVolume = Mathf.Clamp01(volume);
         PlayerPrefs.SetFloat(PrefKeySfxVol, _sfxVolume);
@@ -200,7 +200,7 @@ public class AudioManager : MonoBehaviour
 
     #region Background Music
 
-    public void PlayBgMusic()
+    internal void PlayBgMusic()
     {
         if (bgMusicSource == null || clipGameMainBg == null) return;
         if (bgMusicSource.isPlaying && bgMusicSource.clip == clipGameMainBg) return;
@@ -211,7 +211,7 @@ public class AudioManager : MonoBehaviour
         bgMusicSource.Play();
     }
 
-    public void StopBgMusic()
+    private void StopBgMusic()
     {
         StopSource(bgMusicSource);
     }
@@ -220,14 +220,14 @@ public class AudioManager : MonoBehaviour
 
     #region Reels & Gameplay Sounds
 
-    public void PlayReelSpinLoop()
+    internal void PlayReelSpinLoop()
     {
         if (!_sfxEnabled || clipReelSpinLoop == null) return;
         AudioSource targetSource = (reserveSource != null) ? reserveSource : uiSource;
         PlayLoop(targetSource, clipReelSpinLoop);
     }
 
-    public void StopReelSpinLoop()
+    internal void StopReelSpinLoop()
     {
         if (reserveSource != null && reserveSource.clip == clipReelSpinLoop)
         {
@@ -239,27 +239,27 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlayReelSpin() => PlayReelSpinLoop();
-    public void StopReelSpin() => StopReelSpinLoop();
+    internal void PlayReelSpin() => PlayReelSpinLoop();
+    internal void StopReelSpin() => StopReelSpinLoop();
 
-    public void PlayReelStop()
+    internal void PlayReelStop()
     {
         PlayUISound(clipReelStop);
     }
 
-    public void PlayWildChilliHit()
+    internal void PlayWildChilliHit()
     {
         PlayUISound(clipWildChilliHit != null ? clipWildChilliHit : clipScatterHit);
     }
 
-    public void PlayTensionBuilder()
+    internal void PlayTensionBuilder()
     {
         if (!_sfxEnabled || clipTensionBuilder == null) return;
         AudioSource targetSource = (reserveSource != null) ? reserveSource : uiSource;
         PlayLoop(targetSource, clipTensionBuilder);
     }
 
-    public void StopTensionBuilder()
+    internal void StopTensionBuilder()
     {
         if (reserveSource != null && reserveSource.clip == clipTensionBuilder)
         {
@@ -275,22 +275,22 @@ public class AudioManager : MonoBehaviour
 
     #region Win Celebrations & Popups
 
-    public void PlayNormalWin()
+    private void PlayNormalWin()
     {
         PlayUISound(clipNormalWin != null ? clipNormalWin : clipCongratulationBox);
     }
 
-    public void PlayBigWin()
+    internal void PlayBigWin()
     {
         PlayUISound(clipBigWin2x != null ? clipBigWin2x : clipCongratulationBox);
     }
 
-    public void PlayWinLinePhase1Start()
+    internal void PlayWinLinePhase1Start()
     {
         PlayNormalWin();
     }
 
-    public void PlayWinTypePopupOpen()
+    internal void PlayWinTypePopupOpen()
     {
         if (!_sfxEnabled) return;
         AudioClip clip = clipWinTypePopupOpen != null ? clipWinTypePopupOpen : clipBigWin2x;
@@ -300,7 +300,7 @@ public class AudioManager : MonoBehaviour
         PlayLoop(targetSource, clip);
     }
 
-    public void StopWinTypePopupOpen()
+    internal void StopWinTypePopupOpen()
     {
         if (reserveSource != null && (reserveSource.clip == clipWinTypePopupOpen || reserveSource.clip == clipBigWin2x))
         {
@@ -312,7 +312,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlayResultPopupOpen()
+    private void PlayResultPopupOpen()
     {
         PlayUISound(clipCongratulationBox != null ? clipCongratulationBox : clipPopupOpenClose);
     }
@@ -321,12 +321,12 @@ public class AudioManager : MonoBehaviour
 
     #region UI & Button Clicks
 
-    public void PlayButton()
+    internal void PlayButton()
     {
         PlayUISound(clipGeneralButtonClick);
     }
 
-    public void PlaySpinButton()
+    internal void PlaySpinButton()
     {
         if (!_sfxEnabled) return;
         AudioClip clip = clipSpinButton != null ? clipSpinButton : clipGeneralButtonClick;
@@ -342,47 +342,47 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySpinStart() => PlaySpinButton();
-    public void PlaySpinStop()  => PlaySpinButton();
-    public void PlayStopButton() => PlaySpinButton();
+    internal void PlaySpinStart() => PlaySpinButton();
+    internal void PlaySpinStop()  => PlaySpinButton();
+    internal void PlayStopButton() => PlaySpinButton();
 
-    public void PlayBetPlusMinus()
+    internal void PlayBetPlusMinus()
     {
         PlayUISound(clipBetPlusMinus != null ? clipBetPlusMinus : clipGeneralButtonClick);
     }
 
-    public void PlayBetPlus()  => PlayBetPlusMinus();
-    public void PlayBetMinus() => PlayBetPlusMinus();
+    internal void PlayBetPlus()  => PlayBetPlusMinus();
+    internal void PlayBetMinus() => PlayBetPlusMinus();
 
-    public void PlayMaxBetReached()
+    internal void PlayMaxBetReached()
     {
         PlayUISound(clipMaxBetReached != null ? clipMaxBetReached : clipBetPlusMinus);
     }
 
-    public void PlayTurboButtonClick()
+    internal void PlayTurboButtonClick()
     {
         PlayUISound(clipTurboButtonClick != null ? clipTurboButtonClick : clipGeneralButtonClick);
     }
 
-    public void PlayTurboBtnClick() => PlayTurboButtonClick();
+    internal void PlayTurboBtnClick() => PlayTurboButtonClick();
 
-    public void PlayAutoplayPanelOpen()
+    internal void PlayAutoplayPanelOpen()
     {
         PlayUISound(clipAutoplayPanelOpen != null ? clipAutoplayPanelOpen : clipPopupOpenClose);
     }
 
-    public void PlayAutoplayStop()
+    internal void PlayAutoplayStop()
     {
         PlaySpinButton();
     }
 
-    public void PlayPopupOpenClose()
+    internal void PlayPopupOpenClose()
     {
         PlayUISound(clipPopupOpenClose != null ? clipPopupOpenClose : clipGeneralButtonClick);
     }
 
-    public void PlayPopupOpen()  => PlayPopupOpenClose();
-    public void PlayPopupClose() => PlayPopupOpenClose();
+    internal void PlayPopupOpen()  => PlayPopupOpenClose();
+    internal void PlayPopupClose() => PlayPopupOpenClose();
 
     #endregion
 
@@ -390,7 +390,7 @@ public class AudioManager : MonoBehaviour
 
     private bool isForceMuted = false;
 
-    public void SetMuteAll(bool forceMute)
+    internal void SetMuteAll(bool forceMute)
     {
         if (forceMute == isForceMuted) return;
         isForceMuted = forceMute;

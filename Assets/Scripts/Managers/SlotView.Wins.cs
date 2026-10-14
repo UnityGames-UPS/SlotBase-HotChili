@@ -9,7 +9,7 @@ public partial class SlotView
 {
     #region Win Line Animation
     
-        public void ShowWinLineAnimation(List<WinLine> winLines, System.Action onComplete)
+        internal void ShowWinLineAnimation(List<WinLine> winLines, System.Action onComplete)
         {
             if (winLines == null || winLines.Count == 0)
             {
@@ -384,7 +384,7 @@ public partial class SlotView
             }
         }
     
-        public static string FormatSpriteText(string input)
+        private static string FormatSpriteText(string input)
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
     
@@ -411,7 +411,7 @@ public partial class SlotView
             return sb.ToString();
         }
     
-        public static string FormatSpriteText(double amount)
+        private static string FormatSpriteText(double amount)
         {
             return FormatSpriteText(amount.ToString("0.###"));
         }
