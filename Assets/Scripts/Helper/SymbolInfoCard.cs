@@ -39,7 +39,7 @@ public class SymbolInfoCard : MonoBehaviour
     private Sprite GetRightSideSprite() => rightSideCardSprite;
     private Sprite GetLeftSideSprite() => leftSideCardSprite;
 
-    public void ShowCard(int symbolId, int colIndex, int rowIndex, RectTransform symbolRect, GameManager gameManager, float customYOffset = 0f)
+    internal void ShowCard(int symbolId, int colIndex, int rowIndex, RectTransform symbolRect, GameManager gameManager, float customYOffset = 0f)
     {
         if (gameObject.activeSelf && activeCol == colIndex && activeRow == rowIndex)
         {
@@ -89,7 +89,7 @@ public class SymbolInfoCard : MonoBehaviour
         HideCard();
     }
 
-    public void RefreshCard(GameManager gameManager = null)
+    internal void RefreshCard(GameManager gameManager = null)
     {
         if (!gameObject.activeSelf || activeSymbolId < 0) return;
         if (gameManager != null) cachedGameManager = gameManager;
@@ -125,7 +125,7 @@ public class SymbolInfoCard : MonoBehaviour
         if (symbolId >= 0 && symbolId <= 3)
         {
             infoText.alignment = TextAlignmentOptions.Center;
-            infoText.enableWordWrapping = true;
+            infoText.textWrappingMode = TextWrappingModes.Normal;
             int mult = symbolId == 0 ? 2 : (symbolId == 1 ? 3 : (symbolId == 2 ? 4 : 5));
             infoText.text = $"<color=#FFC700>{mult}X WILD</color>\nSubstitutes all symbols\nMultiplies line win by {mult}X";
             return;
@@ -133,7 +133,7 @@ public class SymbolInfoCard : MonoBehaviour
 
         // Standard Symbols (7s and Bars)
         infoText.alignment = TextAlignmentOptions.Flush;
-        infoText.enableWordWrapping = false;
+        infoText.textWrappingMode = TextWrappingModes.NoWrap;
 
         SymbolInfo symbolInfo = null;
         if (gameManager != null && gameManager.gameConfig != null && gameManager.gameConfig.symbols != null)
@@ -180,7 +180,7 @@ public class SymbolInfoCard : MonoBehaviour
         }
     }
 
-    public void HideCard()
+    internal void HideCard()
     {
         if (autoCloseCoroutine != null)
         {

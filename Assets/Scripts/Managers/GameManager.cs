@@ -535,7 +535,7 @@ public class GameManager : MonoBehaviour
             AudioManager.Instance?.PlayWildChilliHit();
 
             // Automatic anticipation delay: 1.5s delay before auto-spinning (player can also tap early)
-            float delay = 1.5f;
+            float delay = 2f;
             float timer = 0f;
             while (timer < delay && isRespinPending)
             {
@@ -572,12 +572,6 @@ public class GameManager : MonoBehaviour
             ProcessSpinResult();
         }
     }
-
-
-
-
-
-
 
     private IEnumerator DelayBeforeNextRound()
     {

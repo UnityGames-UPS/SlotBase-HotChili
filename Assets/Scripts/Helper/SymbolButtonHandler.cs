@@ -8,7 +8,7 @@ public class SymbolButtonHandler : MonoBehaviour
     private SlotView slotView;
     private Button button;
 
-    public void Init(int col, int row, SlotView view)
+    internal void Init(int col, int row, SlotView view)
     {
         columnIndex = col;
         rowIndex = row;

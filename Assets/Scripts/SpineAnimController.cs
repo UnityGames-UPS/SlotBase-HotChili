@@ -8,7 +8,7 @@ public class SpineAnimController : MonoBehaviour
     [SerializeField] private string animName;
     private bool isPlaying;
 
-    public SkeletonGraphic SkeletonGraphic
+    internal SkeletonGraphic SkeletonGraphic
     {
         get
         {
@@ -26,7 +26,7 @@ public class SpineAnimController : MonoBehaviour
     }
 
     // ▶️ Play
-    public void Play(bool loop)
+    internal void Play(bool loop)
     {
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;
@@ -52,7 +52,7 @@ public class SpineAnimController : MonoBehaviour
         }
     }
 
-    public void Pause()
+    internal void Pause()
     {
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;
@@ -67,7 +67,7 @@ public class SpineAnimController : MonoBehaviour
         }
     }
 
-    public void Resume()
+    internal void Resume()
     {
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;
@@ -89,7 +89,7 @@ public class SpineAnimController : MonoBehaviour
     }
 
     // ⏹️ Stop (clears animation completely)
-    public void Stop()
+    internal void Stop()
     { 
         if(isPlaying)
         {
@@ -104,7 +104,7 @@ public class SpineAnimController : MonoBehaviour
         }
     }
 
-    public float GetAnimationDuration()
+    internal float GetAnimationDuration()
     {
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;
@@ -128,7 +128,7 @@ public class SpineAnimController : MonoBehaviour
         return 0f;
     }
 
-    public void SetSkeletonData(SkeletonDataAsset skeletonDataAsset, string overrideAnimName = null, string skinName = null)
+    internal void SetSkeletonData(SkeletonDataAsset skeletonDataAsset, string overrideAnimName = null, string skinName = null)
     {
         if (skeletonGraphic == null)
             skeletonGraphic = SkeletonGraphic;

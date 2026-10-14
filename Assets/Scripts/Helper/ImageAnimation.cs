@@ -105,7 +105,7 @@ public class ImageAnimation : MonoBehaviour
         StopAnimation();
     }
 
-    public void CalculateFrameDelay()
+    internal void CalculateFrameDelay()
     {
         if (textureArray == null || textureArray.Count == 0)
         {
@@ -338,7 +338,7 @@ public class ImageAnimation : MonoBehaviour
         }
     }
 
-    public void StartAnimation()
+    internal void StartAnimation()
     {
         if (textureArray == null || textureArray.Count == 0) return;
 
@@ -376,7 +376,7 @@ public class ImageAnimation : MonoBehaviour
         }
     }
 
-    public void StopAnimation()
+    internal void StopAnimation()
     {
         if (currentAnimationState != ImageState.NONE)
         {
@@ -395,7 +395,7 @@ public class ImageAnimation : MonoBehaviour
         }
     }
 
-    public void RevertToInitialState()
+    internal void RevertToInitialState()
     {
         indexOfTexture = 0;
         currentPhase = 1;

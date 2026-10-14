@@ -63,9 +63,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float maxCountDuration = 0.4f;
     [SerializeField] private float autoCloseDelay = 0.5f;
 
-    public double BigWinThreshold => bigWinThreshold;
-    public double MegaWinThreshold => megaWinThreshold;
-    public double LegendaryWinThreshold => legendaryWinThreshold;
+    internal double BigWinThreshold => bigWinThreshold;
+    internal double MegaWinThreshold => megaWinThreshold;
+    internal double LegendaryWinThreshold => legendaryWinThreshold;
 
     [Header("Spin Button")]
     [SerializeField] private Button spinButton;
@@ -218,8 +218,8 @@ public class UIManager : MonoBehaviour
     [Header("UI State")]
     private double currentWinDisplayValue = 0;
     private bool isSpecialWinActive = false;
-    public bool IsSpecialWinActive => isSpecialWinActive;
-    public System.Action OnSpecialWinComplete;
+    internal bool IsSpecialWinActive => isSpecialWinActive;
+    internal System.Action OnSpecialWinComplete;
 
 
     private Coroutine winTypeCountCoroutine;
@@ -228,7 +228,9 @@ public class UIManager : MonoBehaviour
     private double finalWinTypeAmount;
     private double currentWinTypeCount;
     private double winTypeTotalBet;
+    #pragma warning disable 0414
     private int activeWinTypePhase;
+#pragma warning restore 0414
     private System.Action onWinTypeCompleteCallback;
 
 

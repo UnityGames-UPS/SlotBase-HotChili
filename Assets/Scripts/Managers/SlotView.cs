@@ -34,7 +34,8 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private SkeletonDataAsset spineSingleBar;
     [SerializeField] private SkeletonDataAsset spineRedSeven;
     [SerializeField] private SkeletonDataAsset spineBlueSeven;
-    
+    [SerializeField] private SkeletonDataAsset spineReSpin;
+
     [Header("Spine Skin Names (Optional)")]
     [Tooltip("If you combined multiple symbols into one Spine file, type the Skin Name here for each symbol ID (0 to 9).")]
     public string[] spineSkinNames = new string[10];
@@ -77,14 +78,16 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private float reelStopStagger = 0.12f;
 
     [Header("Stop Animation Settings")]
+    #pragma warning disable 0414
     [SerializeField] private float stopOvershootDistance = 50f;
+    [SerializeField] private float quickStopOvershoot = 20f;
+#pragma warning restore 0414
     [SerializeField] private float stopOvershootDuration = 0.20f;
     [SerializeField] private float stopSettleDuration = 0.30f;
 
     [Header("Quick Spin Settings")]
     [SerializeField] private float quickStopStagger = 0.06f;
-    [SerializeField] private float quickStopOvershoot = 20f;
-    [SerializeField] private float quickStopDuration = 0.2f;
+        [SerializeField] private float quickStopDuration = 0.2f;
     [SerializeField] private int minSpinCyclesBeforeStop = 3;
 
 
@@ -96,6 +99,7 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private GameObject winAnimationParent;
     [SerializeField] private GameObject winBorderAnimationParent;
     [SerializeField] private GameObject winLineAnimation;
+    [SerializeField] private GameObject reSpinAnimationBorder;
     [Tooltip("GameObject references for win animations. Each should have an ImageAnimation component attached.")]
     [SerializeField] private ColumnOverlays[] winAnimationColumns = new ColumnOverlays[5];
 
@@ -217,9 +221,13 @@ public partial class SlotView : MonoBehaviour
     private void DisableAllOverlays()
     {
         DisableColumns(winAnimationColumns);
-        if (winAnimationParent) winAnimationParent.SetActive(false);
-        if(winBorderAnimationParent) winBorderAnimationParent.SetActive(false);
-        if(winLineAnimation) winLineAnimation.SetActive(false);
+        if (lockedColumns.Count == 0)
+        {
+            if (winAnimationParent) winAnimationParent.SetActive(false);
+            if (reSpinAnimationBorder) reSpinAnimationBorder.SetActive(false);
+        }
+        if (winBorderAnimationParent) winBorderAnimationParent.SetActive(false);
+        if (winLineAnimation) winLineAnimation.SetActive(false);
         if (symbolInfoCard) symbolInfoCard.HideCard();
         AudioManager.Instance?.StopTensionBuilder();
         AudioManager.Instance?.StopReelSpinLoop();
@@ -368,8 +376,10 @@ public partial class SlotView : MonoBehaviour
     private void DisableColumns(ColumnOverlays[] cols)
     {
         if (cols == null) return;
-        foreach (var col in cols)
+        for (int c = 0; c < cols.Length; c++)
         {
+            if (IsColumnLocked(c)) continue;
+            var col = cols[c];
             if (col?.rows != null)
             {
                 foreach (var go in col.rows)
@@ -746,46 +756,54 @@ public partial class SlotView : MonoBehaviour
         }
     }
 
-    /// <summary>Controls the middle slot border glow animation on Reel 1 during the respin feature.</summary>
+    private Coroutine glowCoroutine;
+
+    /// <summary>Controls the border animation on Reel 1 during the respin feature.</summary>
     private void ShowMiddleReelGlow(bool show)
     {
-        if (winBorderAnimationParent == null) return;
-
-        Transform middleSlot = winBorderAnimationParent.transform.Find("Middle Slot");
-        Transform leftSlot = winBorderAnimationParent.transform.Find("Left Slot");
-        Transform rightSlot = winBorderAnimationParent.transform.Find("Right Slot ") ?? winBorderAnimationParent.transform.Find("Right Slot");
-
-        if (show)
+        if (glowCoroutine != null)
         {
-            winBorderAnimationParent.SetActive(true);
-            if (leftSlot != null) leftSlot.gameObject.SetActive(false);
-            if (rightSlot != null) rightSlot.gameObject.SetActive(false);
+            StopCoroutine(glowCoroutine);
+            glowCoroutine = null;
+        }
+        glowCoroutine = StartCoroutine(GlowEffectBorder(show));
+    }
 
-            if (middleSlot != null)
+    private IEnumerator GlowEffectBorder(bool Show)
+    {
+        if (reSpinAnimationBorder == null) yield break;
+
+        if (Show)
+        {
+            // 1. Turn OFF normal win lines and win borders
+            if (winBorderAnimationParent != null) winBorderAnimationParent.SetActive(false);
+            if (winLineAnimation != null) winLineAnimation.SetActive(false);
+
+            // 2. Turn ON the respin border
+            reSpinAnimationBorder.SetActive(true);
+            ImageAnimation anim = reSpinAnimationBorder.GetComponent<ImageAnimation>();
+            if (anim == null) anim = reSpinAnimationBorder.GetComponentInChildren<ImageAnimation>(true);
+            if (anim != null)
             {
-                middleSlot.gameObject.SetActive(true);
-                ImageAnimation anim = middleSlot.GetComponent<ImageAnimation>();
-                if (anim != null)
-                {
-                    anim.doLoopAnimation = true;
-                    anim.StartAnimation();
-                }
+                anim.doLoopAnimation = true;
+                anim.StartAnimation();
             }
+
+            // 3. Wait for the anticipation duration (1.5 seconds)
+            yield return new WaitForSeconds(1.5f);
         }
         else
         {
-            if (middleSlot != null)
-            {
-                ImageAnimation anim = middleSlot.GetComponent<ImageAnimation>();
-                if (anim != null) anim.StopAnimation();
-                middleSlot.gameObject.SetActive(false);
-            }
-            winBorderAnimationParent.SetActive(false);
+            // Turn OFF the respin border when respin is complete
+            ImageAnimation anim = reSpinAnimationBorder.GetComponent<ImageAnimation>();
+            if (anim == null) anim = reSpinAnimationBorder.GetComponentInChildren<ImageAnimation>(true);
+            if (anim != null) anim.StopAnimation();
+            reSpinAnimationBorder.SetActive(false);
         }
     }
 
-    /// <summary>Displays spriteReSpin on the child of SlotAnimHolder (center reel overlay) and enables click-to-respin interaction.</summary>
-    /// <param name="show">True to show the Re-Spin sprite overlay on Reel 1; False to hide it.</param>
+    /// <summary>Displays the respin animation (spineReSpin or spriteReSpin) on the center reel overlay and enables click-to-respin interaction.</summary>
+    /// <param name="show">True to show the Re-Spin overlay on Reel 1; False to hide it.</param>
     private void ShowRespinOverlay(bool show)
     {
         if (winAnimationColumns == null || winAnimationColumns.Length <= 1) return;
@@ -810,53 +828,62 @@ public partial class SlotView : MonoBehaviour
                 animGO.transform.rotation = centerSymbol.transform.rotation;
             }
 
-            // Disable spine animation child so spine does not override the sprite
-            SpineAnimController spine = animGO.GetComponentInChildren<SpineAnimController>(true);
-            if (spine != null)
-            {
-                spine.Stop();
-                if (spine.SkeletonGraphic != null)
-                {
-                    spine.SkeletonGraphic.gameObject.SetActive(false);
-                }
-            }
-
-            // Stop image animation
+            // Stop sprite image animation
             ImageAnimation imageAnim = animGO.GetComponentInChildren<ImageAnimation>(true);
             if (imageAnim != null)
             {
                 imageAnim.StopAnimation();
             }
 
-            // Set sprite to spriteReSpin on Image component
+            SpineAnimController spine = animGO.GetComponentInChildren<SpineAnimController>(true);
             Image animImage = animGO.GetComponent<Image>();
             if (animImage == null) animImage = animGO.GetComponentInChildren<Image>(true);
-            if (animImage != null)
+
+            // If spineReSpin is available, play Spine animation:
+            if (spineReSpin != null && spine != null)
             {
-                if (spriteReSpin != null)
+                if (animImage != null) animImage.enabled = false;
+                spine.SetSkeletonData(spineReSpin, "animation");
+                spine.Play(true);
+            }
+            else
+            {
+                // Fallback to static spriteReSpin with pulsing DOTween
+                if (spine != null)
                 {
-                    animImage.sprite = spriteReSpin;
-                    animImage.overrideSprite = spriteReSpin;
+                    spine.Stop();
+                    if (spine.SkeletonGraphic != null)
+                    {
+                        spine.SkeletonGraphic.gameObject.SetActive(false);
+                    }
                 }
-                animImage.enabled = true;
-                animImage.color = Color.white;
+
+                if (animImage != null)
+                {
+                    if (spriteReSpin != null)
+                    {
+                        animImage.sprite = spriteReSpin;
+                        animImage.overrideSprite = spriteReSpin;
+                    }
+                    animImage.enabled = true;
+                    animImage.color = Color.white;
+                }
+
+                animGO.transform.DOKill();
+                animGO.transform.localScale = Vector3.one * (spineScaleMultiplier * 0.7f);
+                animGO.transform.DOScale(spineScaleMultiplier * 1.25f, 0.25f)
+                    .SetEase(Ease.OutBack)
+                    .OnComplete(() =>
+                    {
+                        animGO.transform.DOScale(spineScaleMultiplier * 1.12f, 0.45f)
+                            .SetEase(Ease.InOutSine)
+                            .SetLoops(-1, LoopType.Yoyo);
+                    });
             }
 
             animGO.SetActive(true);
 
-            // Pop-in bounce punch followed by pulsing anticipation loop
-            animGO.transform.DOKill();
-            animGO.transform.localScale = Vector3.one * (spineScaleMultiplier * 0.7f);
-            animGO.transform.DOScale(spineScaleMultiplier * 1.25f, 0.25f)
-                .SetEase(Ease.OutBack)
-                .OnComplete(() =>
-                {
-                    animGO.transform.DOScale(spineScaleMultiplier * 1.12f, 0.45f)
-                        .SetEase(Ease.InOutSine)
-                        .SetLoops(-1, LoopType.Yoyo);
-                });
-
-            // Make it clickable so clicking the Re-Spin icon on the reel triggers respin
+            // Make it clickable so clicking the Re-Spin icon on the reel triggers respin immediately
             Button btn = animGO.GetComponent<Button>();
             if (btn == null)
             {
@@ -878,11 +905,14 @@ public partial class SlotView : MonoBehaviour
             animGO.transform.localScale = Vector3.one * spineScaleMultiplier;
             animGO.SetActive(false);
 
-            // Restore SpineRenderer for normal win animations
             SpineAnimController spine = animGO.GetComponentInChildren<SpineAnimController>(true);
-            if (spine != null && spine.SkeletonGraphic != null)
+            if (spine != null)
             {
-                spine.SkeletonGraphic.gameObject.SetActive(true);
+                spine.Stop();
+                if (spine.SkeletonGraphic != null)
+                {
+                    spine.SkeletonGraphic.gameObject.SetActive(false);
+                }
             }
 
             if (winAnimationParent != null)

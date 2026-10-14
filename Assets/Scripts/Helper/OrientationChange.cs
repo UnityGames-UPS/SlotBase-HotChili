@@ -30,8 +30,8 @@ public class OrientationChange : MonoBehaviour
     [SerializeField] private string mobileKeyword = "mobile";
     [SerializeField] private string currentDevice = "";
 
-    public static event Action<OrientationMode, int, int> OnOrientationChanged;
-    public event Action<OrientationMode, int, int> OnOrientationChangedInstance;
+    internal static event Action<OrientationMode, int, int> OnOrientationChanged;
+    internal event Action<OrientationMode, int, int> OnOrientationChangedInstance;
 
     private Vector2 ReferenceAspect;
     private Tween matchTween;
@@ -43,11 +43,11 @@ public class OrientationChange : MonoBehaviour
     private int lastWidth = 0;
     private int lastHeight = 0;
 
-    public string CurrentDevice => currentDevice;
-    public OrientationMode CurrentMode => currentMode;
-    public bool IsLandscape => isLandscape;
-    public bool IsMobile => IsMobileDevice();
-    public bool EnablePortrait
+    internal string CurrentDevice => currentDevice;
+    internal OrientationMode CurrentMode => currentMode;
+    internal bool IsLandscape => isLandscape;
+    internal bool IsMobile => IsMobileDevice();
+    internal bool EnablePortrait
     {
         get => enablePortrait;
         set
@@ -82,12 +82,12 @@ public class OrientationChange : MonoBehaviour
         ApplyMatch(Screen.width, Screen.height);
     }
 
-    public void DeviceCheck(string device)
+    internal void DeviceCheck(string device)
     {
         DiviceCheck(device);
     }
 
-    public void DiviceCheck(string device)
+    internal void DiviceCheck(string device)
     {
         Debug.Log($"[OrientationChange] Device detected: {device}");
         currentDevice = device;
@@ -96,7 +96,7 @@ public class OrientationChange : MonoBehaviour
         ApplyMatch(w, h);
     }
 
-    public bool IsMobileDevice()
+    internal bool IsMobileDevice()
     {
         if (!string.IsNullOrEmpty(currentDevice))
         {
@@ -116,7 +116,7 @@ public class OrientationChange : MonoBehaviour
 #endif
     }
 
-    public void SwitchDisplay(string dimensions)
+    internal void SwitchDisplay(string dimensions)
     {
         if (rotationRoutine != null) StopCoroutine(rotationRoutine);
         rotationRoutine = StartCoroutine(RotationCoroutine(dimensions));

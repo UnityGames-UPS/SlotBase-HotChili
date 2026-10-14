@@ -1,0 +1,1105 @@
+fileFormatVersion: 2
+guid: f44204acfbcf93c4aafca2b4b4cd4f43
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8335522820937169445
+    second: Re_spin_0
+  - first:
+      213: 1103692383016938109
+    second: Re_spin_1
+  - first:
+      213: 3441942463807561357
+    second: Re_spin_2
+  - first:
+      213: 1237254719593182669
+    second: Re_spin_3
+  - first:
+      213: 9090418492070627241
+    second: Re_spin_4
+  - first:
+      213: -6391047467358073099
+    second: Re_spin_5
+  - first:
+      213: -7972921815543403688
+    second: Re_spin_6
+  - first:
+      213: 3671560544903814337
+    second: Re_spin_7
+  - first:
+      213: -7941436090653055062
+    second: Re_spin_8
+  - first:
+      213: 928944077851474593
+    second: Re_spin_9
+  - first:
+      213: -7672908205271490012
+    second: Re_spin_10
+  - first:
+      213: 2764901370523426435
+    second: Re_spin_11
+  - first:
+      213: -8379762514790007913
+    second: Re_spin_12
+  - first:
+      213: -6915727582471998642
+    second: Re_spin_13
+  - first:
+      213: 5234279830551619676
+    second: Re_spin_14
+  - first:
+      213: 5477499860662134565
+    second: Re_spin_15
+  - first:
+      213: 5724432820143954625
+    second: Re_spin_16
+  - first:
+      213: 1239220796496724663
+    second: Re_spin_17
+  - first:
+      213: -1132789962648480933
+    second: Re_spin_18
+  - first:
+      213: -4629036432311275797
+    second: Re_spin_19
+  - first:
+      213: -1518191534734772127
+    second: Re_spin_20
+  - first:
+      213: -3978095317886628992
+    second: Re_spin_21
+  - first:
+      213: 5820495668580854929
+    second: Re_spin_22
+  - first:
+      213: -881578242078544243
+    second: Re_spin_23
+  - first:
+      213: 6769282079381286065
+    second: Re_spin_24
+  - first:
+      213: 8783858276058832717
+    second: Re_spin_25
+  - first:
+      213: -9064189542900916676
+    second: Re_spin_26
+  - first:
+      213: 222033117376684993
+    second: Re_spin_27
+  - first:
+      213: -6823957274991149798
+    second: Re_spin_28
+  - first:
+      213: 7141961204321337762
+    second: Re_spin_29
+  - first:
+      213: -5399589011958212045
+    second: Re_spin_30
+  - first:
+      213: 5471927961913064185
+    second: Re_spin_31
+  - first:
+      213: -6760719925897826925
+    second: Re_spin_32
+  - first:
+      213: 3147252159467103482
+    second: Re_spin_33
+  - first:
+      213: -2050509703788693042
+    second: Re_spin_34
+  - first:
+      213: 1458119383412214039
+    second: Re_spin_35
+  - first:
+      213: -7409969537514396638
+    second: Re_spin_36
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 0
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Re_spin_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 332
+        width: 44
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd5c0e86826425c80800000000000000
+      internalID: -8335522820937169445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_1
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 344
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7a670fef5a115f00800000000000000
+      internalID: 1103692383016938109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_2
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 332
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8e15944f6c34cf20800000000000000
+      internalID: 3441942463807561357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_3
+      rect:
+        serializedVersion: 2
+        x: 314
+        y: 220
+        width: 201
+        height: 143
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc5f60abc9c9b2110800000000000000
+      internalID: 1237254719593182669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_4
+      rect:
+        serializedVersion: 2
+        x: 562
+        y: 247
+        width: 160
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a703879477a72e70800000000000000
+      internalID: 9090418492070627241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_5
+      rect:
+        serializedVersion: 2
+        x: 829
+        y: 275
+        width: 108
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fe467d80307e47a0800000000000000
+      internalID: -6391047467358073099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_6
+      rect:
+        serializedVersion: 2
+        x: 1027
+        y: 266
+        width: 93
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85ba292e9dd7a5190800000000000000
+      internalID: -7972921815543403688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_7
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 208
+        width: 190
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ccd452ecd004f230800000000000000
+      internalID: 3671560544903814337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_8
+      rect:
+        serializedVersion: 2
+        x: 1310
+        y: 206
+        width: 201
+        height: 141
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa7682a73f95ac190800000000000000
+      internalID: -7941436090653055062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_9
+      rect:
+        serializedVersion: 2
+        x: 1511
+        y: 337
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1aa3a8097b544ec00800000000000000
+      internalID: 928944077851474593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_10
+      rect:
+        serializedVersion: 2
+        x: 1613
+        y: 201
+        width: 190
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 422ec9ed3aa548590800000000000000
+      internalID: -7672908205271490012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_11
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 1
+        width: 313
+        height: 331
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38e1a0db527ee5620800000000000000
+      internalID: 2764901370523426435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_12
+      rect:
+        serializedVersion: 2
+        x: 515
+        y: 217
+        width: 81
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79bbec3046a15bb80800000000000000
+      internalID: -8379762514790007913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_13
+      rect:
+        serializedVersion: 2
+        x: 722
+        y: 216
+        width: 93
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e43b263a7666600a0800000000000000
+      internalID: -6915727582471998642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_14
+      rect:
+        serializedVersion: 2
+        x: 937
+        y: 211
+        width: 81
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c58650306c5e3a840800000000000000
+      internalID: 5234279830551619676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_15
+      rect:
+        serializedVersion: 2
+        x: 1550
+        y: 205
+        width: 63
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 527a40c2a1df30c40800000000000000
+      internalID: 5477499860662134565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_16
+      rect:
+        serializedVersion: 2
+        x: 1803
+        y: 244
+        width: 45
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ca94411255417f40800000000000000
+      internalID: 5724432820143954625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_17
+      rect:
+        serializedVersion: 2
+        x: 1908
+        y: 230
+        width: 19
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b2c67dafb8923110800000000000000
+      internalID: 1239220796496724663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_18
+      rect:
+        serializedVersion: 2
+        x: 314
+        y: 1
+        width: 152
+        height: 219
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b53953fd7858740f0800000000000000
+      internalID: -1132789962648480933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_19
+      rect:
+        serializedVersion: 2
+        x: 466
+        y: 1
+        width: 138
+        height: 216
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: beeaeb7f3eb52cfb0800000000000000
+      internalID: -4629036432311275797
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_20
+      rect:
+        serializedVersion: 2
+        x: 604
+        y: 1
+        width: 154
+        height: 215
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 168f027c7dc4eeae0800000000000000
+      internalID: -1518191534734772127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_21
+      rect:
+        serializedVersion: 2
+        x: 758
+        y: 123
+        width: 99
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08b09be9267fac8c0800000000000000
+      internalID: -3978095317886628992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_22
+      rect:
+        serializedVersion: 2
+        x: 910
+        y: 1
+        width: 149
+        height: 210
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19c2676e8fd86c050800000000000000
+      internalID: 5820495668580854929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_23
+      rect:
+        serializedVersion: 2
+        x: 1059
+        y: 1
+        width: 137
+        height: 207
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8ee137724104c3f0800000000000000
+      internalID: -881578242078544243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_24
+      rect:
+        serializedVersion: 2
+        x: 1196
+        y: 140
+        width: 72
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bc60fd9f2251fd50800000000000000
+      internalID: 6769282079381286065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_25
+      rect:
+        serializedVersion: 2
+        x: 1336
+        y: 74
+        width: 110
+        height: 132
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4f9cdd209886e970800000000000000
+      internalID: 8783858276058832717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_26
+      rect:
+        serializedVersion: 2
+        x: 1476
+        y: 113
+        width: 62
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3e949682a7853280800000000000000
+      internalID: -9064189542900916676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_27
+      rect:
+        serializedVersion: 2
+        x: 1603
+        y: 1
+        width: 138
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c32c91a1f1d41300800000000000000
+      internalID: 222033117376684993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_28
+      rect:
+        serializedVersion: 2
+        x: 1741
+        y: 118
+        width: 46
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1db5b5630f6c41a0800000000000000
+      internalID: -6823957274991149798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_29
+      rect:
+        serializedVersion: 2
+        x: 1803
+        y: 172
+        width: 45
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a1c13720e75d1360800000000000000
+      internalID: 7141961204321337762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_30
+      rect:
+        serializedVersion: 2
+        x: 1867
+        y: 97
+        width: 46
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33ad021e66ec015b0800000000000000
+      internalID: -5399589011958212045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_31
+      rect:
+        serializedVersion: 2
+        x: 825
+        y: 1
+        width: 85
+        height: 123
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9fafa566d7130fb40800000000000000
+      internalID: 5471927961913064185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_32
+      rect:
+        serializedVersion: 2
+        x: 1230
+        y: 1
+        width: 106
+        height: 154
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39d64f61c091d22a0800000000000000
+      internalID: -6760719925897826925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_33
+      rect:
+        serializedVersion: 2
+        x: 1379
+        y: 1
+        width: 97
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af42e970a294dab20800000000000000
+      internalID: 3147252159467103482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_34
+      rect:
+        serializedVersion: 2
+        x: 1534
+        y: 1
+        width: 69
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec9fe29d9402b83e0800000000000000
+      internalID: -2050509703788693042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_35
+      rect:
+        serializedVersion: 2
+        x: 1785
+        y: 1
+        width: 82
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71985609ad74c3410800000000000000
+      internalID: 1458119383412214039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Re_spin_36
+      rect:
+        serializedVersion: 2
+        x: 1925
+        y: 1
+        width: 42
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2242dff17ff7a2990800000000000000
+      internalID: -7409969537514396638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Re_spin_0: -8335522820937169445
+      Re_spin_1: 1103692383016938109
+      Re_spin_10: -7672908205271490012
+      Re_spin_11: 2764901370523426435
+      Re_spin_12: -8379762514790007913
+      Re_spin_13: -6915727582471998642
+      Re_spin_14: 5234279830551619676
+      Re_spin_15: 5477499860662134565
+      Re_spin_16: 5724432820143954625
+      Re_spin_17: 1239220796496724663
+      Re_spin_18: -1132789962648480933
+      Re_spin_19: -4629036432311275797
+      Re_spin_2: 3441942463807561357
+      Re_spin_20: -1518191534734772127
+      Re_spin_21: -3978095317886628992
+      Re_spin_22: 5820495668580854929
+      Re_spin_23: -881578242078544243
+      Re_spin_24: 6769282079381286065
+      Re_spin_25: 8783858276058832717
+      Re_spin_26: -9064189542900916676
+      Re_spin_27: 222033117376684993
+      Re_spin_28: -6823957274991149798
+      Re_spin_29: 7141961204321337762
+      Re_spin_3: 1237254719593182669
+      Re_spin_30: -5399589011958212045
+      Re_spin_31: 5471927961913064185
+      Re_spin_32: -6760719925897826925
+      Re_spin_33: 3147252159467103482
+      Re_spin_34: -2050509703788693042
+      Re_spin_35: 1458119383412214039
+      Re_spin_36: -7409969537514396638
+      Re_spin_4: 9090418492070627241
+      Re_spin_5: -6391047467358073099
+      Re_spin_6: -7972921815543403688
+      Re_spin_7: 3671560544903814337
+      Re_spin_8: -7941436090653055062
+      Re_spin_9: 928944077851474593
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
