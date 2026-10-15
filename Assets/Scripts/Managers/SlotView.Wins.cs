@@ -465,7 +465,8 @@ public partial class SlotView
             }
     
             DisableColumns(winAnimationColumns);
-        StartCoroutine(GlowEffectBorder(false));
+        SetMiddleReelGlow(false);
+        SetRespinReelsGlow(false);
         HideAllWinLineTexts();
     
             foreach (var reel in reelImagesList)

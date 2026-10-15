@@ -207,7 +207,10 @@ public class GameManager : MonoBehaviour
         if (slotView != null)
         {
             slotView.StartSpin();
+            slotView.SetRespinReelsGlow(true); // Glow turns ON only for Slot 0 & 2 while rolling!
+            Debug.Log("000");
         }
+        Debug.Log("999");
 
         if (spinCoroutine != null)
             StopCoroutine(spinCoroutine);
@@ -257,7 +260,11 @@ public class GameManager : MonoBehaviour
     private void OnRespinReelsStoppedComplete()
     {
         isRespinActive = false;
-        if (slotView != null) slotView.SetCenterWildLocked(false);
+        if (slotView != null)
+        {
+            slotView.SetRespinReelsGlow(false); // Shuts OFF Slot 0 & 2 glow immediately when reels stop!
+            slotView.SetCenterWildLocked(false);
+        }
         if (uiManager != null) uiManager.SetRespinButtonState(false);
 
         double bet = currentBetAmount > 0 ? currentBetAmount : 0.01;
@@ -350,6 +357,8 @@ public class GameManager : MonoBehaviour
 
         if (slotView != null)
         {
+            slotView.SetRespinReelsGlow(false);
+            slotView.SetMiddleReelGlow(false);
             slotView.StartSpin();
         }
 
@@ -553,7 +562,11 @@ public class GameManager : MonoBehaviour
         if (isRespinActive)
         {
             isRespinActive = false;
-            if (slotView != null) slotView.SetCenterWildLocked(false);
+            if (slotView != null)
+            {
+                slotView.SetRespinReelsGlow(false);
+                slotView.SetCenterWildLocked(false);
+            }
             if (uiManager != null) uiManager.SetRespinButtonState(false);
         }
 

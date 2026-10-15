@@ -99,7 +99,8 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private GameObject winAnimationParent;
     [SerializeField] private GameObject winBorderAnimationParent;
     [SerializeField] private GameObject winLineAnimation;
-    [SerializeField] private GameObject reSpinAnimationBorder;
+    [SerializeField] internal GameObject reSpinAnimationBorder;
+    [SerializeField] internal GameObject respinReelsGlowObject;
     [Tooltip("GameObject references for win animations. Each should have an ImageAnimation component attached.")]
     [SerializeField] private ColumnOverlays[] winAnimationColumns = new ColumnOverlays[5];
 
@@ -225,6 +226,7 @@ public partial class SlotView : MonoBehaviour
         {
             if (winAnimationParent) winAnimationParent.SetActive(false);
             if (reSpinAnimationBorder) reSpinAnimationBorder.SetActive(false);
+            if (respinReelsGlowObject) respinReelsGlowObject.SetActive(false);
         }
         if (winBorderAnimationParent) winBorderAnimationParent.SetActive(false);
         if (winLineAnimation) winLineAnimation.SetActive(false);
@@ -744,7 +746,8 @@ public partial class SlotView : MonoBehaviour
         {
             lockedColumns.Add(1);
             ShowRespinOverlay(true);
-            ShowMiddleReelGlow(true);
+            SetMiddleReelGlow(true);
+            SetRespinReelsGlow(true); // Respin appeared -> turn ON glow for Slot 0 and Slot 2
         }
         else
         {
@@ -752,55 +755,44 @@ public partial class SlotView : MonoBehaviour
             centerWildLockTween?.Kill();
             centerWildLockTween = null;
             ShowRespinOverlay(false);
-            ShowMiddleReelGlow(false);
+            SetMiddleReelGlow(false);
+            SetRespinReelsGlow(false); // Respin finished -> turn OFF glow
         }
     }
 
-    private Coroutine glowCoroutine;
-
-    /// <summary>Controls the border animation on Reel 1 during the respin feature.</summary>
-    private void ShowMiddleReelGlow(bool show)
+    /// <summary>Controls the glow border on Reel 1 (center) during respin lock using simple SetActive.</summary>
+    public void SetMiddleReelGlow(bool show)
     {
-        if (glowCoroutine != null)
+        if (reSpinAnimationBorder != null)
         {
-            StopCoroutine(glowCoroutine);
-            glowCoroutine = null;
-        }
-        glowCoroutine = StartCoroutine(GlowEffectBorder(show));
-    }
-
-    private IEnumerator GlowEffectBorder(bool Show)
-    {
-        if (reSpinAnimationBorder == null) yield break;
-
-        if (Show)
-        {
-            // 1. Turn OFF normal win lines and win borders
-            if (winBorderAnimationParent != null) winBorderAnimationParent.SetActive(false);
-            if (winLineAnimation != null) winLineAnimation.SetActive(false);
-
-            // 2. Turn ON the respin border
-            reSpinAnimationBorder.SetActive(true);
-            ImageAnimation anim = reSpinAnimationBorder.GetComponent<ImageAnimation>();
-            if (anim == null) anim = reSpinAnimationBorder.GetComponentInChildren<ImageAnimation>(true);
-            if (anim != null)
+            if (show)
             {
-                anim.doLoopAnimation = true;
-                anim.StartAnimation();
+                if (winBorderAnimationParent != null) winBorderAnimationParent.SetActive(false);
+                if (winLineAnimation != null) winLineAnimation.SetActive(false);
             }
-
-            // 3. Wait for the anticipation duration (1.5 seconds)
-            yield return new WaitForSeconds(1.5f);
-        }
-        else
-        {
-            // Turn OFF the respin border when respin is complete
-            ImageAnimation anim = reSpinAnimationBorder.GetComponent<ImageAnimation>();
-            if (anim == null) anim = reSpinAnimationBorder.GetComponentInChildren<ImageAnimation>(true);
-            if (anim != null) anim.StopAnimation();
-            reSpinAnimationBorder.SetActive(false);
+            reSpinAnimationBorder.SetActive(show);
         }
     }
+
+    /// <summary>Controls the glow border for Slot 0 & Slot 2 (outer reels) during respin using simple SetActive.</summary>
+    public void SetRespinReelsGlow(bool show)
+    {
+        if (respinReelsGlowObject != null)
+        {
+            if (show)
+            {
+                if (winBorderAnimationParent != null) winBorderAnimationParent.SetActive(false);
+                if (winLineAnimation != null) winLineAnimation.SetActive(false);
+            }
+            respinReelsGlowObject.SetActive(show);
+            Debug.Log("111");
+        }
+        Debug.Log("222");
+
+    }
+
+    /// <summary>Alias for backwards-compatibility.</summary>
+    public void ShowRespinRollingGlow(bool show) => SetRespinReelsGlow(show);
 
     /// <summary>Displays the respin animation (spineReSpin or spriteReSpin) on the center reel overlay and enables click-to-respin interaction.</summary>
     /// <param name="show">True to show the Re-Spin overlay on Reel 1; False to hide it.</param>
