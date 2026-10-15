@@ -309,6 +309,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3095547206956503317, guid: faff706b2706aad4b9d7c81fb5a6fef4, type: 3}
   m_PrefabInstance: {fileID: 12812983}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &12812985 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9099239027757464155, guid: faff706b2706aad4b9d7c81fb5a6fef4, type: 3}
+  m_PrefabInstance: {fileID: 12812983}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &17680114
 GameObject:
   m_ObjectHideFlags: 0
@@ -1179,6 +1190,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3095547206956503317, guid: faff706b2706aad4b9d7c81fb5a6fef4, type: 3}
   m_PrefabInstance: {fileID: 57735786}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &57735788 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9099239027757464155, guid: faff706b2706aad4b9d7c81fb5a6fef4, type: 3}
+  m_PrefabInstance: {fileID: 57735786}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &71008949
 GameObject:
   m_ObjectHideFlags: 0
@@ -5349,6 +5371,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3095547206956503317, guid: faff706b2706aad4b9d7c81fb5a6fef4, type: 3}
   m_PrefabInstance: {fileID: 367664339}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &367664341 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9099239027757464155, guid: faff706b2706aad4b9d7c81fb5a6fef4, type: 3}
+  m_PrefabInstance: {fileID: 367664339}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &368185690
 GameObject:
   m_ObjectHideFlags: 0
@@ -19106,14 +19139,14 @@ MonoBehaviour:
   majorJackpotText: {fileID: 1247446769}
   minorJackpotText: {fileID: 1634534343}
   miniJackpotText: {fileID: 1565216537}
-  grandJackpotTextPortrait: {fileID: 0}
-  majorJackpotTextPortrait: {fileID: 0}
-  minorJackpotTextPortrait: {fileID: 0}
-  miniJackpotTextPortrait: {fileID: 0}
-  grandJackpotPortraitParent: {fileID: 0}
-  majorJackpotPortraitParent: {fileID: 0}
-  minorJackpotPortraitParent: {fileID: 0}
-  miniJackpotPortraitParent: {fileID: 0}
+  grandJackpotTextPortrait: {fileID: 57735788}
+  majorJackpotTextPortrait: {fileID: 1905013788}
+  minorJackpotTextPortrait: {fileID: 367664341}
+  miniJackpotTextPortrait: {fileID: 12812985}
+  grandJackpotPortraitParent: {fileID: 57735787}
+  majorJackpotPortraitParent: {fileID: 1905013786}
+  minorJackpotPortraitParent: {fileID: 367664340}
+  miniJackpotPortraitParent: {fileID: 12812984}
   enableJackpotPortraitLevitation: 1
   jackpotLevitateHeight: 10
   jackpotLevitateDuration: 1.4
@@ -29058,10 +29091,10 @@ MonoBehaviour:
   reelStartStagger: 0.08
   reelStopStagger: 0.12
   stopOvershootDistance: 50
+  quickStopOvershoot: 20
   stopOvershootDuration: 0.2
   stopSettleDuration: 0.3
   quickStopStagger: 0.06
-  quickStopOvershoot: 20
   quickStopDuration: 0.2
   minSpinCyclesBeforeStop: 3
   winSymbolLoopDuration: 1.2
@@ -30580,6 +30613,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &1905013788 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9099239027757464155, guid: faff706b2706aad4b9d7c81fb5a6fef4, type: 3}
+  m_PrefabInstance: {fileID: 1905013785}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1912859082
 GameObject:
   m_ObjectHideFlags: 0

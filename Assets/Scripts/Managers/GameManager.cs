@@ -534,7 +534,7 @@ public class GameManager : MonoBehaviour
             if (uiManager != null) uiManager.SetRespinButtonState(true);
             AudioManager.Instance?.PlayWildChilliHit();
 
-            // Automatic anticipation delay: 1.5s delay before auto-spinning (player can also tap early)
+            // Automatic anticipation delay: 2s delay before auto-spinning (player can also tap early)
             float delay = 2f;
             float timer = 0f;
             while (timer < delay && isRespinPending)

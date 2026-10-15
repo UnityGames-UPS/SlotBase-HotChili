@@ -465,10 +465,8 @@ public partial class SlotView
             }
     
             DisableColumns(winAnimationColumns);
-            if (winAnimationParent) winAnimationParent.SetActive(false);
-            if (winBorderAnimationParent) winBorderAnimationParent.SetActive(false);
-            if (winLineAnimation) winLineAnimation.SetActive(false);
-            HideAllWinLineTexts();
+        StartCoroutine(GlowEffectBorder(false));
+        HideAllWinLineTexts();
     
             foreach (var reel in reelImagesList)
             {
