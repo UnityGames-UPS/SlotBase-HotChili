@@ -2678,7 +2678,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Procedural::UnityEngine.UI.ProceduralImage.ProceduralImage
   m_Material: {fileID: 0}
-  m_Color: {r: 0.25882354, g: 0.25882354, b: 0.25882354, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5934,6 +5934,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!224 &411776991 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1097157897625756623, guid: 50e428982bc6b4fdf916b9d7b44515e1, type: 3}
+  m_PrefabInstance: {fileID: 411776988}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &422375824
 GameObject:
   m_ObjectHideFlags: 0
@@ -7944,7 +7949,6 @@ GameObject:
   m_Component:
   - component: {fileID: 530733300}
   - component: {fileID: 530733302}
-  - component: {fileID: 530733301}
   m_Layer: 5
   m_Name: SlotBG
   m_TagString: Untagged
@@ -7981,36 +7985,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -16.5}
   m_SizeDelta: {x: 1076, y: 622}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &530733301
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 530733299}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: -3492312326123597474, guid: 61dc726d0312f4548a07d0c22c7710fa, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &530733302
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10534,7 +10508,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 475.50003}
-  m_SizeDelta: {x: 719, y: 132}
+  m_SizeDelta: {x: 719, y: 127.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &687215927
 MonoBehaviour:
@@ -10549,7 +10523,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.94509804}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -11547,9 +11521,9 @@ RectTransform:
   - {fileID: 1351439313}
   - {fileID: 1284644658}
   - {fileID: 1377928932}
+  - {fileID: 687215926}
   - {fileID: 1965491223}
   - {fileID: 1383899371}
-  - {fileID: 687215926}
   m_Father: {fileID: 1836420537}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -16216,7 +16190,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3492312326123597474, guid: a7cd9d4cce472f94d9ada391711527c5, type: 3}
+  m_Sprite: {fileID: -3492312326123597474, guid: 61dc726d0312f4548a07d0c22c7710fa, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16459,7 +16433,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Procedural::UnityEngine.UI.ProceduralImage.ProceduralImage
   m_Material: {fileID: 0}
-  m_Color: {r: 0.25882354, g: 0.25882354, b: 0.25882354, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -19110,12 +19084,12 @@ MonoBehaviour:
   soundPanelOpenButton: {fileID: 51923522}
   soundPanelOpenButtonPortrait: {fileID: 455560151}
   gameRulesPanel: {fileID: 200148664}
-  gameRulesPanelRect: {fileID: 2106140692}
+  gameRulesContent: {fileID: 1368711339}
   gameRulesOpenButton: {fileID: 1719723463}
   gameRulesBackButton: {fileID: 1569240829}
   gameRulesOpenButtonPortrait: {fileID: 2026920556}
   guidePanel: {fileID: 1114913841}
-  guidePanelRect: {fileID: 411776989}
+  guideContent: {fileID: 411776991}
   guideOpenButton: {fileID: 1565575577}
   guideBackButton: {fileID: 411776990}
   guideOpenButtonPortrait: {fileID: 509276551}
@@ -20749,7 +20723,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1353281353
 RectTransform:
   m_ObjectHideFlags: 0
@@ -29167,7 +29141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f521a04de7f494272a617b2719edd271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SocketIOManager
-  testToken: f1ebeb666bd346c1a431304844b18f73
+  testToken: d340e94af9d64460968ea00de53eac47
   gameManager: {fileID: 1328156518}
   uiManager: {fileID: 1266113020}
   popupManager: {fileID: 1195155500}
@@ -29381,7 +29355,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1836420536}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
   m_Name: 
@@ -29994,7 +29968,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1942418299}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.15179048
+  m_Size: 0.15179045
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -31470,7 +31444,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.87058824}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

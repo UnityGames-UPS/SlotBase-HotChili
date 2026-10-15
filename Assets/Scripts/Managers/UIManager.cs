@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
@@ -139,7 +139,7 @@ public class UIManager : MonoBehaviour
 
     [Header("Game Rules Panel")]
     [SerializeField] private GameObject gameRulesPanel;
-    [SerializeField] private RectTransform gameRulesPanelRect;
+    [SerializeField] private RectTransform gameRulesContent;
     [SerializeField] private Button gameRulesOpenButton;
     [SerializeField] private Button gameRulesBackButton;
     [Header("Game Rules Panel - Portrait")]
@@ -147,7 +147,7 @@ public class UIManager : MonoBehaviour
 
     [Header("Guide Panel")]
     [SerializeField] private GameObject guidePanel;
-    [SerializeField] private RectTransform guidePanelRect;
+    [SerializeField] private RectTransform guideContent;
     [SerializeField] private Button guideOpenButton;
     [SerializeField] private Button guideBackButton;
     [Header("Guide Panel - Portrait")]
@@ -1288,6 +1288,20 @@ public class UIManager : MonoBehaviour
         if (gameRulesPanel == null) return;
         AudioManager.Instance?.PlayButton();
         UpdateGameRulesDynamicTexts();
+
+        if (gameRulesContent == null)
+        {
+            var sr = gameRulesPanel.GetComponentInChildren<ScrollRect>(true);
+            if (sr != null) gameRulesContent = sr.content;
+        }
+
+        if (gameRulesContent != null)
+        {
+            var sr = gameRulesContent.GetComponentInParent<ScrollRect>();
+            if (sr != null) sr.StopMovement();
+            gameRulesContent.anchoredPosition = new Vector2(gameRulesContent.anchoredPosition.x, 0f);
+        }
+
         gameRulesPanel.SetActive(true);
     }
 
@@ -1362,6 +1376,20 @@ public class UIManager : MonoBehaviour
     {
         if (guidePanel == null) return;
         AudioManager.Instance?.PlayButton();
+
+        if (guideContent == null)
+        {
+            var sr = guidePanel.GetComponentInChildren<ScrollRect>(true);
+            if (sr != null) guideContent = sr.content;
+        }
+
+        if (guideContent != null)
+        {
+            var sr = guideContent.GetComponentInParent<ScrollRect>();
+            if (sr != null) sr.StopMovement();
+            guideContent.anchoredPosition = new Vector2(guideContent.anchoredPosition.x, 0f);
+        }
+
         guidePanel.SetActive(true);
     }
 

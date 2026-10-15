@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -190,13 +190,23 @@ public class SocketIOManager : MonoBehaviour
     {
       AutoConnect = false,
       Reconnection = false,
-      Timeout = TimeSpan.FromSeconds(3),
+      Timeout = TimeSpan.FromSeconds(10),
       ConnectWith = Best.SocketIO.Transports.TransportTypes.WebSocket
     };
 
     options.Auth = (SocketManager manager, Socket socket) => new { token = authToken };
 
 #if UNITY_EDITOR
+    try
+    {
+      Uri uri = new Uri(testSocketURL);
+      var hostSettings = Best.HTTP.Shared.HTTPManager.PerHostSettings.Get(uri.Host);
+      hostSettings.TLSSettings.TLSHandler = Best.HTTP.Hosts.Settings.TLSHandlers.Framework;
+    }
+    catch (Exception ex)
+    {
+      Debug.LogWarning($"[SocketIO] Could not configure Framework TLS: {ex.Message}");
+    }
     socketManager = new SocketManager(new Uri(testSocketURL), options);
 #else
         socketManager = new SocketManager(new Uri(socketURL), options);
@@ -209,6 +219,10 @@ public class SocketIOManager : MonoBehaviour
     gameSocket.On<ConnectResponse>(SocketIOEventTypes.Connect, OnSocketConnected);
     gameSocket.On(SocketIOEventTypes.Disconnect, OnSocketDisconnected);
     gameSocket.On<Error>(SocketIOEventTypes.Error, OnSocketError);
+    if (socketManager.Socket != gameSocket)
+    {
+      socketManager.Socket.On<Error>(SocketIOEventTypes.Error, OnSocketError);
+    }
 
     gameSocket.On<string>("game:init", OnInitReceived);
     gameSocket.On<string>("result", OnResultReceived);
