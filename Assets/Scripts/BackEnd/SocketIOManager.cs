@@ -726,17 +726,17 @@ public class SocketIOManager : MonoBehaviour
 
 
 [Serializable]
-public class AuthTokenData
+internal class AuthTokenData
 {
-  public string cookie;
-  public string socketURL;
-  public string nameSpace;
+  [SerializeField] internal string cookie;
+  [SerializeField] internal string socketURL;
+  [SerializeField] internal string nameSpace;
 }
 
 [Serializable]
-public class BalanceSyncData
+internal class BalanceSyncData
 {
-  public string userId;
-  public string gameId;
-  public double balance;
+  [SerializeField] internal string userId;
+  [SerializeField] internal string gameId;
+  [SerializeField] internal double balance;
 }

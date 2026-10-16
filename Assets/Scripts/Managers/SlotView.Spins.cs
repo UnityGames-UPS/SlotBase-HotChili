@@ -209,6 +209,12 @@ public partial class SlotView
     
             float stagger = isQuickStop ? quickStopStagger : (isTurbo ? (reelStopStagger * 0.5f) : reelStopStagger);
     
+            int remainingReels = 0;
+            for (int col = 0; col < maxCols; col++)
+            {
+                if (!IsColumnLocked(col)) remainingReels++;
+            }
+
             for (int col = 0; col < maxCols; col++)
             {
                 if (IsColumnLocked(col)) continue;
@@ -218,36 +224,31 @@ public partial class SlotView
                 {
                     delay += tensionSpinExtraDuration;
                 }
-                StartCoroutine(StopSingleReel(col, resultMatrix[col], delay, isQuickStop || isTurbo, isLastReel && isWheelTriggered, stagger));
+                StartCoroutine(StopSingleReel(col, resultMatrix[col], delay, isQuickStop || isTurbo, isLastReel && isWheelTriggered, stagger, () =>
+                {
+                    remainingReels--;
+                }));
             }
-    
-            float extraDelay = isWheelTriggered ? tensionSpinExtraDuration : 0f;
-            float longestStopTime;
-            if (isQuickStop)
+
+            // Wait for all active reels to complete their sequences (with safety timeout):
+            float safetyTimeout = 2.5f;
+            float elapsedSafety = 0f;
+            while (remainingReels > 0 && elapsedSafety < safetyTimeout)
             {
-                longestStopTime = ((maxCols - 1) * stagger) + extraDelay + quickStopDuration;
+                elapsedSafety += Time.deltaTime;
+                yield return null;
             }
-            else if (isTurbo)
-            {
-                longestStopTime = ((maxCols - 1) * stagger) + extraDelay + (stopOvershootDuration * 0.5f) + (stopSettleDuration * 0.5f);
-            }
-            else
-            {
-                longestStopTime = ((maxCols - 1) * stagger) + extraDelay + stopOvershootDuration + stopSettleDuration;
-            }
-    
-            yield return new WaitForSeconds(longestStopTime);
-    
+
             AudioManager.Instance?.StopTensionBuilder();
-    
+
             isSpinning = false;
-    
+
             foreach (var tween in spinTweens)
             {
                 tween?.Kill();
             }
             spinTweens.Clear();
-    
+
             if (reelSettleCurveTweens != null)
             {
                 for (int i = 0; i < reelSettleCurveTweens.Length; i++)
@@ -259,7 +260,15 @@ public partial class SlotView
                     }
                 }
             }
-    
+
+            // Guarantee every unlocked reel is exactly at its target Y position:
+            for (int col = 0; col < maxCols; col++)
+            {
+                if (IsColumnLocked(col)) continue;
+                float finalTargetY = GetTargetYForResult(resultMatrix[col]);
+                reelTransforms[col].localPosition = new Vector3(reelTransforms[col].localPosition.x, finalTargetY, 0f);
+            }
+
 UpdateCylindricalSpinEffect(force: true);
     
             
@@ -267,7 +276,7 @@ UpdateCylindricalSpinEffect(force: true);
             onComplete?.Invoke();
         }
     
-        private IEnumerator StopSingleReel(int columnIndex, List<int> targetSymbols, float delay, bool isQuickStop, bool isTensionSpin = false, float currentStagger = 0.2f)
+        private IEnumerator StopSingleReel(int columnIndex, List<int> targetSymbols, float delay, bool isQuickStop, bool isTensionSpin = false, float currentStagger = 0.2f, System.Action onReelComplete = null)
         {
             if (isTensionSpin)
             {
@@ -386,7 +395,9 @@ UpdateCylindricalSpinEffect(force: true);
 
             stopSequence.OnComplete(() =>
             {
+                slotTransform.localPosition = new Vector3(slotTransform.localPosition.x, targetY, 0f);
                 UpdateCylindricalSpinEffect(force: true);
+                onReelComplete?.Invoke();
             });
 
             if (spinTweens.Count <= columnIndex)

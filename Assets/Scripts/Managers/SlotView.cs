@@ -22,7 +22,7 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private Sprite spriteBlueSeven; // ID 8
     [SerializeField] private Sprite spriteReSpin;
 
-    internal Sprite GetRespinSprite() => spriteReSpin;
+   
 
     [Header("Spine Win Animations - Matches Backend JSON")]
     [SerializeField] private SkeletonDataAsset spineGreenChilli;
@@ -38,10 +38,10 @@ public partial class SlotView : MonoBehaviour
 
     [Header("Spine Skin Names (Optional)")]
     [Tooltip("If you combined multiple symbols into one Spine file, type the Skin Name here for each symbol ID (0 to 9).")]
-    public string[] spineSkinNames = new string[10];
+    [SerializeField] internal string[] spineSkinNames = new string[10];
 
     [Tooltip("Global scale modifier to shrink or grow Spine Win animations.")]
-    public float spineScaleMultiplier = 0.8f;
+    [SerializeField] internal float spineScaleMultiplier = 0.8f;
     
     private SkeletonDataAsset[] spineDataArray;
 
@@ -349,10 +349,9 @@ public partial class SlotView : MonoBehaviour
             }
         }
 
-        int imageIndex = 4 + row;
-        if (imageIndex < reel.images.Count && reel.images[imageIndex] != null)
+        Image clickedImage = GetSymbolImage(col, row);
+        if (clickedImage != null)
         {
-            Image clickedImage = reel.images[imageIndex];
             if (imageToSymbolIdMap.TryGetValue(clickedImage, out int symbolId))
             {
                 if (symbolId == 9 || symbolId == 99 || symbolId < 0) return;
@@ -660,20 +659,44 @@ public partial class SlotView : MonoBehaviour
             reservedIndices.Add(5);
             reservedIndices.Add(6);
 
+            // Case 1: Centered stop (Row 1 has symbol)
+            // Image 4 = Row 0 (Upper)
+            // Image 5 = Row 1 (Center Payline)
+            // Image 6 = Row 2 (Lower)
             SetImageSymbol(reel.images[4], visibleSymbolIds[0]);
             SetImageSymbol(reel.images[5], visibleSymbolIds[1]);
             SetImageSymbol(reel.images[6], visibleSymbolIds[2]);
+
+            // Buffers 3 and 7 blanked on spin stop so stray icons never peek
+            if (!isInitial)
+            {
+                if (reel.images.Count > 3) SetImageSymbol(reel.images[3], 9);
+                if (reel.images.Count > 7) SetImageSymbol(reel.images[7], 9);
+            }
         }
         else if (visibleSymbolIds != null && visibleSymbolIds.Count >= 3)
         {
+            // Case 2: Split / Half-Step stop (Row 1 is 9 / Blank)
+            // Image 4 = Row 0 (Upper)
+            // Image 5 = Row 2 (Lower)
             reservedIndices.Add(4);
             reservedIndices.Add(5);
+            reservedIndices.Add(6);
+            reservedIndices.Add(3);
+            reservedIndices.Add(7);
 
             SetImageSymbol(reel.images[4], visibleSymbolIds[0]);
             SetImageSymbol(reel.images[5], visibleSymbolIds[2]);
+
+            // In Case 2, reel lands at 0f, placing Image 6 just below viewport.
+            // Image 6, 3, and 7 MUST be set to 9 (blank) so stale icons never peek into view:
+            SetImageSymbol(reel.images[6], 9);
+            if (reel.images.Count > 3) SetImageSymbol(reel.images[3], 9);
+            if (reel.images.Count > 7) SetImageSymbol(reel.images[7], 9);
         }
         else
         {
+            // Fallback (initialization before matrix is received)
             reservedIndices.Add(4);
             reservedIndices.Add(5);
             reservedIndices.Add(6);
@@ -695,15 +718,15 @@ public partial class SlotView : MonoBehaviour
                 bufferIndex++;
                 SetImageSymbol(reel.images[i], symId);
             }
-        }
 
-        if (isInitial && reelTransforms[columnIndex] != null)
-        {
-            reelTransforms[columnIndex].localPosition = new Vector3(
-                reelTransforms[columnIndex].localPosition.x,
-                0f,
-                0f
-            );
+            if (reelTransforms != null && columnIndex < reelTransforms.Length && reelTransforms[columnIndex] != null)
+            {
+                reelTransforms[columnIndex].localPosition = new Vector3(
+                    reelTransforms[columnIndex].localPosition.x,
+                    0f,
+                    0f
+                );
+            }
         }
     }
 
@@ -747,7 +770,7 @@ public partial class SlotView : MonoBehaviour
             lockedColumns.Add(1);
             ShowRespinOverlay(true);
             SetMiddleReelGlow(true);
-            SetRespinReelsGlow(true); // Respin appeared -> turn ON glow for Slot 0 and Slot 2
+            //SetRespinReelsGlow(true); // Respin appeared -> turn ON glow for Slot 0 and Slot 2
         }
         else
         {
@@ -761,7 +784,7 @@ public partial class SlotView : MonoBehaviour
     }
 
     /// <summary>Controls the glow border on Reel 1 (center) during respin lock using simple SetActive.</summary>
-    public void SetMiddleReelGlow(bool show)
+    internal void SetMiddleReelGlow(bool show)
     {
         if (reSpinAnimationBorder != null)
         {
@@ -775,7 +798,7 @@ public partial class SlotView : MonoBehaviour
     }
 
     /// <summary>Controls the glow border for Slot 0 & Slot 2 (outer reels) during respin using simple SetActive.</summary>
-    public void SetRespinReelsGlow(bool show)
+    internal void SetRespinReelsGlow(bool show)
     {
         if (respinReelsGlowObject != null)
         {
@@ -792,7 +815,7 @@ public partial class SlotView : MonoBehaviour
     }
 
     /// <summary>Alias for backwards-compatibility.</summary>
-    public void ShowRespinRollingGlow(bool show) => SetRespinReelsGlow(show);
+    internal void ShowRespinRollingGlow(bool show) => SetRespinReelsGlow(show);
 
     /// <summary>Displays the respin animation (spineReSpin or spriteReSpin) on the center reel overlay and enables click-to-respin interaction.</summary>
     /// <param name="show">True to show the Re-Spin overlay on Reel 1; False to hide it.</param>
@@ -973,15 +996,15 @@ public partial class SlotView : MonoBehaviour
 }
 
 [System.Serializable]
-public class ReelImages
+internal class ReelImages
 {
-    public List<Image> images = new List<Image>(16);
+    [SerializeField] internal List<Image> images = new List<Image>(16);
 }
 
 
 [System.Serializable]
-public class ColumnOverlays
+internal class ColumnOverlays
 {
     [Tooltip("Row 0 = top (Case 2) / middle (Case 1 y=6.5), Row 1 = bottom (Case 2)")]
-    public GameObject[] rows = new GameObject[2];
+    [SerializeField] internal GameObject[] rows = new GameObject[2];
 }
