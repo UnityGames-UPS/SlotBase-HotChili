@@ -39,9 +39,12 @@ public class OrientationChange : MonoBehaviour
     private Coroutine rotationRoutine;
     private bool isLandscape;
     private OrientationMode currentMode = OrientationMode.Landscape;
+    private OrientationMode lastMode = (OrientationMode)(-1);
 
     private int lastWidth = 0;
     private int lastHeight = 0;
+    private int lastScreenWidth = 0;
+    private int lastScreenHeight = 0;
 
     internal string CurrentDevice => currentDevice;
     internal OrientationMode CurrentMode => currentMode;
@@ -79,6 +82,8 @@ public class OrientationChange : MonoBehaviour
 
     private void Start()
     {
+        lastScreenWidth = Screen.width;
+        lastScreenHeight = Screen.height;
         ApplyMatch(Screen.width, Screen.height);
     }
 
@@ -143,24 +148,36 @@ public class OrientationChange : MonoBehaviour
         isLandscape = width > height;
         bool isMobile = IsMobileDevice();
 
+        OrientationMode newMode;
         if (isLandscape)
         {
-            currentMode = OrientationMode.Landscape;
+            newMode = OrientationMode.Landscape;
         }
         else if (enablePortrait && isMobile)
         {
-            currentMode = OrientationMode.MobilePortrait;
+            newMode = OrientationMode.MobilePortrait;
         }
         else
         {
-            currentMode = OrientationMode.DesktopPortrait;
+            newMode = OrientationMode.DesktopPortrait;
         }
+
+        bool modeChanged = (newMode != currentMode) || (lastMode == (OrientationMode)(-1));
+        currentMode = newMode;
+        lastMode = newMode;
 
         Quaternion targetRotation = (currentMode == OrientationMode.DesktopPortrait) ? Quaternion.Euler(0, 0, -90) : Quaternion.identity;
         if (UIWrapper != null)
         {
-            if (rotationTween != null && rotationTween.IsActive()) rotationTween.Kill();
-            rotationTween = UIWrapper.DOLocalRotateQuaternion(targetRotation, transitionDuration).SetEase(Ease.OutCubic);
+            if (modeChanged)
+            {
+                if (rotationTween != null && rotationTween.IsActive()) rotationTween.Kill();
+                rotationTween = UIWrapper.DOLocalRotateQuaternion(targetRotation, transitionDuration).SetEase(Ease.OutCubic);
+            }
+            else
+            {
+                UIWrapper.localRotation = targetRotation;
+            }
         }
 
         if (CanvasScaler != null)
@@ -170,14 +187,26 @@ public class OrientationChange : MonoBehaviour
 
             float targetMatch = CalculateTargetMatch(currentMode, width, height);
 
-            if (matchTween != null && matchTween.IsActive()) matchTween.Kill();
-            matchTween = DOTween.To(() => CanvasScaler.matchWidthOrHeight, x => CanvasScaler.matchWidthOrHeight = x, targetMatch, transitionDuration).SetEase(Ease.InOutQuad);
+            if (modeChanged)
+            {
+                if (matchTween != null && matchTween.IsActive()) matchTween.Kill();
+                matchTween = DOTween.To(() => CanvasScaler.matchWidthOrHeight, x => CanvasScaler.matchWidthOrHeight = x, targetMatch, transitionDuration).SetEase(Ease.InOutQuad);
+            }
+            else
+            {
+                if (matchTween == null || !matchTween.IsActive())
+                {
+                    CanvasScaler.matchWidthOrHeight = targetMatch;
+                }
+            }
         }
 
-        Debug.Log($"[OrientationChange] Dimensions: {width}x{height}, Mode: {currentMode}, isLandscape: {isLandscape}, isMobile: {isMobile}");
-
-        OnOrientationChanged?.Invoke(currentMode, width, height);
-        OnOrientationChangedInstance?.Invoke(currentMode, width, height);
+        if (modeChanged)
+        {
+            Debug.Log($"[OrientationChange] Dimensions: {width}x{height}, Mode: {currentMode}, isLandscape: {isLandscape}, isMobile: {isMobile}");
+            OnOrientationChanged?.Invoke(currentMode, width, height);
+            OnOrientationChangedInstance?.Invoke(currentMode, width, height);
+        }
     }
 
     private float CalculateTargetMatch(OrientationMode mode, int width, int height)
@@ -211,8 +240,10 @@ public class OrientationChange : MonoBehaviour
 
     private void Update()
     {
-        if (Screen.width != lastWidth || Screen.height != lastHeight)
+        if (Screen.width != lastScreenWidth || Screen.height != lastScreenHeight)
         {
+            lastScreenWidth = Screen.width;
+            lastScreenHeight = Screen.height;
             ApplyMatch(Screen.width, Screen.height);
         }
 

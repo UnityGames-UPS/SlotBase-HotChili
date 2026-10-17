@@ -110,23 +110,7 @@ public class AudioManager : MonoBehaviour
 
     #region Volume & Settings Controls
 
-    private void SetMusicEnabled(bool on)
-    {
-        _musicEnabled = on;
-        PlayerPrefs.SetInt(PrefKeyMusic, on ? 1 : 0);
-        PlayerPrefs.Save();
-        ApplyMusicVolume();
-        if (on) PlayBgMusic();
-        else StopBgMusic();
-    }
 
-    private void SetSfxEnabled(bool on)
-    {
-        _sfxEnabled = on;
-        PlayerPrefs.SetInt(PrefKeysfx, on ? 1 : 0);
-        PlayerPrefs.Save();
-        ApplySfxVolume();
-    }
 
     internal void SetMusicVolume(float volume)
     {
@@ -312,10 +296,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private void PlayResultPopupOpen()
-    {
-        PlayUISound(clipCongratulationBox != null ? clipCongratulationBox : clipPopupOpenClose);
-    }
 
     #endregion
 

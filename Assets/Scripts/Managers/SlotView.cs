@@ -47,19 +47,6 @@ public partial class SlotView : MonoBehaviour
 
     private Sprite[] symbolSprites;
 
-    [Header("Win Animation Sprite Arrays for All Icons")]
-    private List<Sprite> animSpritesRed3X;
-    private List<Sprite> animSpritesBlue2X;
-    private List<Sprite> animSpritesBlue7;
-    private List<Sprite> animSpritesWhite7;
-    private List<Sprite> animSpritesWhite7Bar;
-    private List<Sprite> animSpritesRed7;
-    private List<Sprite> animSpritesTripleBar;
-    private List<Sprite> animSpritesDoubleBar;
-    private List<Sprite> animSpritesSingleBar;
-    private List<Sprite> animSpritesSpin;
-
-    private List<Sprite>[] animationSpriteArrays;
 
     [Header("Reel Containers")]
     [SerializeField] private Transform[] reelTransforms;
@@ -75,7 +62,7 @@ public partial class SlotView : MonoBehaviour
     [SerializeField] private float symbolHeight = 500f;
     [SerializeField] private float spinSpeed = 2000f;
     [SerializeField] private float reelStartStagger = 0.08f;
-    [SerializeField] private float reelStopStagger = 0.12f;
+    [SerializeField] private float reelStopStagger = 0.25f;
 
     [Header("Stop Animation Settings")]
     #pragma warning disable 0414
@@ -175,14 +162,6 @@ public partial class SlotView : MonoBehaviour
         }
     }
 
-    private Vector3 GetOriginalWinBoxPosition(GameObject go)
-    {
-        if (go != null && originalWinBoxLocalPositions != null && originalWinBoxLocalPositions.TryGetValue(go, out Vector3 origPos))
-        {
-            return origPos;
-        }
-        return go != null ? go.transform.localPosition : Vector3.zero;
-    }
 
     private void ResetWinBoxPosition(GameObject go)
     {
@@ -530,17 +509,6 @@ public partial class SlotView : MonoBehaviour
                 symbolSprites[i] = defaultSprite;
             }
         }
-        animationSpriteArrays = new List<Sprite>[15];
-        animationSpriteArrays[1] = animSpritesRed3X;
-        animationSpriteArrays[2] = animSpritesBlue2X;
-        animationSpriteArrays[3] = animSpritesBlue7;
-        animationSpriteArrays[4] = animSpritesWhite7;
-        animationSpriteArrays[5] = animSpritesWhite7Bar;
-        animationSpriteArrays[6] = animSpritesRed7;
-        animationSpriteArrays[7] = animSpritesTripleBar;
-        animationSpriteArrays[8] = animSpritesDoubleBar;
-        animationSpriteArrays[9] = animSpritesSingleBar;
-        animationSpriteArrays[10] = animSpritesSpin;
     }
 
     private void InitializeReels()
@@ -808,9 +776,7 @@ public partial class SlotView : MonoBehaviour
                 if (winLineAnimation != null) winLineAnimation.SetActive(false);
             }
             respinReelsGlowObject.SetActive(show);
-            Debug.Log("111");
         }
-        Debug.Log("222");
 
     }
 
@@ -947,10 +913,6 @@ public partial class SlotView : MonoBehaviour
     }
     #endregion
 
-    private List<List<int>> GetCurrentDisplayMatrix()
-    {
-        return currentDisplayMatrix;
-    }
 
     internal bool IsSpinning()
     {

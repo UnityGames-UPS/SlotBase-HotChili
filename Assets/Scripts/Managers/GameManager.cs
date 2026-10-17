@@ -208,9 +208,7 @@ public class GameManager : MonoBehaviour
         {
             slotView.StartSpin();
             slotView.SetRespinReelsGlow(true); // Glow turns ON only for Slot 0 & 2 while rolling!
-            Debug.Log("000");
         }
-        Debug.Log("999");
 
         if (spinCoroutine != null)
             StopCoroutine(spinCoroutine);
@@ -517,16 +515,6 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ProcessSpecialFeaturesAfterWin());
     }
 
-    private bool CheckForCenterWild(List<List<int>> matrix)
-    {
-        if (matrix == null || matrix.Count < 3) return false;
-        var centerCol = matrix[1];
-        if (centerCol == null || centerCol.Count == 0) return false;
-        int paylineRow = centerCol.Count >= 3 ? 1 : 0;
-        if (paylineRow >= centerCol.Count) return false;
-        int centerSymbolId = centerCol[paylineRow];
-        return centerSymbolId >= 0 && centerSymbolId <= 3;
-    }
 
     /// <summary>Checks for triggered features after win animations: detects respinTriggered and initiates respin pending mode.</summary>
     private IEnumerator ProcessSpecialFeaturesAfterWin()

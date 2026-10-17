@@ -116,16 +116,6 @@ public partial class SlotView
                 if (imageAnim == null) continue;
     
                 if (currentDisplayMatrix == null || col >= currentDisplayMatrix.Count || row >= currentDisplayMatrix[col].Count) continue;
-                int symbolId = currentDisplayMatrix[col][row];
-                if (symbolId < 0 || symbolId >= animationSpriteArrays.Length) continue;
-    
-                List<Sprite> animSprites = animationSpriteArrays[symbolId];
-                
-    
-                if (animSprites != null)
-                {
-                    imageAnim.textureArray = animSprites;
-                }
                 imageAnim.animationMode = ImageAnimation.AnimationMode.SINGLE_PHASE;
                 imageAnim.useDynamicFramerate = true;
                 imageAnim.dynamicLoopDuration = winSymbolLoopDuration;
@@ -300,16 +290,6 @@ public partial class SlotView
                 if (imageAnim == null) continue;
     
                 if (currentDisplayMatrix == null || col >= currentDisplayMatrix.Count || row >= currentDisplayMatrix[col].Count) continue;
-                int symbolId = currentDisplayMatrix[col][row];
-                if (symbolId < 0 || symbolId >= animationSpriteArrays.Length) continue;
-    
-                List<Sprite> animSprites = animationSpriteArrays[symbolId];
-                
-    
-                if (animSprites != null)
-                {
-                    imageAnim.textureArray = animSprites;
-                }
                 imageAnim.animationMode = ImageAnimation.AnimationMode.SINGLE_PHASE;
                 imageAnim.useDynamicFramerate = true;
                 imageAnim.dynamicLoopDuration = winSymbolLoopDuration;
@@ -384,37 +364,7 @@ public partial class SlotView
             }
         }
     
-        private static string FormatSpriteText(string input)
-        {
-            if (string.IsNullOrEmpty(input)) return string.Empty;
     
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            foreach (char c in input)
-            {
-                if (c >= '0' && c <= '9')
-                {
-                    sb.Append("<sprite=").Append(c - '0').Append(">");
-                }
-                else if (c == '=')
-                {
-                    sb.Append("<sprite=10>");
-                }
-                else if (c == '.' || c == ',')
-                {
-                    sb.Append("<sprite=11>");
-                }
-                else
-                {
-                    sb.Append(c);
-                }
-            }
-            return sb.ToString();
-        }
-    
-        private static string FormatSpriteText(double amount)
-        {
-            return FormatSpriteText(amount.ToString("0.###"));
-        }
 
         private void KillWinTweens(bool stopCoroutine = true)
         {

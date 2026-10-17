@@ -300,18 +300,23 @@ public class UIManager : MonoBehaviour
 
     private void OnEnable()
     {
+        OrientationChange.OnOrientationChanged += HandleOrientationChangedForLevitation;
         var oc = GetOrientationChange();
         if (oc != null)
         {
+            UpdateJackpotPortraitLevitation(oc.CurrentMode);
         }
     }
 
     private void OnDisable()
     {
-        if (orientationChange != null)
-        {
-        }
+        OrientationChange.OnOrientationChanged -= HandleOrientationChangedForLevitation;
         StopJackpotPortraitLevitation();
+    }
+
+    private void HandleOrientationChangedForLevitation(OrientationChange.OrientationMode mode, int width, int height)
+    {
+        UpdateJackpotPortraitLevitation(mode);
     }
 
     private void InitializeUI()
@@ -859,8 +864,6 @@ public class UIManager : MonoBehaviour
 
     #region Spin Button
 
-    private Sprite defaultSpinButtonSprite;
-    private Sprite defaultSpinButtonPortraitSprite;
 
     /// <summary>Configures the spin button interactability during respin pending mode so the player can trigger the respin.</summary>
     /// <param name="isRespin">True when awaiting player respin input; False when returning to normal state.</param>
@@ -1530,17 +1533,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void AnimateBalanceUpdate(double newBalance, double startBalance = -1f, float durationOverride = -1f)
-    {
-        if (balanceTween != null) balanceTween.Kill();
-        SetTMPText(balanceText, balanceTextPortrait, "BALANCE : " + FormatAmount(newBalance));
-    }
 
-    private void AnimateWinUpdate(double targetWin, float duration = 0.8f)
-    {
-        if (winTween != null) winTween.Kill();
-        UpdateWinDisplay(targetWin);
-    }
 
     #endregion
 
@@ -1637,12 +1630,12 @@ public class UIManager : MonoBehaviour
             float targetY = startPos.y + jackpotLevitateHeight;
             float delay = i * jackpotStaggerDelay;
 
-            Tween posTween = tr.DOLocalMoveY(targetY, jackpotLevitateDuration)
+           /* Tween posTween = tr.DOLocalMoveY(targetY, jackpotLevitateDuration)
                 .SetEase(Ease.InOutSine)
                 .SetLoops(-1, LoopType.Yoyo)
                 .SetDelay(delay);
 
-            jackpotPortraitTweens.Add(posTween);
+            jackpotPortraitTweens.Add(posTween);*/
         }
     }
 
@@ -1694,12 +1687,6 @@ public class UIManager : MonoBehaviour
         return orientationChange;
     }
 
-    private OCController GetOCController()
-    {
-        if (ocController != null) return ocController;
-        ocController = Object.FindFirstObjectByType<OCController>();
-        return ocController;
-    }
 
     private void UpdateTopBarVisibility(bool visible = true)
     {

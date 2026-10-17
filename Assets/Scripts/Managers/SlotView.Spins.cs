@@ -203,8 +203,6 @@ public partial class SlotView
                 }
             }
     
-            AudioManager.Instance?.StopReelSpinLoop();
-    
             bool isWheelTriggered = false;
     
             float stagger = isQuickStop ? quickStopStagger : (isTurbo ? (reelStopStagger * 0.5f) : reelStopStagger);
@@ -239,6 +237,8 @@ public partial class SlotView
                 yield return null;
             }
 
+            // Stop spin audio loop only after the last reel has completed its landing:
+            AudioManager.Instance?.StopReelSpinLoop();
             AudioManager.Instance?.StopTensionBuilder();
 
             isSpinning = false;
@@ -560,25 +560,6 @@ UpdateCylindricalSpinEffect(force: true);
         }
     }
 
-    private void ResetCylindricalTransforms()
-    {
-        if (reelImagesList == null) return;
-        foreach (var reel in reelImagesList)
-        {
-            if (reel?.images == null) continue;
-            foreach (var img in reel.images)
-            {
-                if (img == null) continue;
-                img.rectTransform.localRotation = Quaternion.identity;
-                img.rectTransform.localScale = Vector3.one;
-                Vector2 pos = img.rectTransform.anchoredPosition;
-                if (pos.x != 0f)
-                {
-                    img.rectTransform.anchoredPosition = new Vector2(0f, pos.y);
-                }
-            }
-        }
-    }
 
     #endregion
 }

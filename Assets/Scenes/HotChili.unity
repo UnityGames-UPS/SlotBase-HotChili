@@ -19648,20 +19648,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f6e09498d3f57ae429fc9cb494fe6a4b, type: 3}
   - {fileID: 21300000, guid: 87e21c4ace3382e4780eab8dd695e092, type: 3}
   - {fileID: 21300000, guid: 4472e09309b240d43a838ecc789d3b34, type: 3}
-  - {fileID: 21300000, guid: 59871978055b1ea459e9d7495d2b21af, type: 3}
-  - {fileID: 21300000, guid: 9c491a1f515e802498ff4f760fd91913, type: 3}
-  - {fileID: 21300000, guid: 3086288a66e51214d96a958102cd88d8, type: 3}
-  - {fileID: 21300000, guid: 2e60e3f90147946469bc34e2cd2f008f, type: 3}
-  - {fileID: 21300000, guid: 94e57b9cc89d99a4ab7be1bca5087f75, type: 3}
-  - {fileID: 21300000, guid: f03242e244bdd994eac137a5e3817d4f, type: 3}
-  - {fileID: 21300000, guid: 47cb0509656c1c2419d3f31aba2e11d0, type: 3}
-  - {fileID: 21300000, guid: 490a9858e4ceff540a4728af04f1ae8a, type: 3}
-  - {fileID: 21300000, guid: 70eaf9c64a9ec25468bdb41ae9d8f80a, type: 3}
-  - {fileID: 21300000, guid: 5c8c6f67c15676740a7c6d80c68ddc36, type: 3}
-  - {fileID: 21300000, guid: 661892b52f8f5e84db286ad4638a9e68, type: 3}
-  - {fileID: 21300000, guid: 5a0773d3c0e66a3478330d6543e0816b, type: 3}
-  - {fileID: 21300000, guid: 4c7f16513d571d841b8e4b6a06ac3043, type: 3}
-  - {fileID: 21300000, guid: a341244bd5215f24291fbc30a9122468, type: 3}
   rendererDelegate: {fileID: 0}
   useSharedMaterial: 1
   doLoopAnimation: 1
@@ -20361,8 +20347,8 @@ MonoBehaviour:
   winAmountTextPortrait: {fileID: 1453476038}
   winTextObjectPortrait: {fileID: 2097130249}
   goodLuckObjectPortrait: {fileID: 2030076910}
-  landscapeTopBarObject: {fileID: 1965491222}
-  portraitTopBarObject: {fileID: 1002368432}
+  landscapeTopBarObject: {fileID: 0}
+  portraitTopBarObject: {fileID: 0}
   winTypePopupObject: {fileID: 0}
   winTypeCanvasGroup: {fileID: 0}
   winTypePopupRect: {fileID: 0}
@@ -24281,7 +24267,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1450203742
 RectTransform:
   m_ObjectHideFlags: 0
@@ -31631,7 +31617,7 @@ MonoBehaviour:
   symbolHeight: 275
   spinSpeed: 3500
   reelStartStagger: 0.08
-  reelStopStagger: 0.12
+  reelStopStagger: 0.25
   stopOvershootDistance: 50
   quickStopOvershoot: 20
   stopOvershootDuration: 0.2
@@ -31710,7 +31696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f521a04de7f494272a617b2719edd271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SocketIOManager
-  testToken: 756e8aaa63004dfcb3306eaf02f73a56
+  testToken: a4af7a9ee89546b0b583eabfd033ae39
   gameManager: {fileID: 1328156518}
   uiManager: {fileID: 1266113020}
   popupManager: {fileID: 1195155500}
@@ -31856,7 +31842,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1836420536}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -34081,10 +34067,10 @@ MonoBehaviour:
   clipTensionBuilder: {fileID: 8300000, guid: 35b556493dbc54e51b268680ac44643f, type: 3}
   clipNormalWin: {fileID: 8300000, guid: bd5221888690aad439b73f93ba365b8d, type: 3}
   clipBigWin2x: {fileID: 8300000, guid: 81569dfc36f741349b4b1a884167c26a, type: 3}
-  clipWildChilliHit: {fileID: 0}
+  clipWildChilliHit: {fileID: 8300000, guid: 9cdc1ff86a873487d97ad4eec7849cc7, type: 3}
   clipCongratulationBox: {fileID: 0}
   clipScatterHit: {fileID: 0}
-  clipSpinButton: {fileID: 0}
+  clipSpinButton: {fileID: 8300000, guid: 50ff95a09cccb499d80af8f5e75f73c2, type: 3}
   clipGeneralButtonClick: {fileID: 8300000, guid: c2ed94ff9b16b4493b05db8e783049c7, type: 3}
   clipBetPlusMinus: {fileID: 8300000, guid: 2f2b2ed50e5fe4c05bde643bb826e4c2, type: 3}
   clipMaxBetReached: {fileID: 8300000, guid: b556940f8a085479cbf7662d579f648c, type: 3}
