@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -112,6 +112,7 @@ public class SocketIOManager : MonoBehaviour
 #if UNITY_WEBGL && !UNITY_EDITOR
     if (JSManager != null)
     {
+      JSManager.RegisterAuthTokenListener(gameObject.name);
       JSManager.SendCustomMessage("authToken");
     }
     StartCoroutine(FallbackAuthRoutine());
