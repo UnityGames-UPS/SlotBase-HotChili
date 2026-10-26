@@ -5,10 +5,16 @@ public class JSFunctCalls : MonoBehaviour
 {
   #region External Functions
   [DllImport("__Internal")]
-  private static extern void SendLogToReactNative(string message);
+  private static extern void SendPostMessage(string message);
 
   [DllImport("__Internal")]
-  private static extern void SendPostMessage(string message);
+  private static extern void RegisterVisibilityChangeListener(string gameObjectName);
+
+  [DllImport("__Internal")]
+  private static extern void RegisterResizeListener(string gameObjectName, string methodName);
+
+  [DllImport("__Internal")]
+  private static extern void RegisterTokenListener(string gameObjectName, string methodName);
 
   [DllImport("__Internal")]
   private static extern void RequestFullscreen();
@@ -18,47 +24,50 @@ public class JSFunctCalls : MonoBehaviour
 
   [DllImport("__Internal")]
   private static extern void RegisterFullscreenChangeListener(string gameObjectName);
-
-  [DllImport("__Internal")]
-  private static extern void RegisterVisibilityChangeListener(string gameObjectName);
   #endregion
 
   #region Unity Lifecycle
-  private void OnEnable()
+  // Start, not Awake: the receiver's Awake must run before the initial dimensions callback.
+  void Start()
   {
-#if UNITY_WEBGL && !UNITY_EDITOR
-        Application.logMessageReceived += HandleLog;
-        Debug.Log("[JS] Log forwarding enabled");
-#endif
+    var oc = FindFirstObjectByType<OrientationChange>();
+    string targetGo = oc != null ? oc.gameObject.name : "OC";
+    RegisterDimensionsListener(targetGo);
   }
-
-  private void OnDisable()
-  {
-#if UNITY_WEBGL && !UNITY_EDITOR
-        Application.logMessageReceived -= HandleLog;
-        Debug.Log("[JS] Log forwarding disabled");
-#endif
-  }
-  #endregion
-
-  #region Private Methods
-#if UNITY_WEBGL && !UNITY_EDITOR
-    private void HandleLog(string logString, string stackTrace, LogType type)
-    {
-        string formattedMessage = $"[{type}] {logString}";
-        SendLogToReactNative(formattedMessage);
-    }
-#endif
   #endregion
 
   #region Public API
   internal void SendCustomMessage(string message)
   {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        Debug.Log($"[JS] Sending message to platform: {message}");
-        SendPostMessage(message);
+    Debug.Log($"[JS] Sending message to platform: {message}");
+    SendPostMessage(message);
 #else
     Debug.Log($"[JS] Would send message (editor mode): {message}");
+#endif
+  }
+
+  /// <summary>
+  /// Self-contained resize bridge: the page drives <OC_GO>.<OC_METHOD>("width,height") on its own resize.
+  /// </summary>
+  internal void RegisterDimensionsListener(string gameObjectName = "OC", string methodName = "SwitchDisplay")
+  {
+#if UNITY_WEBGL && !UNITY_EDITOR
+    RegisterResizeListener(gameObjectName, methodName);
+#else
+    Debug.Log($"[JS] Resize listener not registered ('{gameObjectName}.{methodName}', editor mode)");
+#endif
+  }
+
+  /// <summary>
+  /// Inbound auth: routes the host's "TokenReceived" message to gameObjectName.methodName(json).
+  /// </summary>
+  internal void RegisterAuthTokenListener(string gameObjectName, string methodName = "ReceiveAuthToken")
+  {
+#if UNITY_WEBGL && !UNITY_EDITOR
+    RegisterTokenListener(gameObjectName, methodName);
+#else
+    Debug.Log($"[JS] Token listener not registered ('{gameObjectName}.{methodName}', editor mode)");
 #endif
   }
 
@@ -66,8 +75,8 @@ public class JSFunctCalls : MonoBehaviour
   internal void RequestExpandGame()
   {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        Debug.Log("[JS] Requesting fullscreen expand");
-        RequestFullscreen();
+    Debug.Log("[JS] Requesting fullscreen expand");
+    RequestFullscreen();
 #else
     Debug.Log("[JS] Would request fullscreen (editor mode)");
 #endif
@@ -77,8 +86,8 @@ public class JSFunctCalls : MonoBehaviour
   internal void RequestShrinkGame()
   {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        Debug.Log("[JS] Requesting exit fullscreen (shrink)");
-        ExitFullscreen();
+    Debug.Log("[JS] Requesting exit fullscreen (shrink)");
+    ExitFullscreen();
 #else
     Debug.Log("[JS] Would exit fullscreen (editor mode)");
 #endif
@@ -91,8 +100,8 @@ public class JSFunctCalls : MonoBehaviour
   internal void RegisterFullscreenListener(string gameObjectName)
   {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        Debug.Log($"[JS] Registering fullscreen change listener on '{gameObjectName}'");
-        RegisterFullscreenChangeListener(gameObjectName);
+    Debug.Log($"[JS] Registering fullscreen change listener on '{gameObjectName}'");
+    RegisterFullscreenChangeListener(gameObjectName);
 #else
     Debug.Log("[JS] Fullscreen listener not registered (editor mode)");
 #endif
@@ -105,8 +114,8 @@ public class JSFunctCalls : MonoBehaviour
   internal void RegisterVisibilityListener(string gameObjectName)
   {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        Debug.Log($"[JS] Registering visibility change listener on '{gameObjectName}'");
-        RegisterVisibilityChangeListener(gameObjectName);
+    Debug.Log($"[JS] Registering visibility change listener on '{gameObjectName}'");
+    RegisterVisibilityChangeListener(gameObjectName);
 #else
     Debug.Log("[JS] Visibility listener not registered (editor mode)");
 #endif
