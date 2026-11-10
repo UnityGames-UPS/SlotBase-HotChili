@@ -4,9 +4,9 @@ using DG.Tweening;
 using System;
 using System.Collections;
 
-public class OrientationChange : MonoBehaviour
+internal class OrientationChange : MonoBehaviour
 {
-    public enum OrientationMode
+    internal enum OrientationMode
     {
         Landscape,
         DesktopPortrait,
@@ -20,9 +20,6 @@ public class OrientationChange : MonoBehaviour
     [Header("Transition Settings")]
     [SerializeField] private float transitionDuration = 0.2f;
     [SerializeField] private float waitForRotation = 0.2f;
-
-    [Header("Orientation Settings")]
-    [SerializeField] private bool enablePortrait = true;
 
     [Header("Device Detection Settings")]
     [SerializeField] private string androidKeyword = "MB";
@@ -39,37 +36,15 @@ public class OrientationChange : MonoBehaviour
     private Coroutine rotationRoutine;
     private bool isLandscape;
     private OrientationMode currentMode = OrientationMode.Landscape;
-    private OrientationMode lastMode = (OrientationMode)(-1);
 
     private int lastWidth = 0;
     private int lastHeight = 0;
-    private int lastScreenWidth = 0;
-    private int lastScreenHeight = 0;
 
-    internal string CurrentDevice => currentDevice;
     internal OrientationMode CurrentMode => currentMode;
-    internal bool IsLandscape => isLandscape;
-    internal bool IsMobile => IsMobileDevice();
-    internal bool EnablePortrait
-    {
-        get => enablePortrait;
-        set
-        {
-            enablePortrait = value;
-            ApplyMatch(lastWidth > 0 ? lastWidth : Screen.width, lastHeight > 0 ? lastHeight : Screen.height);
-        }
-    }
-
-    private void OnValidate()
-    {
-        if (Application.isPlaying)
-        {
-            ApplyMatch(lastWidth > 0 ? lastWidth : Screen.width, lastHeight > 0 ? lastHeight : Screen.height);
-        }
-    }
 
     private void Awake()
     {
+        gameObject.name = "OC";
         if (CanvasScaler != null)
         {
             ReferenceAspect = CanvasScaler.referenceResolution;
@@ -82,26 +57,18 @@ public class OrientationChange : MonoBehaviour
 
     private void Start()
     {
-        lastScreenWidth = Screen.width;
-        lastScreenHeight = Screen.height;
         ApplyMatch(Screen.width, Screen.height);
     }
 
     internal void DeviceCheck(string device)
     {
-        DiviceCheck(device);
-    }
-
-    internal void DiviceCheck(string device)
-    {
-        Debug.Log($"[OrientationChange] Device detected: {device}");
         currentDevice = device;
         int w = lastWidth > 0 ? lastWidth : Screen.width;
         int h = lastHeight > 0 ? lastHeight : Screen.height;
         ApplyMatch(w, h);
     }
 
-    internal bool IsMobileDevice()
+    private bool IsMobileDevice()
     {
         if (!string.IsNullOrEmpty(currentDevice))
         {
@@ -148,107 +115,71 @@ public class OrientationChange : MonoBehaviour
         isLandscape = width > height;
         bool isMobile = IsMobileDevice();
 
-        OrientationMode newMode;
         if (isLandscape)
         {
-            newMode = OrientationMode.Landscape;
+            currentMode = OrientationMode.Landscape;
         }
-        else if (enablePortrait && isMobile)
+        else if (isMobile)
         {
-            newMode = OrientationMode.MobilePortrait;
+            currentMode = OrientationMode.MobilePortrait;
         }
         else
         {
-            newMode = OrientationMode.DesktopPortrait;
+            currentMode = OrientationMode.DesktopPortrait;
         }
 
-        bool modeChanged = (newMode != currentMode) || (lastMode == (OrientationMode)(-1));
-        currentMode = newMode;
-        lastMode = newMode;
-
+        // Apply Rotation: DesktopPortrait gets -90 degrees rotation, MobilePortrait & Landscape get 0 degrees.
         Quaternion targetRotation = (currentMode == OrientationMode.DesktopPortrait) ? Quaternion.Euler(0, 0, -90) : Quaternion.identity;
         if (UIWrapper != null)
         {
-            if (modeChanged)
-            {
-                if (rotationTween != null && rotationTween.IsActive()) rotationTween.Kill();
-                rotationTween = UIWrapper.DOLocalRotateQuaternion(targetRotation, transitionDuration).SetEase(Ease.OutCubic);
-            }
-            else
-            {
-                UIWrapper.localRotation = targetRotation;
-            }
+            if (rotationTween != null && rotationTween.IsActive()) rotationTween.Kill();
+            rotationTween = UIWrapper.DOLocalRotateQuaternion(targetRotation, transitionDuration).SetEase(Ease.OutCubic);
         }
 
+        // Calculate CanvasScaler Match Width/Height
         if (CanvasScaler != null)
         {
             Vector2 refRes = (currentMode == OrientationMode.MobilePortrait) ? new Vector2(1080f, 1920f) : new Vector2(1920f, 1080f);
             CanvasScaler.referenceResolution = refRes;
 
-            float targetMatch = CalculateTargetMatch(currentMode, width, height);
+            float refW = refRes.x;
+            float refH = refRes.y;
 
-            if (modeChanged)
+            float scaleW, scaleH;
+            if (currentMode == OrientationMode.DesktopPortrait)
             {
-                if (matchTween != null && matchTween.IsActive()) matchTween.Kill();
-                matchTween = DOTween.To(() => CanvasScaler.matchWidthOrHeight, x => CanvasScaler.matchWidthOrHeight = x, targetMatch, transitionDuration).SetEase(Ease.InOutQuad);
+                // In DesktopPortrait, UIWrapper is rotated -90 degrees.
+                // Canvas width (1920) corresponds to screen height.
+                // Canvas height (1080) corresponds to screen width.
+                scaleW = (float)height / refW;
+                scaleH = (float)width / refH;
             }
             else
             {
-                if (matchTween == null || !matchTween.IsActive())
-                {
-                    CanvasScaler.matchWidthOrHeight = targetMatch;
-                }
+                scaleW = (float)width / refW;
+                scaleH = (float)height / refH;
             }
+
+            float targetMatch = (scaleW <= scaleH) ? 0f : 1f;
+
+            if (matchTween != null && matchTween.IsActive()) matchTween.Kill();
+            matchTween = DOTween.To(() => CanvasScaler.matchWidthOrHeight, x => CanvasScaler.matchWidthOrHeight = x, targetMatch, transitionDuration).SetEase(Ease.InOutQuad);
         }
 
-        if (modeChanged)
-        {
-            Debug.Log($"[OrientationChange] Dimensions: {width}x{height}, Mode: {currentMode}, isLandscape: {isLandscape}, isMobile: {isMobile}");
-            OnOrientationChanged?.Invoke(currentMode, width, height);
-            OnOrientationChangedInstance?.Invoke(currentMode, width, height);
-        }
-    }
-
-    private float CalculateTargetMatch(OrientationMode mode, int width, int height)
-    {
-        if (mode == OrientationMode.Landscape)
-        {
-            float scaleW = (float)width / 1920f;
-            float scaleH = (float)height / 1080f;
-            return (scaleW <= scaleH) ? 0f : 1f;
-        }
-        else if (mode == OrientationMode.MobilePortrait)
-        {
-            float scaleW = (float)width / 1080f;
-            float scaleH = (float)height / 1920f;
-            return (scaleW <= scaleH) ? 0f : 1f;
-        }
-        else
-        {
-            float targetScale = Mathf.Min((float)width / 1080f, (float)height / 1920f);
-            float logWidth = Mathf.Log((float)width / 1920f, 2f);
-            float logHeight = Mathf.Log((float)height / 1080f, 2f);
-
-            float diff = logHeight - logWidth;
-            if (Mathf.Abs(diff) < 0.0001f) return 0.5f;
-
-            float logTarget = Mathf.Log(targetScale, 2f);
-            float match = (logTarget - logWidth) / diff;
-            return Mathf.Clamp01(match);
-        }
+        // Notify Listeners (including OCController)
+        OnOrientationChanged?.Invoke(currentMode, width, height);
+        OnOrientationChangedInstance?.Invoke(currentMode, width, height);
     }
 
     private void Update()
     {
-        if (Screen.width != lastScreenWidth || Screen.height != lastScreenHeight)
+        if (Screen.width != lastWidth || Screen.height != lastHeight)
         {
-            lastScreenWidth = Screen.width;
-            lastScreenHeight = Screen.height;
             ApplyMatch(Screen.width, Screen.height);
         }
 
 #if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.O))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             int w = lastHeight > 0 ? lastHeight : Screen.height;
             int h = lastWidth > 0 ? lastWidth : Screen.width;
@@ -257,7 +188,7 @@ public class OrientationChange : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M))
         {
             string nextDevice = IsMobileDevice() ? "desktop" : "mobile";
-            DiviceCheck(nextDevice);
+            DeviceCheck(nextDevice);
         }
 #endif
     }

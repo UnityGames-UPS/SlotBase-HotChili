@@ -490,11 +490,12 @@ public class SocketIOManager : MonoBehaviour
       }
     }
   }
-
+    //000
   private IEnumerator FocusTimeoutCheck()
   {
     while (!hasFocus && !isExiting && !isDestroyed)
     {
+      Debug.Log("Time Out Started");
       if (Time.time - focusLostTime >= maxBackgroundTime)
       {
         Debug.LogWarning("[SOCKET] Background timeout — closing connection");
